@@ -246,7 +246,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
 
-    if (useVisionDashboard.get()) {
+    if (true) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
