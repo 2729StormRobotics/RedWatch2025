@@ -29,9 +29,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 
- public interface VisionIO {
 
-    // Updates arrays with information
+public interface VisionIO {
+
+    @AutoLog
     public static class VisionIOInputs {
       public Pose2d[] estimate = new Pose2d[0];
       public double timestamp = 0;

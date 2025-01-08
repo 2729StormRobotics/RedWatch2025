@@ -54,7 +54,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final VisionIO vision;
+  // private final VisionIO vision;
 
   private boolean brakeMode = true;
 
@@ -89,10 +89,11 @@ public class RobotContainer {
                 new ModuleIOSparkMax(0),
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+                new ModuleIOSparkMax(3),
+                new VisionIOPhoton());
         
-        vision = 
-            new VisionIOPhoton();
+        // vision = 
+        //     new VisionIOPhoton();
             
         break;
 
@@ -104,10 +105,11 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new ModuleIOSim());
+                new ModuleIOSim(),
+                new VisionIOSim());
 
-        vision = 
-            new VisionIOSim();
+        // vision = 
+        //     new VisionIOSim();
         break;
 
       default:
@@ -118,10 +120,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                new VisionIO() {});
 
-        vision = 
-            new VisionIO();
+        // vision = 
+        //     new VisionIO();
         break;
     }
 
