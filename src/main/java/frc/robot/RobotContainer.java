@@ -36,6 +36,9 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.PhotonVision.VisionIO;
+import frc.robot.subsystems.PhotonVision.VisionIOPhoton;
+import frc.robot.subsystems.PhotonVision.VisionIOSim;
 import frc.robot.util.drive.DriveControls;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -51,6 +54,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final VisionIO vision;
 
   private boolean brakeMode = true;
 
@@ -86,6 +90,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
+        
+        vision = 
+            new VisionIOPhoton();
+            
         break;
 
       case SIM:
@@ -97,6 +105,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+
+        vision = 
+            new VisionIOSim();
         break;
 
       default:
@@ -108,6 +119,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        vision = 
+            new VisionIO();
         break;
     }
 
