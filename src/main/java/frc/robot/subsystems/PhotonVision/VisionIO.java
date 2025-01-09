@@ -51,7 +51,7 @@ public interface VisionIO {
 
     // getAllUnreadResults was a replacement for getLatestResult(), casted to fix error ******_______******
     public default PhotonPipelineResult getLatestResult(PhotonCamera camera) {
-      return (PhotonPipelineResult) camera.getAllUnreadResults();
+      return camera.getLatestResult();
     }
 
     // Checks if the results from PhotonPipelineResult are valid
