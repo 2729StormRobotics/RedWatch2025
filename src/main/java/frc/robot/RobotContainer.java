@@ -16,7 +16,6 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -37,7 +37,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -53,7 +52,8 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-
+  private final CommandGenericHID SimKeyboard = new CommandGenericHID(0); // Keyboard 0 on port 0
+  
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -135,13 +135,44 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Default command, normal field-relative drive
+    // Default command, normal field-relative drive  SimKeyboard
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
+            () -> controller.getRightX()));
+
+    // Uncomment if Sim
+
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(
+    //         drive,
+    //         () -> SimKeyboard.getRawAxis(1),
+    //         () -> SimKeyboard.getRawAxis(0),
+    //         () -> SimKeyboard.getRawAxis(2)));
+
+    // @SuppressWarnings("resource")
+    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    // aimController.enableContinuousInput(-Math.PI, Math.PI);
+    // controller
+    //     .y()
+    //     .whileTrue(
+    //         Commands.startRun(
+    //             () -> {
+    //               aimController.reset();
+    //             },
+    //             () -> {
+    //               DriveCommands.joystickDrive(
+    //                   drive,
+    //                   () -> SimKeyboard.getRawAxis(1),
+    //                   () -> SimKeyboard.getRawAxis(0),
+    //                   () -> aimController.calculate(vision.getTargetX(0).getRadians()));
+    //             },
+    //             drive));
+
+
+
 
     // Lock to 0° when A button is held
     controller
@@ -149,8 +180,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
@@ -167,11 +198,11 @@ public class RobotContainer {
                   aimController.reset();
                 },
                 () -> {
-                    DriveCommands.joystickDrive(
-                        drive,
-                        () -> -controller.getLeftY(),
-                        () -> -controller.getLeftX(),
-                        () -> aimController.calculate(vision.getTargetX(0).getRadians()));
+                  DriveCommands.joystickDrive(
+                      drive,
+                      () -> controller.getLeftY(),
+                      () -> controller.getLeftX(),
+                      () -> aimController.calculate(vision.getTargetX(0).getRadians()));
                 },
                 drive));
     // Reset gyro to 0° when B button is pressed
