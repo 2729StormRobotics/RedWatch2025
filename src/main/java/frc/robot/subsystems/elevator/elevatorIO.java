@@ -5,12 +5,13 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import com.revrobotics.spark.SparkMax;
 
 
 public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
-        private final CANSparkMax motor;
+        private final SparkMax motor;
         private final ProfiledPIDController pidController = new ProfiledPIDController(double kP, double kI, double kD, double MOVEMENT_CONSTRAINTS); 
         private final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(double kS, double kG, double kV, double kA);
         
