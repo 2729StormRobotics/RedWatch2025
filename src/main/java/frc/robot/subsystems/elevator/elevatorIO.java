@@ -1,6 +1,14 @@
 package frc.robot.subsystems.elevator;
 
-public class elevatorIO {
-    
+
+public interface ElevatorIO {
+    @AutoLog
+    public static class ElevatorIOInputs {
+        
+
+
+
+
+    }
     
 }
