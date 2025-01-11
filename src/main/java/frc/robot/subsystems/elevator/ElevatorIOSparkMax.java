@@ -77,6 +77,13 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
   private final double absoluteEncoderOffset;
 
+  public final RelativeEncoder m_LeftEncoder;
+  public final RelativeEncoder m_RightEncoder;
+
+  m_LeftEncoder = m_ArmExtend.getEncoder();
+  m_RightEncoder = m_ArmExtend.getEncoder();
+
+
   public ElevatorIOSparkMax(int index) {
     switch (index) {
       case 0: // Front Left
@@ -125,6 +132,16 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     elevatorPositionQueue.clear();
     //turnPositionQueue.clear();
   }
+
+
+    public double getLeftEncoderDistance() {
+        return -m_LeftEncoder.getPosition();
+    }
+
+    public double getRightEncoderDistance() {
+        return -m_RightEncoder.getPosition();
+    } 
+  
 
   @Override
   public void setElevatorVelocity(double velocityRadPerSec) {
