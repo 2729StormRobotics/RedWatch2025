@@ -76,13 +76,18 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   private final Queue<Double> elevatorPositionQueue;
 
   private final double absoluteEncoderOffset;
+  public final AnalogPotentiometer elevatorPot = new AnalogPotentiometer(0); //idk change it later
+
+  public final AnalogPotentiometer pot = new AnalogPotentiometer(1);
+  public double pot_val;
+  public double offset = 0;
 
   public final RelativeEncoder m_LeftEncoder;
   public final RelativeEncoder m_RightEncoder;
 
   m_LeftEncoder = m_ArmExtend.getEncoder();
   m_RightEncoder = m_ArmExtend.getEncoder();
-
+  
 
   public ElevatorIOSparkMax(int index) {
     switch (index) {
@@ -117,7 +122,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     
     double kWheelDiameterMeters = 0.0;
 
-        inputs.elevatorPositionRad = elevatorEncoder.getPosition() / (kWheelDiameterMeters / 2);
+    inputs.elevatorPositionRad = elevatorEncoder.getPosition() / (kWheelDiameterMeters / 2);
     inputs.elevatorPositionMeters = elevatorEncoder.getPosition();
     inputs.elevatorVelocityMeterPerSec = elevatorEncoder.getVelocity();
     inputs.elevatorVelocityRadPerSec = elevatorEncoder.getVelocity() / (kWheelDiameterMeters / 2);
@@ -133,15 +138,19 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     //turnPositionQueue.clear();
   }
 
+ 
+  // Gets the distance from this value to this value.
+  public double getDistance(){
+    return pot_val;
+  }
+  public double getLeftEncoderDistance() {
+    return -m_LeftEncoder.getPosition();
+}
 
-    public double getLeftEncoderDistance() {
-        return -m_LeftEncoder.getPosition();
-    }
+public double getRightEncoderDistance() {
+    return -m_RightEncoder.getPosition();
+} 
 
-    public double getRightEncoderDistance() {
-        return -m_RightEncoder.getPosition();
-    } 
-  
 
   @Override
   public void setElevatorVelocity(double velocityRadPerSec) {
@@ -161,5 +170,11 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public double getAbsoluteEncoderOffset() {
     return absoluteEncoderOffset;
+  }
+  // Periodically calculates the value of the pot.
+  public void periodic() {
+    // This method will be called once per scheduler run
+    pot_val = ((pot.get())*50)-offset;
+    // pot_val = ((pot.get())*50);
   }
 }

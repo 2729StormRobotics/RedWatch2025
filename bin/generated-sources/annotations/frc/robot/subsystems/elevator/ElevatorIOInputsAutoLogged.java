@@ -8,10 +8,9 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs implements LoggableInputs, Cloneable {
   @Override
   public void toLog(LogTable table) {
-    table.put("Motor", motor);
+    table.put("MOVEMENT_CONSTRAINTS", MOVEMENT_CONSTRAINTS);
     table.put("PidController", pidController);
     table.put("FeedforwardController", feedforwardController);
-    table.put("ElevatorPot", elevatorPot);
     table.put("ElevatorAppliedVolts", elevatorAppliedVolts);
     table.put("ElevatorCurrentAmps", elevatorCurrentAmps);
     table.put("ElevatorPositionRad", elevatorPositionRad);
@@ -23,10 +22,9 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
 
   @Override
   public void fromLog(LogTable table) {
-    motor = table.get("Motor", motor);
+    MOVEMENT_CONSTRAINTS = table.get("MOVEMENT_CONSTRAINTS", MOVEMENT_CONSTRAINTS);
     pidController = table.get("PidController", pidController);
     feedforwardController = table.get("FeedforwardController", feedforwardController);
-    elevatorPot = table.get("ElevatorPot", elevatorPot);
     elevatorAppliedVolts = table.get("ElevatorAppliedVolts", elevatorAppliedVolts);
     elevatorCurrentAmps = table.get("ElevatorCurrentAmps", elevatorCurrentAmps);
     elevatorPositionRad = table.get("ElevatorPositionRad", elevatorPositionRad);
@@ -38,10 +36,9 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
 
   public ElevatorIOInputsAutoLogged clone() {
     ElevatorIOInputsAutoLogged copy = new ElevatorIOInputsAutoLogged();
-    copy.motor = this.motor;
+    copy.MOVEMENT_CONSTRAINTS = this.MOVEMENT_CONSTRAINTS;
     copy.pidController = this.pidController;
     copy.feedforwardController = this.feedforwardController;
-    copy.elevatorPot = this.elevatorPot;
     copy.elevatorAppliedVolts = this.elevatorAppliedVolts;
     copy.elevatorCurrentAmps = this.elevatorCurrentAmps.clone();
     copy.elevatorPositionRad = this.elevatorPositionRad;
