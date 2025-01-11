@@ -22,15 +22,12 @@ public class ElevatorIOSim implements ElevatorIO {
     public static final double driveReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
     private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, driveReduction), elevatorMotorModel);
 
-    private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
     private double driveAppliedVolts = 0.0;
   
     @Override
     public void updateInputs(ElevatorIOSim inputs) {
       elevatorSim.update(LOOP_PERIOD_SECS);
-  
-      inputs.drivePositionRad = elevatorSim.getAngularPositionRad();
-      inputs.driveVelocityRadPerSec = elevatorSim.getAngularVelocityRadPerSec();
+
       inputs.driveAppliedVolts = driveAppliedVolts;
       inputs.driveCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
 
