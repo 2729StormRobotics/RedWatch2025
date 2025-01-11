@@ -93,12 +93,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     switch (index) {
       case 0: // Front Left
         elevatorSparkMax = new SparkMax(kLeftElevatorCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = ElevatorConstants.kFrontLeftChassisAngularOffset; // MUST BE CALIBRATED/FIXED
-        break;
       case 1: // Front Right
         elevatorSparkMax = new SparkMax(kRightElevatorCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = ElevatorConstants.kFrontRightChassisAngularOffset; // MUST BE CALIBRATED/FIXED
-        break;
       default:
         throw new RuntimeException("Invalid module index");
     }
