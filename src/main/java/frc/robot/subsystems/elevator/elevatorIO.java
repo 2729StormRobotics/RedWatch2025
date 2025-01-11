@@ -7,6 +7,9 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
@@ -29,8 +32,18 @@ public interface ElevatorIO {
         public double elevatorPositionMeters = 0.0;
         public double elevatorVelocityMeterPerSec = 0.0;
         public double elevatorVelocityRadPerSec = 0.0;
+        public final AnalogPotentiometer pot;
+        public double pot_val;
     }
-    
+
+    public default void elevatorPot() {
+        pot = new AnalogPotentiometer(1);
+    }
+
+    // Gets the distance from this value to this value.
+    public default double getDistance(){
+        return pot_val;
+    }
     //delete turn motor??
     /** Updates the set of loggable inputs. */
     public default void updateInputs(ElevatorIOInputs inputs) {}

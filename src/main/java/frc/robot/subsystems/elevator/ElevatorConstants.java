@@ -1,5 +1,7 @@
 package frc.robot.subsystems.elevator;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
+
 public class ElevatorConstants {
     // PID values for elevator to be tested
     public static final double kPElevator = 0.0;
@@ -10,6 +12,7 @@ public class ElevatorConstants {
     public static final double kVElevator = 0.0;
     public static final double kAElevator = 0.0;
     //add MOVEMENT CONSTRAINTS
+
 
     // SPARK MAX CAN IDs
     // Subject to change depending on what robot side is the front
