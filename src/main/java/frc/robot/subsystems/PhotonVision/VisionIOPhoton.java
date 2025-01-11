@@ -42,7 +42,7 @@ public class VisionIOPhoton implements VisionIO {
     PortForwarder.add(5800, "photonvision.local", 5800);
 
     camera = new PhotonCamera(camName);
-    cameraEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camRobotToCam); // **REMOVED CAMERA FROM THING TO FIX ERROR REVIEW LATER** **CHANGE**
+    cameraEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camRobotToCam);
     cameraEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 

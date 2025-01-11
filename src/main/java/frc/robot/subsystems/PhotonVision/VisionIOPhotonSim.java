@@ -34,17 +34,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
-public class VisionIOSim implements VisionIO {
+public class VisionIOPhotonSim implements VisionIO {
   private final PhotonCamera cam;
   private final PhotonPoseEstimator camEstimator;
   private PhotonCameraSim camSim;
   private VisionSystemSim visionSim;
   private Pose2d lastEstimate = new Pose2d();
 
-  public VisionIOSim() {
+  public VisionIOPhotonSim() {
     cam = new PhotonCamera(camName);
 
-    // GOT RID OF CAM AGAIN **CHANGE**
     camEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getSimVersion(camRobotToCam));
     camEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 

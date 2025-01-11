@@ -38,7 +38,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOPhoton;
-import frc.robot.subsystems.PhotonVision.VisionIOSim;
+import frc.robot.subsystems.PhotonVision.VisionIOPhotonSim;
 import frc.robot.util.drive.DriveControls;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -91,9 +91,6 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
-        
-        // vision = 
-        //     new VisionIOPhoton();
             
         break;
 
@@ -106,10 +103,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
-                new VisionIOSim());
-
-        // vision = 
-        //     new VisionIOSim();
+                new VisionIOPhotonSim());
+                
         break;
 
       default:
