@@ -11,6 +11,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
     table.put("Motor", motor);
     table.put("PidController", pidController);
     table.put("FeedforwardController", feedforwardController);
+    table.put("ElevatorPot", elevatorPot);
   }
 
   @Override
@@ -18,6 +19,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
     motor = table.get("Motor", motor);
     pidController = table.get("PidController", pidController);
     feedforwardController = table.get("FeedforwardController", feedforwardController);
+    elevatorPot = table.get("ElevatorPot", elevatorPot);
   }
 
   public ElevatorIOInputsAutoLogged clone() {
@@ -25,6 +27,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
     copy.motor = this.motor;
     copy.pidController = this.pidController;
     copy.feedforwardController = this.feedforwardController;
+    copy.elevatorPot = this.elevatorPot;
     return copy;
   }
 }

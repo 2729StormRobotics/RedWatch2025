@@ -6,15 +6,16 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import com.revrobotics.spark.SparkMax;
-
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import frc.robot.Constants;
 
 public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
         private final SparkMax motor;
-        private final ProfiledPIDController pidController = new ProfiledPIDController(double kP, double kI, double kD, double MOVEMENT_CONSTRAINTS); 
-        private final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(double kS, double kG, double kV, double kA);
-        
+        private final ProfiledPIDController pidController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); 
+        private final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
+        public final AnalogPotentiometer elevatorPot = new AnalogPotentiometer(0); //idk change it later
     }
     
     //delete turn motor??
