@@ -9,8 +9,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Vision;
 
@@ -51,21 +53,36 @@ public class AutoAprilTagAlign extends Command {
     }
     SmartDashboard.putNumber("turnError", m_turnError);
     // drive the robot
-    m_drivetrain.drive(
-      0,
-      0,
-      (m_turnPower),
-      true, true);
+    // m_drivetrain.joystickDrive(
+    //   0,
+    //   0,
+    //   (m_turnPower));
       
-    
+        CommandScheduler.getInstance()
+        .schedule(
+            DriveCommands.joystickDrive(
+                m_drivetrain,
+                () -> 0.0,  // X translation (stopped)
+                () -> 0.0,  // Y translation (stopped)
+                () -> m_turnPower  // Rotation (stopped)
+                // true,       // Field-relative driving
+                // true        // Open-loop control
+            ));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.drive(
-      0, 0, 0,
-            true, true);
+    CommandScheduler.getInstance()
+        .schedule(
+            DriveCommands.joystickDrive(
+                m_drivetrain,
+                () -> 0.0,  // X translation (stopped)
+                () -> 0.0,  // Y translation (stopped)
+                () -> 0.0  // Rotation (stopped)
+                // true,       // Field-relative driving
+                // true        // Open-loop control
+            ));
     
   }
 

@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DriveCommands;
 
-public class AutoNoteAlign extends Command {
+public class AutoGamePieceAlign extends Command {
   /** Creates a new RotationAllign. */
   Vision m_vision; 
   Drive m_driveSubsystem;
@@ -19,7 +21,7 @@ public class AutoNoteAlign extends Command {
   private double m_turnError;
   private double m_turnPower;
 
-  public AutoNoteAlign(Drive drivetrain) {
+  public AutoGamePieceAlign(Drive drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_vision = Vision.getInstance(); 
     m_driveSubsystem = drivetrain;
@@ -42,11 +44,17 @@ public class AutoNoteAlign extends Command {
     m_turnPower += Math.copySign(Constants.VisionConstants.kSTurn, m_turnPower); // Add feedforward value
     SmartDashboard.putNumber("turnError", m_turnError);
     // drive the robot
-    m_driveSubsystem.drive(
-      -0.4, 0,
-      (m_controller.calculate(m_vision.getNoteXSkew()) + m_controller.calculate(m_vision.getNoteXSkew()) + Math.copySign(Constants.VisionConstants.kSTurn, m_controller.calculate(m_vision.getNoteXSkew()))),
-      false, true);
-
+    CommandScheduler.getInstance()
+    .schedule(
+    DriveCommands.joystickDrive(
+      m_driveSubsystem,
+      //CHANGE THIS FOR MOVING FORWARD DURING AUTO ALIGN THE X TRANSLATION
+        () -> 0.0,  // X translation (stopped)
+        () -> 0.0,  // Y translation (stopped)
+        () -> ((m_controller.calculate(m_vision.getNoteXSkew()) + m_controller.calculate(m_vision.getNoteXSkew()) + Math.copySign(Constants.VisionConstants.kSTurn, m_controller.calculate(m_vision.getNoteXSkew()))))  // Rotation (stopped)
+        // true,       // Field-relative driving
+        // true        // Open-loop control
+    ));
   }
 
   // Called once the command ends or is interrupted.
