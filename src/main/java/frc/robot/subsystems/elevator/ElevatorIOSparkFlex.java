@@ -29,8 +29,8 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -46,7 +46,7 @@ import frc.robot.subsystems.drive.MotorConfigs;
 import java.util.Queue;
 
 /**
- * Module IO implementation for SparkMax elevator motor controller, SparkMax turn
+ * Module IO implementation for SparkFlex elevator motor controller, SparkFlex turn
  * motor controller (NEO
  * or NEO 550), and analog absolute encoder connected to the RIO
  *
@@ -63,11 +63,11 @@ import java.util.Queue;
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Elevator/ModuleX/TurnAbsolutePositionRad"
  */
-public class ElevatorIOSparkMax implements ElevatorIO {
+public class ElevatorIOSparkFlex implements ElevatorIO {
 
-  private final SparkMax elevatorSparkMax;
+  private final SparkFlex elevatorSparkFlex;
 
-  private SparkMaxConfig elevatorConfig;
+  private SparkFlexConfig elevatorConfig;
   private final SparkClosedLoopController elevatorPIDController;
 
   private final RelativeEncoder elevatorEncoder;
@@ -89,26 +89,26 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   m_RightEncoder = m_ArmExtend.getEncoder();
   
 
-  public ElevatorIOSparkMax(int index) {
+  public ElevatorIOSparkFlex(int index) {
     switch (index) {
       case 0: // Front Left
-        elevatorSparkMax = new SparkMax(kLeftElevatorCanId, MotorType.kBrushless);
+        elevatorSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
       case 1: // Front Right
-        elevatorSparkMax = new SparkMax(kRightElevatorCanId, MotorType.kBrushless);
+        elevatorSparkFlex = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
       default:
         throw new RuntimeException("Invalid module index");
     }
-    elevatorSparkMax.configure(MotorConfigs.drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorSparkFlex.configure(MotorConfigs.drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
-    elevatorSparkMax.setCANTimeout(0);
+    elevatorSparkFlex.setCANTimeout(0);
 
-    elevatorEncoder = elevatorSparkMax.getEncoder();
+    elevatorEncoder = elevatorSparkFlex.getEncoder();
     
-    elevatorPIDController = elevatorSparkMax.getClosedLoopController();
+    elevatorPIDController = elevatorSparkFlex.getClosedLoopController();
 
     // Log things?
-    /*timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
-    elevatorPositionQueue = SparkMaxOdometryThread.getInstance().registerSignal(elevatorEncoder::getPosition);
+    /*timestampQueue = SparkFlexOdometryThread.getInstance().makeTimestampQueue();
+    elevatorPositionQueue = SparkFlexOdometryThread.getInstance().registerSignal(elevatorEncoder::getPosition);
     */
     }
 
@@ -122,8 +122,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     inputs.elevatorPositionMeters = elevatorEncoder.getPosition();
     inputs.elevatorVelocityMeterPerSec = elevatorEncoder.getVelocity();
     inputs.elevatorVelocityRadPerSec = elevatorEncoder.getVelocity() / (kWheelDiameterMeters / 2);
-    inputs.elevatorAppliedVolts = elevatorSparkMax.getAppliedOutput() * elevatorSparkMax.getBusVoltage();
-    inputs.elevatorCurrentAmps = new double[] { elevatorSparkMax.getOutputCurrent() };
+    inputs.elevatorAppliedVolts = elevatorSparkFlex.getAppliedOutput() * elevatorSparkFlex.getBusVoltage();
+    inputs.elevatorCurrentAmps = new double[] { elevatorSparkFlex.getOutputCurrent() };
 
         //.mapToDouble((Double value) -> Units.rotationsToRadians(value))
         //.toArray();
@@ -150,17 +150,17 @@ public double getRightEncoderDistance() {
 
   @Override
   public void setElevatorVelocity(double velocityRadPerSec) {
-    elevatorPIDController.setReference(velocityRadPerSec, SparkMax.ControlType.kVelocity);
+    elevatorPIDController.setReference(velocityRadPerSec, SparkFlex.ControlType.kVelocity);
   }
 
   @Override
   public void setElevatorVoltage(double volts) {
-    elevatorSparkMax.setVoltage(volts);
+    elevatorSparkFlex.setVoltage(volts);
   }
 
   @Override
   public double getElevatorVoltage() {
-    return elevatorSparkMax.getBusVoltage() * elevatorSparkMax.getAppliedOutput();
+    return elevatorSparkFlex.getBusVoltage() * elevatorSparkFlex.getAppliedOutput();
   }
 
   @Override
