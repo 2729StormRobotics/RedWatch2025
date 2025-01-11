@@ -13,38 +13,37 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
  *
  * 
  */
-public class ElevatorIOSim implements ElevatorIO {
+public class ElevatorIOSIM implements ElevatorIO {
     private static final double LOOP_PERIOD_SECS = 0.02;
   
   
     private static final DCMotor elevatorMotorModel = DCMotor.getNeoVortex(1);
   
-    public static final double driveReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
-    private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, driveReduction), elevatorMotorModel);
+    public static final double elevatorReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
+    private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, elevatorReduction), elevatorMotorModel);
 
     private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
-    private double driveAppliedVolts = 0.0;
+    public double elevatorAppliedVolts = 0.0;
+    public double[] elevatorCurrentAmps;
   
     @Override
-    public void updateInputs(ElevatorIOSim inputs) {
+    public void updateInputs(ElevatorIOInputs inputs) {
       elevatorSim.update(LOOP_PERIOD_SECS);
-  
-      inputs.drivePositionRad = elevatorSim.getAngularPositionRad();
-      inputs.driveVelocityRadPerSec = elevatorSim.getAngularVelocityRadPerSec();
-      inputs.driveAppliedVolts = driveAppliedVolts;
-      inputs.driveCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
+
+      inputs.elevatorAppliedVolts = elevatorAppliedVolts;
+      inputs.elevatorCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
 
     }
   
     @Override
     public void setElevatorVoltage(double volts) {
-      driveAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-      elevatorSim.setInputVoltage(driveAppliedVolts);
+      elevatorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+      elevatorSim.setInputVoltage(elevatorAppliedVolts);
     }
   
     @Override
     public double getElevatorVoltage() {
-      return driveAppliedVolts;
+      return elevatorAppliedVolts;
     }
   
     

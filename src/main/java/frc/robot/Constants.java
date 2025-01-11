@@ -184,16 +184,6 @@ public final class Constants {
     public static final double kDTurn = 0.003; // 0.001
     public static final double kSTurn = .025;
 
-    // PID values for elevator to be tested
-    public static final double kPElevator = 0.0;
-    public static final double kIElevator = 0.0;
-    public static final double kDElevator = 0.0;
-    public static final double kSElevator = 0.0;
-    public static final double kGElevator = 0.0;
-    public static final double kVElevator = 0.0;
-    public static final double kAElevator = 0.0;
-
-
     // Heights for detecting distance away from apriltag
     public static final double limelightHeight = Units.inchesToMeters(11.5);
     public static final double limelightAngle = 30.5; // degrees

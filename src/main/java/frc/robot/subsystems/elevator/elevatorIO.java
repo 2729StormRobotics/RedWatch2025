@@ -7,15 +7,28 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import frc.robot.Constants;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kSElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kGElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kVElevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.kAElevator;
 
 public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
         private final SparkMax motor;
-        private final ProfiledPIDController pidController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); 
+        private final ProfiledPIDController pidController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
         private final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
         public final AnalogPotentiometer elevatorPot = new AnalogPotentiometer(0); //idk change it later
+        public double elevatorAppliedVolts = 0.0;
+        public double[] elevatorCurrentAmps;
+        public double elevatorPositionRad  = 0.0;
+        public double kWheelDiameterMeters = 0.0;
+        public double elevatorPositionMeters = 0.0;
+        public double elevatorVelocityMeterPerSec = 0.0;
+        public double elevatorVelocityRadPerSec = 0.0;
     }
     
     //delete turn motor??
