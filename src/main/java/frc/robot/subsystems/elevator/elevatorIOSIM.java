@@ -22,6 +22,7 @@ public class ElevatorIOSIM implements ElevatorIO {
     public static final double elevatorReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
     private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, elevatorReduction), elevatorMotorModel);
 
+    private double driveAppliedVolts = 0.0;
     private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
     public double elevatorAppliedVolts = 0.0;
     public double[] elevatorCurrentAmps;
