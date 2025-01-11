@@ -27,7 +27,7 @@ public class DriveControls {
   // drive modes
   public static Trigger DRIVE_ROBOT_RELATIVE;
   public static Trigger DRIVE_FIELD_RELATIVE;
-  public static Trigger DRIVE_SPEAKER_AIM;
+  public static Trigger DRIVE_ALIGN_TO_APRILTAG;
 
   // Drive Angle Locks
   public static Trigger LOCK_BACK;
@@ -99,7 +99,7 @@ public class DriveControls {
 
         // Driver Modes
         DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
-        DRIVE_SPEAKER_AIM = m_translator.button(1); // uses vision
+        DRIVE_ALIGN_TO_APRILTAG = m_translator.button(1); // uses vision
 
         // ALL BELOW TBD
         // Driver Angle Locks

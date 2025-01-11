@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.Vision.AprilTagAlign;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -181,6 +182,7 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+        DRIVE_ALIGN_TO_APRILTAG.whileTrue(new AprilTagAlign(m_rotator, drive))
 
     RESET_GYRO.onTrue(
         new InstantCommand(
