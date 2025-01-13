@@ -7,6 +7,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+
+
 
 /**
  * Physics sim implementation of elevator IO.
@@ -41,7 +44,7 @@ public class ElevatorIOSIM implements ElevatorIO {
     public void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {
       // Ensure target is within the allowed range
       if (targetHeight < 0 || targetHeight > inputs.kWheelDiameterMeters) {
-          System.out.println("Target height is out of range: " + targetHeight);
+          //stop??
           return;
       }
   

@@ -42,6 +42,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc.robot.subsystems.drive.MotorConfigs;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 
 import java.util.Queue;
 
@@ -130,7 +131,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   }
 
  
-  // Gets the distance from this value to this value.
+  // Gets the distance from this value to this value. its tweakoing
   public double getDistance(){
     return pot_val;
   }
@@ -169,4 +170,4 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     // pot_val = ((pot.get())*50);
   }
 }
-}
+
