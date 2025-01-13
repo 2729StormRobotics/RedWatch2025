@@ -20,8 +20,6 @@ public class ElevatorIOSIM implements ElevatorIO {
   
     public static final double elevatorReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
     private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, elevatorReduction), elevatorMotorModel);
-
-    private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
     public double elevatorAppliedVolts = 0.0;
     public double[] elevatorCurrentAmps;
   
@@ -38,6 +36,29 @@ public class ElevatorIOSIM implements ElevatorIO {
       elevatorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
       elevatorSim.setInputVoltage(elevatorAppliedVolts);
     }
+
+    @Override
+    public void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {
+      // Ensure target is within the allowed range
+      if (targetHeight < 0 || targetHeight > inputs.kWheelDiameterMeters) {
+          System.out.println("Target height is out of range: " + targetHeight);
+          return;
+      }
+  
+      // Update the PID controller's goal
+      inputs.elevatorPIDController.setGoal(targetHeight);
+  
+      // Calculate the PID output and feedforward voltage
+      double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
+      double feedforward = inputs.feedforwardController.calculate(inputs.elevatorVelocityMeterPerSec);
+  
+      // Compute total voltage to apply
+      double appliedVoltage = pidOutput + feedforward;
+  
+      // Apply the computed voltage
+      setElevatorVoltage(appliedVoltage);
+  }
+  
   
     @Override
     public double getElevatorVoltage() {

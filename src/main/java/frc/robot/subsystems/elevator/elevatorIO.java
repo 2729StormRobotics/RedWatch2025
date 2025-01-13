@@ -25,7 +25,7 @@ public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
         private static final TrapezoidProfile.Constraints MOVEMENT_CONSTRAINTS = new TrapezoidProfile.Constraints(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
-        private final ProfiledPIDController pidController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
+        private final ProfiledPIDController elevatorPIDController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
         private final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
         public double elevatorAppliedVolts = 0.0;
         public double[] elevatorCurrentAmps;
@@ -46,6 +46,28 @@ public interface ElevatorIO {
     public default double getElevatorVoltage() {
         return 0.0;
     }
+
+    public default void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {
+        // Ensure target is within the allowed range
+        if (targetHeight < 0 || targetHeight > inputs.kWheelDiameterMeters) {
+            System.out.println("Target height is out of range: " + targetHeight);
+            return;
+        }
+    
+        // Update the PID controller's goal
+        inputs.elevatorPIDController.setGoal(targetHeight);
+    
+        // Calculate the PID output and feedforward voltage
+        double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
+        double feedforward = inputs.feedforwardController.calculate(inputs.elevatorVelocityMeterPerSec);
+    
+        // Compute total voltage to apply
+        double appliedVoltage = pidOutput + feedforward;
+    
+        // Apply the computed voltage
+        setElevatorVoltage(appliedVoltage);
+    }
+    
 
     /** Enable or disable brake mode on the elevator motor. */
     public default void setElevatorBrakeMode(boolean enable) {}

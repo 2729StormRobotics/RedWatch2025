@@ -89,28 +89,23 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   m_RightEncoder = m_ArmExtend.getEncoder();
   
 
-  public ElevatorIOSparkFlex(int index) {
-    switch (index) {
-      case 0: // Front Left
-        elevatorSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
-      case 1: // Front Right
-        elevatorSparkFlex = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
-      default:
-        throw new RuntimeException("Invalid module index");
-    }
-    elevatorSparkFlex.configure(MotorConfigs.drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    
-    elevatorSparkFlex.setCANTimeout(0);
+  // Front Left
+  m_LeftElevatorMotor = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
+  // Front Right
+  m_RightElevatorMotor = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
+  
+  elevatorSparkFlex.configure(MotorConfigs.drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  
+  elevatorSparkFlex.setCANTimeout(0);
 
-    elevatorEncoder = elevatorSparkFlex.getEncoder();
-    
-    elevatorPIDController = elevatorSparkFlex.getClosedLoopController();
+  elevatorEncoder = elevatorSparkFlex.getEncoder();
+  
+  elevatorPIDController = elevatorSparkFlex.getClosedLoopController();
 
-    // Log things?
-    /*timestampQueue = SparkFlexOdometryThread.getInstance().makeTimestampQueue();
-    elevatorPositionQueue = SparkFlexOdometryThread.getInstance().registerSignal(elevatorEncoder::getPosition);
-    */
-    }
+  // Log things?
+  /*timestampQueue = SparkFlexOdometryThread.getInstance().makeTimestampQueue();
+  elevatorPositionQueue = SparkFlexOdometryThread.getInstance().registerSignal(elevatorEncoder::getPosition);
+  */
 
 
   @Override
@@ -141,11 +136,11 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   }
   public double getLeftEncoderDistance() {
     return -m_LeftEncoder.getPosition();
-}
+  }
 
-public double getRightEncoderDistance() {
+  public double getRightEncoderDistance() {
     return -m_RightEncoder.getPosition();
-} 
+  } 
 
 
   @Override
@@ -156,7 +151,7 @@ public double getRightEncoderDistance() {
   @Override
   public void setElevatorVoltage(double volts) {
     elevatorSparkFlex.setVoltage(volts);
-  }
+  } 
 
   @Override
   public double getElevatorVoltage() {
@@ -173,4 +168,5 @@ public double getRightEncoderDistance() {
     pot_val = ((pot.get())*50)-offset;
     // pot_val = ((pot.get())*50);
   }
+}
 }

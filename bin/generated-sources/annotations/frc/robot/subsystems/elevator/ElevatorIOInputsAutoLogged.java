@@ -9,7 +9,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
   @Override
   public void toLog(LogTable table) {
     table.put("MOVEMENT_CONSTRAINTS", MOVEMENT_CONSTRAINTS);
-    table.put("PidController", pidController);
+    table.put("ElevatorPIDController", elevatorPIDController);
     table.put("FeedforwardController", feedforwardController);
     table.put("ElevatorAppliedVolts", elevatorAppliedVolts);
     table.put("ElevatorCurrentAmps", elevatorCurrentAmps);
@@ -23,7 +23,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
   @Override
   public void fromLog(LogTable table) {
     MOVEMENT_CONSTRAINTS = table.get("MOVEMENT_CONSTRAINTS", MOVEMENT_CONSTRAINTS);
-    pidController = table.get("PidController", pidController);
+    elevatorPIDController = table.get("ElevatorPIDController", elevatorPIDController);
     feedforwardController = table.get("FeedforwardController", feedforwardController);
     elevatorAppliedVolts = table.get("ElevatorAppliedVolts", elevatorAppliedVolts);
     elevatorCurrentAmps = table.get("ElevatorCurrentAmps", elevatorCurrentAmps);
@@ -37,7 +37,7 @@ public class ElevatorIOInputsAutoLogged extends ElevatorIO.ElevatorIOInputs impl
   public ElevatorIOInputsAutoLogged clone() {
     ElevatorIOInputsAutoLogged copy = new ElevatorIOInputsAutoLogged();
     copy.MOVEMENT_CONSTRAINTS = this.MOVEMENT_CONSTRAINTS;
-    copy.pidController = this.pidController;
+    copy.elevatorPIDController = this.elevatorPIDController;
     copy.feedforwardController = this.feedforwardController;
     copy.elevatorAppliedVolts = this.elevatorAppliedVolts;
     copy.elevatorCurrentAmps = this.elevatorCurrentAmps.clone();

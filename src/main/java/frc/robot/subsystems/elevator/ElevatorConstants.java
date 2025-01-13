@@ -23,4 +23,11 @@ public class ElevatorConstants {
     public static final int kLeftElevatorCanId = -1; //ask controls
     public static final int kRightElevatorCanId = -2; //ask controls
 
+    //height constants'
+    public static final  double MIN_HEIGHT = 0.0;
+    public static final double MAX_HEIGHT = 0.0;
+    public static final double L1 = 0.0;
+    public static final double L2 = 0.0;
+    public static final double L3 = 0.0;
+    public static final double L4 = 0.0;
 }
