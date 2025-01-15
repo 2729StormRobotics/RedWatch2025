@@ -16,18 +16,18 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import java.util.Queue;
 
 
-public class HangerIOSparkFlex implements HangerIO{
+// public class HangerIOSparkFlex implements HangerIO{
 
-    private SparkFlex hangerSparkFlex;
-    private SparkFlexConfig hangerConfig;
+//     private SparkFlex hangerSparkFlex;
+//     private SparkFlexConfig hangerConfig;
 
-    @Override
-  public void setHangerVoltage(double volts) {
-    hangerSparkFlex.setVoltage(volts);
-  } 
+//     @Override
+//   public void setHangerVoltage(double volts) {
+//     hangerSparkFlex.setVoltage(volts);
+//   } 
 
-  public double getHangerVoltage() {
-    return hangerSparkFlex.getBusVoltage() * hangerSparkFlex.getAppliedOutput();
-  }
+//   public double getHangerVoltage() {
+//     return hangerSparkFlex.getBusVoltage() * hangerSparkFlex.getAppliedOutput();
+//   }
     
-}
+// }
