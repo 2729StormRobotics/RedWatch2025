@@ -54,7 +54,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final GripperIO m_gripper;
+  private final GripperIO m_gripper = new GripperIO();
 
   private final XboxController controller = new XboxController(0);
 
@@ -185,8 +185,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Gripper
-    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {m_gripper.open();}));
-    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {m_gripper.close();}));
+    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {m_gripper.setIn();}));
+    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {m_gripper.setOut();}));
+    new JoystickButton(controller, Button.kY.value).onTrue(new InstantCommand(() -> {m_gripper.stop();}));
     
     // default subsystem commands
     DriveControls.configureControls();
