@@ -23,6 +23,12 @@ public class ElevatorConstants {
     public static final int kLeftElevatorCanId = -1; //ask controls
     public static final int kRightElevatorCanId = -2; //ask controls
 
+    public static final int kLeftElevatorMotorPort = 0;
+    public static final int kRightElevatorMotorPort = 0;
+
+    //string pot info
+    public static final int kStringPotPort = 0;
+
     //height constants'
     public static final double MIN_HEIGHT = 0.0;
     public static final double MAX_HEIGHT = 0.0;
@@ -30,6 +36,10 @@ public class ElevatorConstants {
     public static final double L2 = 0.0;
     public static final double L3 = 0.0;
     public static final double L4 = 0.0;
+
+    //motor speeds
+    public static final double kMotorSpeedUp = 0.0;
+    public static final double kMotorSpeedDown = -kMotorSpeedUp;
 
     public double elevatorAppliedVolts = 0.0;
     public double[] elevatorCurrentAmps;
