@@ -19,9 +19,9 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.kAElevator;
 public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
-        public static final TrapezoidProfile.Constraints MOVEMENT_CONSTRAINTS = new TrapezoidProfile.Constraints(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
-        public final ProfiledPIDController elevatorPIDController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
-        public final ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
+        // public TrapezoidProfile.Constraints MOVEMENT_CONSTRAINTS = new TrapezoidProfile.Constraints(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+        // public ProfiledPIDController elevatorPIDController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
+        public ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
         
         public double elevatorAppliedVolts = 0.0;
         public double[] elevatorCurrentAmps;
@@ -51,17 +51,17 @@ public interface ElevatorIO {
         }
     
         // Update the PID controller's goal
-        inputs.elevatorPIDController.setGoal(targetHeight);
+        // inputs.elevatorPIDController.setGoal(targetHeight);
     
-        // Calculate the PID output and feedforward voltage
-        double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
+        // // Calculate the PID output and feedforward voltage
+        // double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
         double feedforward = inputs.feedforwardController.calculate(inputs.elevatorVelocityMeterPerSec);
     
         // Compute total voltage to apply
-        double appliedVoltage = pidOutput + feedforward;
+        // double appliedVoltage = pidOutput + feedforward;
     
         // Apply the computed voltage
-        setElevatorVoltage(appliedVoltage);
+        // setElevatorVoltage(appliedVoltage);
     }
     
 

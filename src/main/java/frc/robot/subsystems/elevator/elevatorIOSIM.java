@@ -45,17 +45,17 @@ public class ElevatorIOSIM implements ElevatorIO {
       }
   
       // Update the PID controller's goal
-      inputs.elevatorPIDController.setGoal(targetHeight);
+      // inputs.elevatorPIDController.setGoal(targetHeight);
   
       // Calculate the PID output and feedforward voltage
-      double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
+      // double pidOutput = inputs.elevatorPIDController.calculate(inputs.elevatorPositionMeters);
       double feedforward = inputs.feedforwardController.calculate(inputs.elevatorVelocityMeterPerSec);
   
       // Compute total voltage to apply
-      double appliedVoltage = pidOutput + feedforward;
+      // double appliedVoltage = pidOutput + feedforward;
   
       // Apply the computed voltage
-      setElevatorVoltage(appliedVoltage);
+      // setElevatorVoltage(appliedVoltage);
   }
   
   
