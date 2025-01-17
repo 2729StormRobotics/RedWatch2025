@@ -1,6 +1,6 @@
 package frc.robot.subsystems.hanger;
 
-import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,7 +17,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public class HangerIO extends SubsystemBase {
 
-    public static SparkFlex m_hangerMotor = new SparkFlex(HangerConstants.hangerMotorPort, MotorType.kBrushless); 
+    public static SparkMax m_hangerMotor = new SparkMax(HangerConstants.hangerMotorPort, MotorType.kBrushless); 
     public static boolean isClosed = false;
     public static Timer timer = new Timer();
 
