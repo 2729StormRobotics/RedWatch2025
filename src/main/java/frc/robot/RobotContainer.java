@@ -39,6 +39,10 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.Gripper.GripperIO;
+import frc.robot.subsystems.Gripper.Gripper;
+import frc.robot.subsystems.Gripper.GripperIOSparkMax;
+import frc.robot.commands.GripperInCommand;
+import frc.robot.commands.GripperOutCommand;
 import frc.robot.util.drive.DriveControls;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -54,7 +58,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final GripperIO m_gripper = new GripperIO();
+  private final GripperIO gripperIO = new GripperIOSparkMax();
+  private final Gripper m_gripper = new Gripper(gripperIO);
 
   private final XboxController controller = new XboxController(0);
 
@@ -185,8 +190,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Gripper
-    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {m_gripper.setIn();}));
-    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {m_gripper.setOut();}));
+    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {new GripperInCommand(m_gripper);}));
+    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {new GripperOutCommand(m_gripper);}));
     new JoystickButton(controller, Button.kY.value).onTrue(new InstantCommand(() -> {m_gripper.stop();}));
     
     // default subsystem commands
