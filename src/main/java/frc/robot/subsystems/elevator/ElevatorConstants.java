@@ -20,8 +20,8 @@ public class ElevatorConstants {
 
     // SPARK MAX CAN IDs
     // Subject to change depending on what robot side is the front
-    public static final int kLeftElevatorCanId = -1; //ask controls
-    public static final int kRightElevatorCanId = -2; //ask controls
+    public static final int kLeftElevatorCanId = 9; //ask controls
+    public static final int kRightElevatorCanId = 10; //ask controls
 
     public static final int kLeftElevatorMotorPort = 0;
     public static final int kRightElevatorMotorPort = 0;
