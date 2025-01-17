@@ -6,11 +6,6 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
-import com.revrobotics.spark.SparkFlex;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
 import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
@@ -81,5 +76,5 @@ public interface ElevatorIO {
         return 0.0;
     }
 
-    public default void setElevatorCurrentLimit(int limit) {}
+
 }

@@ -13,46 +13,26 @@
 
 package frc.robot.subsystems.elevator;
 
-import static frc.robot.Constants.VisionConstants.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kSElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kGElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kVElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kAElevator;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kLeftElevatorCanId;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kRightElevatorCanId;
 import static frc.robot.subsystems.elevator.ElevatorConstants.kStringPotPort;
 
 
-import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import frc.robot.subsystems.drive.MotorConfigs;
-import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.Timer;
-
-import java.util.LinkedList;
+import frc.robot.subsystems.drive.SparkMaxOdometryThread;
 import java.util.Queue;
 
 /**
@@ -73,78 +53,91 @@ import java.util.Queue;
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Elevator/ModuleX/TurnAbsolutePositionRad"
  */
-public class ElevatorIOSparkFlex extends SubsystemBase {
+public class ElevatorIOSparkFlex implements ElevatorIO {
 
   private final SparkFlex elevatorLeftSparkFlex;
   private final SparkFlex elevatorRightSparkFlex;
 
-  elevatorPIDController.setP(kPElevator);
-  elevatorPIDController.setI(kIElevator);
-  +elevatorPIDController.setD(kDElevator);
-
   private SparkFlexConfig elevatorConfig;
-  private final SparkClosedLoopController elevatorPIDController;
+  private SparkFlexConfig elevatorConfigLeft;
+  private SparkFlexConfig elevatorConfigRight;
+  // private final SparkClosedLoopController elevatorPIDController;
 
-  private final RelativeEncoder elevatorEncoder;
+  // private final RelativeEncoder elevatorEncoder;
 
   private final Queue<Double> timestampQueue;
   private final Queue<Double> elevatorPositionQueue;
 
-  private final double absoluteEncoderOffset;
+  private final double absoluteEncoderOffset = 0;
   public final AnalogPotentiometer elevatorPot = new AnalogPotentiometer(0); //idk change it later
-
+  
+  @SuppressWarnings("unused")
   private DigitalInput m_ObjectDectector = new DigitalInput(ElevatorConstants.kStringPotPort);
+  @SuppressWarnings("unused")
   private SparkMax m_elevatorLeftSparkMotor = new SparkMax(ElevatorConstants.kLeftElevatorMotorPort, MotorType.kBrushless); 
+  @SuppressWarnings("unused")
   private SparkMax m_elevatorRightSparkMotor = new SparkMax(ElevatorConstants.kRightElevatorMotorPort, MotorType.kBrushless); 
 
-  private boolean isOpen = false;
-  private Timer timer;
 
   public final AnalogPotentiometer pot = new AnalogPotentiometer(1);
   public double pot_val;
   public double offset = 0;
+
+  public final double VoltsToDistanceMeters = 1;
     
+  public final RelativeEncoder m_ElevatorLeftEncoder;
+  public final RelativeEncoder m_ElevatorRightEncoder;
+  
   public ElevatorIOSparkFlex() {
     // need to complete
-    elevatorLeftSparkFlex = new SparkFlex(kLeftElevatorCanId); 
-    elevatorRightSparkFlex = new SparkFlex(kRightElevatorCanId);
+    elevatorLeftSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless); 
+    elevatorRightSparkFlex = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
 
     // configure motor controllers
     elevatorConfig = new SparkFlexConfig();
-    elevatorLeftSparkFlex.configure(elevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    elevatorRightSparkFlex.configure(elevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorConfig.closedLoop.p(kPElevator);
+    elevatorConfig.closedLoop.i(kIElevator);
+    elevatorConfig.closedLoop.d(kDElevator);  
+    // left individual config
+    elevatorConfigLeft = elevatorConfig;
+    elevatorConfigLeft.analogSensor.positionConversionFactor(VoltsToDistanceMeters);
+    elevatorConfigLeft.limitSwitch.forwardLimitSwitchEnabled(true);
+    elevatorConfigLeft.limitSwitch.reverseLimitSwitchEnabled(true);
+    elevatorConfigLeft.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
+    elevatorConfigLeft.limitSwitch.reverseLimitSwitchType(Type.kNormallyOpen);
+
+
+    // Rigt individual config
+    elevatorConfigRight = elevatorConfig;
+    elevatorConfigRight.follow(elevatorLeftSparkFlex, true);
+
 
     // initialize encoders
     m_ElevatorLeftEncoder = elevatorLeftSparkFlex.getEncoder();
     m_ElevatorRightEncoder = elevatorRightSparkFlex.getEncoder();
 
+    elevatorLeftSparkFlex.setCANTimeout(0);
+    elevatorRightSparkFlex.setCANTimeout(0);
+
     // initialize PID controller
-    elevatorPIDController = elevatorLeftSparkFlex.getClosedLoopController();
     
-    elevatorPot = new AnalogPotentiometer(0);
     m_ObjectDectector = new DigitalInput(kStringPotPort);
-    timestampQueue = new LinkedList<>();
-    elevatorPositionQueue = new LinkedList<>();
-    timer = new Timer();
+    // timestampQueue = new LinkedList<>();
+    // elevatorPositionQueue = new LinkedList<>();
+
+    timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
+    elevatorPositionQueue = SparkMaxOdometryThread.getInstance().registerSignal(m_ElevatorLeftEncoder::getPosition);
+
+
+    elevatorLeftSparkFlex.configure(elevatorConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorRightSparkFlex.configure(elevatorConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
     }
 
-  public final RelativeEncoder m_ElevatorLeftEncoder;
-  m_LeftEncoder = elevatorLeftSparkFlex.getEncoder();
-
-  public final RelativeEncoder m_ElevatorRightEncoder;
-  m_RightEncoder = elevatorRightSparkFlex.getEncoder();
-  
-  elevatorSparkFlex.configure(MotorConfigs.drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  
-  elevatorSparkFlex.setCANTimeout(0);
-
-  // elevatorEncoder = elevatorSparkFlex.getEncoder();
-  
-  elevatorPIDController = elevatorSparkFlex.getClosedLoopController();
 
   public void setTargetPosition(double position) {
-    elevatorPIDController.setReference(position, SparkFlex.ControlType.kPosition);
+    elevatorLeftSparkFlex.getClosedLoopController().setReference(position, SparkFlex.ControlType.kPosition);
     
   }
   
@@ -153,66 +146,54 @@ public class ElevatorIOSparkFlex extends SubsystemBase {
     elevatorRightSparkFlex.set(power);
   }
 
-  // Log things?
-  /*timestampQueue = SparkFlexOdometryThread.getInstance().makeTimestampQueue();
-  elevatorPositionQueue = SparkFlexOdometryThread.getInstance().registerSignal(elevatorEncoder::getPosition);
-  */
-
-
-  // @Override
-  // public void updateInputs(ElevatorIOInputs inputs) {
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
     
-  //   double kWheelDiameterMeters = 0.0;
+    double kWheelDiameterMeters = 0.0;
 
-  //   inputs.elevatorPositionRad = elevatorEncoder.getPosition() / (kWheelDiameterMeters / 2);
-  //   inputs.elevatorPositionMeters = elevatorEncoder.getPosition();
-  //   inputs.elevatorVelocityMeterPerSec = elevatorEncoder.getVelocity();
-  //   inputs.elevatorVelocityRadPerSec = elevatorEncoder.getVelocity() / (kWheelDiameterMeters / 2);
-  //   inputs.elevatorAppliedVolts = elevatorSparkFlex.getAppliedOutput() * elevatorSparkFlex.getBusVoltage();
-  //   inputs.elevatorCurrentAmps = new double[] { elevatorSparkFlex.getOutputCurrent() };
-
-  //       //.mapToDouble((Double value) -> Units.rotationsToRadians(value))
-  //       //.toArray();
-  //       //.map((Double value) -> Rotation2d.fromRotations(value))
-  //       //.toArray(Rotation2d[]::new);
-  //   timestampQueue.clear();
-  //   elevatorPositionQueue.clear();
-  //   //turnPositionQueue.clear();
-  // }
-
+    inputs.elevatorPositionRad = m_ElevatorLeftEncoder.getPosition() / (kWheelDiameterMeters / 2);
+    inputs.elevatorPositionMeters = m_ElevatorLeftEncoder.getPosition();
+    inputs.elevatorVelocityMeterPerSec = m_ElevatorLeftEncoder.getVelocity();
+    inputs.elevatorVelocityRadPerSec = m_ElevatorLeftEncoder.getVelocity() / (kWheelDiameterMeters / 2);
+    inputs.elevatorAppliedVolts = elevatorLeftSparkFlex.getAppliedOutput() * elevatorLeftSparkFlex.getBusVoltage();
+    inputs.elevatorCurrentAmps = new double[] { elevatorLeftSparkFlex.getOutputCurrent() };
+    timestampQueue.clear();
+    elevatorPositionQueue.clear();
+    // turnPositionQueue.clear();
+  }
  
-  // // Gets the distance from this value to this value. its tweakoing
-  // public default double getDistance(){
-  //   return pot_val;
-  // }
-  // public double getLeftEncoderDistance() {
-  //   return -m_LeftEncoder.getPosition();
-  // }
+  // Gets the distance from this value to this value. its tweakoing
+  public double getDistance(){
+    return pot_val;
+  }
+  public double getLeftEncoderDistance() {
+    return -m_ElevatorLeftEncoder.getPosition();
+  }
 
-  // public double getRightEncoderDistance() {
-  //   return -m_RightEncoder.getPosition();
-  // } 
+  public double getRightEncoderDistance() {
+    return -m_ElevatorRightEncoder.getPosition();
+  } 
 
 
-  // @Override
-  // public void setElevatorVelocity(double velocityRadPerSec) {
-  //   elevatorPIDController.setReference(velocityRadPerSec, SparkFlex.ControlType.kVelocity);
-  // }
+  @Override
+  public void setElevatorVelocity(double velocityRadPerSec) {
+    elevatorLeftSparkFlex.getClosedLoopController().setReference(velocityRadPerSec, SparkFlex.ControlType.kVelocity);
+  }
 
-  // @Override
-  // public void setElevatorVoltage(double volts) {
-  //   elevatorSparkFlex.setVoltage(volts);
-  // } 
+  @Override
+  public void setElevatorVoltage(double volts) {
+    elevatorLeftSparkFlex.setVoltage(volts);
+  } 
 
-  // @Override
-  // public double getElevatorVoltage() {
-  //   return elevatorSparkFlex.getBusVoltage() * elevatorSparkFlex.getAppliedOutput();
-  // }
+  @Override
+  public double getElevatorVoltage() {
+    return elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput();
+  }
 
-  // @Override
-  // public double getAbsoluteEncoderOffset() {
-  //   return absoluteEncoderOffset;
-  // }
+  @Override
+  public double getAbsoluteEncoderOffset() {
+    return absoluteEncoderOffset;
+  }
   // Periodically calculates the value of the pot.
   public void periodic() {
     // This method will be called once per scheduler run
