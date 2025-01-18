@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
@@ -37,6 +39,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.util.drive.DriveControls;
+import frc.robot.subsystems.hanger.HangerIOSparkMax;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -53,6 +56,8 @@ public class RobotContainer {
   private final Drive drive;
 
   private boolean brakeMode = true;
+
+  private final HangerIOSparkMax hanger = new HangerIOSparkMax();
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
@@ -178,16 +183,19 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // default subsystem commands
-    DriveControls.configureControls();
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    // DriveControls.configureControls();
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
-    RESET_GYRO.onTrue(
-        new InstantCommand(
-            () -> {
-              drive.resetYaw();
-            },
-            drive));
+    // RESET_GYRO.onTrue(
+    //     new InstantCommand(
+    //         () -> {
+    //           drive.resetYaw();
+    //         },
+    //         drive));
+
+    new JoystickButton(m_weaponsController.getHID(), Button.kA.value).onTrue(new InstantCommand(() -> {hanger.pull();}));
+    new JoystickButton(m_weaponsController.getHID(), Button.kB.value).onTrue(new InstantCommand(() -> {hanger.release();}));
     // RESET_GYRO.whileTrue(
     //     new InstantCommand(
     //         () -> {
