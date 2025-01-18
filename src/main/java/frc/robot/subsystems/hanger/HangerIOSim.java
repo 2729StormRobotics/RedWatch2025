@@ -1,47 +1,47 @@
 package frc.robot.subsystems.hanger;
 
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class HangerIOSim implements HangerIO{
+    private static final double LOOP_PERIOD_SECS = 0.02;
+    private static final DCMotor neoMotor = DCMotor.getNeo550(1); //Change to whatever CAN ID it is 
 
-  private static final DCMotor neoMotor = DCMotor.getNeo550(1);
-
-    private final DCMotorSim turnSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(turnMotorModel, 0.004, turnReduction),
-            turnMotorModel);
+    private final DCMotorSim turnSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(neoMotor, 0.004, turnReduction),neoMotor);
+    private double appliedVolts = 0.0;
 
  public void updateInputs(HangerIOInputs inputs) {
 
     turnSim.update(LOOP_PERIOD_SECS);
+    
+ }
+
+                                    
+@Override
+public void startMotor(){
+    neoMotor.set(0.2);//Change to whatever speed wanted 
+    
+ }
 
 @Override
+public void reverseMotor(){
+    neoMotor.set(-0.2)//Change to whatever speed wanted 
 
-public void robotInit(){
-
-    motor = new DCMotor( );// replace with specfic motor instance if needed
-
-    motorSim = new DCMotorSim(motor);
-    
 }
 
 @Override
-
-public void start(){
-
-
- }
-
-@Override
-
-public void stop (){
-
+public void stopMotor (){
+    neoMotor.set(0);
 
  }
+
+@Override                                    
+  public void setMotorVoltage(double volts) {
+    appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+    turnSim.setInputVoltage(appliedVolts);
+  }
+
 }
