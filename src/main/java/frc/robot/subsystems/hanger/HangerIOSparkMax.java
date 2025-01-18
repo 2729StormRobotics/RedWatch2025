@@ -1,33 +1,39 @@
 package frc.robot.subsystems.hanger;
-
-
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.config.SparkFlexConfig;
-
-import frc.robot.subsystems.drive.MotorConfigs;
-
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
+import edu.wpi.first.wpilibj.Timer;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
-import java.util.Queue;
 
 
-// public class HangerIOSparkFlex implements HangerIO{
+public class HangerIOSparkMax implements HangerIO{
 
-//     private SparkFlex hangerSparkFlex;
-//     private SparkFlexConfig hangerConfig;
 
-//     @Override
-//   public void setHangerVoltage(double volts) {
-//     hangerSparkFlex.setVoltage(volts);
-//   } 
-
-//   public double getHangerVoltage() {
-//     return hangerSparkFlex.getBusVoltage() * hangerSparkFlex.getAppliedOutput();
-//   }
+    public static SparkMax m_hangerMotor = new SparkMax(HangerConstants.hangerMotorPort, MotorType.kBrushless); 
+    public static boolean isClosed = false;
+    public static Timer timer = new Timer();
     
-// }
+    @Override
+    public void stop() {
+        m_hangerMotor.stopMotor();
+        
+    }
+
+    @Override
+    public void pull() {
+        m_hangerMotor.set(HangerConstants.motorSpeedOpenHanger);
+        timer.delay(0.5);
+        //not sure if this will lock the motor
+        m_hangerMotor.set(0);
+        isClosed = true;
+    }
+
+    @Override
+    public void release() {
+        m_hangerMotor.set(-HangerConstants.motorSpeedOpenHanger);
+        timer.delay(0.5);
+        m_hangerMotor.set(0);
+        isClosed = false;
+
+    }
+    
+}

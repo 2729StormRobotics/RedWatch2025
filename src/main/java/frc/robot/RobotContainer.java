@@ -39,7 +39,9 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.util.drive.DriveControls;
-import frc.robot.subsystems.hanger.HangerIO;
+import frc.robot.subsystems.hanger.HangerIOSparkMax;
+import frc.robot.subsystems.hanger.HangerIOSparkMax;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -54,7 +56,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final HangerIO hanger = new HangerIO();
+  private final HangerIOSparkMax hanger = new HangerIOSparkMax();
 
   private boolean brakeMode = true;
 
