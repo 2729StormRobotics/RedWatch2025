@@ -14,6 +14,9 @@
 package frc.robot;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
+import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
+import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
+import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -184,6 +187,7 @@ public class RobotContainer {
     public void configureButtonBindings() {
       //elevator
       new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L1);}));
+      new JoystickButton(controller, Button.kX.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L2);}));
       new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {elevator.setRightPower(0.2);}));
       new JoystickButton (controller, Button.kY.value).onTrue (new InstantCommand(() -> {elevator.setLeftPower(0.4);}));
     }

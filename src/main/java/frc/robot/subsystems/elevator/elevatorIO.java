@@ -76,7 +76,7 @@ public interface ElevatorIO {
         return 0.0;
     }
 
-    public void setElevatorHeight();
+    public void setTargetPosition(double position);
 
     public void setRightPower(double power) ;
 
