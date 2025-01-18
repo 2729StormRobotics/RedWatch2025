@@ -24,7 +24,9 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.kStringPotPort;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
@@ -138,7 +140,6 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
   public void setTargetPosition(double position) {
     elevatorLeftSparkFlex.getClosedLoopController().setReference(position, SparkFlex.ControlType.kPosition);
-    
   }
   
   public void setLeftPower(double power) {
@@ -149,6 +150,20 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     elevatorRightSparkFlex.set(power);
   }
 
+  public boolean isTopLimitTriggered() {
+    return elevatorLeftSparkFlex.getForwardLimitSwitch().isPressed();
+  } 
+  public boolean isBottomLimitTriggered() {
+    return elevatorLeftSparkFlex.getReverseLimitSwitch().isPressed();
+  } 
+
+  public double getElevatorHeight() {
+    return elevatorLeftSparkFlex.getAnalog().getPosition();
+  }
+
+  public SparkAnalogSensor StringPot() {
+    return elevatorLeftSparkFlex.getAnalog();
+  }
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     
@@ -204,6 +219,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     // This method will be called once per scheduler run
     pot_val = (elevatorPot.get()*50)-offset;
     // pot_val = ((pot.get())*50);
+    SmartDashboard.putBoolean("Top Limit Switch Triggered?", isTopLimitTriggered());
   }
 }
 
