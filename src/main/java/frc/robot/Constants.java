@@ -193,7 +193,7 @@ public final class Constants {
         Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
     public static final double stageTagHeight =
         Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
-    public static final double aprilTagAlignTolerance = 0.5;
+    public static final double aprilTagAlignTolerance = 0.7;
 
     public static final double kNoteTolerance = 2.0;
     public static final double kPNoteTurn = 0.008;

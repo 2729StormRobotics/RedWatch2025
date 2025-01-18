@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.Vision;
 
 import edu.wpi.first.math.MathUtil;
@@ -26,8 +22,9 @@ public class AprilTagAlign extends Command {
   private final PIDController m_controller;
   private double m_turnError;
   private double m_turnPower;
+
   /** Creates a new AprilTagAlign. */
-  public AprilTagAlign(Joystick joystick,Drive drivetrain) {
+  public AprilTagAlign(Joystick joystick, Drive drivetrain) {
     m_vision = Vision.getInstance();
     m_drivetrain = drivetrain;
     m_translator = joystick;
@@ -39,37 +36,42 @@ public class AprilTagAlign extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Values for PID Calculation
+    // Reset PID controller and initialize values
+    m_controller.reset();
     m_turnError = 0;
     m_turnPower = 0;
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_turnError = m_vision.getX(); // Horizontal angle away from target
-    m_turnPower = m_controller.calculate(m_vision.getX()) + Math.copySign(Constants.VisionConstants.kSTurn, m_controller.calculate(m_vision.getX())); // Calculate P value
-    if (Math.abs(m_vision.getX()) < 0.5) {
-      m_turnPower = 0;
+    m_turnPower = m_controller.calculate(m_turnError); // Calculate PID output
+
+    // Constrain turnPower to a safe range
+    m_turnPower = MathUtil.clamp(m_turnPower, -1.0, 1.0);
+
+    // Stop turning if error is within tolerance
+    if (Math.abs(m_turnError) < Constants.VisionConstants.aprilTagAlignTolerance) {
+      m_turnPower = 0.0;
     }
+
+    // Send debug info to SmartDashboard
     SmartDashboard.putNumber("turnError", m_turnError);
-    // drive the robot
+    SmartDashboard.putNumber("turnPower", m_turnPower);
+
+    // Drive the robot
     CommandScheduler.getInstance()
         .schedule(
             DriveCommands.joystickDrive(
                 m_drivetrain,
-                () ->
-                    MathUtil.applyDeadband(
-                        -m_translator.getY() * OperatorConstants.translationMultiplier,
-                        OperatorConstants.kDriveDeadband),
-                () ->
-                    MathUtil.applyDeadband(
-                        -m_translator.getX() * OperatorConstants.translationMultiplier,
-                        OperatorConstants.kDriveDeadband),
-                () -> (m_turnPower)));
-      
-    
+                () -> MathUtil.applyDeadband(
+                    -m_translator.getY() * OperatorConstants.translationMultiplier,
+                    OperatorConstants.kDriveDeadband),
+                () -> MathUtil.applyDeadband(
+                    -m_translator.getX() * OperatorConstants.translationMultiplier,
+                    OperatorConstants.kDriveDeadband),
+                () -> m_turnPower));
   }
 
   // Called once the command ends or is interrupted.
@@ -82,16 +84,13 @@ public class AprilTagAlign extends Command {
                 () -> 0.0,  // X translation (stopped)
                 () -> 0.0,  // Y translation (stopped)
                 () -> 0.0  // Rotation (stopped)
-                // true,       // Field-relative driving
-                // true        // Open-loop control
             ));
-}
-
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return Math.abs(m_turnError) < Constants.VisionConstants.aprilTagAlignTolerance;
-    return false;
+    // End command when turn error is within tolerance
+    return Math.abs(m_turnError) < Constants.VisionConstants.aprilTagAlignTolerance;
   }
 }
