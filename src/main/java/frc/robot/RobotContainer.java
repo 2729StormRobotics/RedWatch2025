@@ -13,7 +13,11 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
 import static frc.robot.util.drive.DriveControls.*;
+
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -26,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
@@ -36,11 +41,16 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 import frc.robot.util.drive.DriveControls;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSIM;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,8 +59,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Subsystems
-  private final Drive drive;
+  private final XboxController controller = new XboxController(0);
+
+   // Subsystems
+  // private final Drive drive;
+  private ElevatorIOSparkFlex elevator = new ElevatorIOSparkFlex() {};
 
   private boolean brakeMode = true;
 
@@ -79,36 +92,40 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOReal(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+        // drive =
+        //     new Drive(
+        //         new GyroIOReal(),
+        //         new ModuleIOSparkMax(0),
+        //         new ModuleIOSparkMax(1),
+        //         new ModuleIOSparkMax(2),
+        //         new ModuleIOSparkMax(3));
+        // break;
+        elevator = new ElevatorIOSparkFlex();
         break;
-
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+        // drive =
+        //     new Drive(
+        //         new GyroIO() {},
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim(),
+        //         new ModuleIOSim());
+        // break;
+        // elevator = new ElevatorIOSIM();
         break;
-
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        break;
+        // drive =
+        //     new Drive(
+        //         new GyroIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {},
+        //         new ModuleIO() {});
+        // break;
+        // elevator = new ElevatorIO(); 
+        break; // Ensure this break is here
     }
 
     field = new Field2d();
@@ -148,46 +165,55 @@ public class RobotContainer {
     //         .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     // Configure the button bindings
+    //Set up SysId routines
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     // Configure the button bindings
     configureButtonBindings();
+}
 
-    // Set up auto routines
-    System.out.println("[Init] Setting up Logged Auto Chooser");
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-  }
+    public void configureButtonBindings() {
+      //elevator
+      new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L1);}));
+      new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {elevator.setRightPower(0.2);}));
+      new JoystickButton (controller, Button.kY.value).onTrue (new InstantCommand(() -> {elevator.setLeftPower(0.4);}));
+    }
+  
+    // // Set up auto routines
+    // System.out.println("[Init] Setting up Logged Auto Chooser");
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+  
   // zero gyro
-  public void reset() {
-    drive.resetYaw();
-  }
+  // public void reset() {
+  //   drive.resetYaw();
+  // }
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
-    // default subsystem commands
-    DriveControls.configureControls();
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+  // private void configureButtonBindings() {
+  //   // default subsystem commands
+  //   DriveControls.configureControls();
+  //   drive.setDefaultCommand(
+  //       DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
-    RESET_GYRO.onTrue(
-        new InstantCommand(
-            () -> {
-              drive.resetYaw();
-            },
-            drive));
+    // RESET_GYRO.onTrue(
+    //     new InstantCommand(
+    //         () -> {
+    //           drive.resetYaw();
+    //         },
+    //         drive));
     // RESET_GYRO.whileTrue(
     //     new InstantCommand(
     //         () -> {
@@ -195,10 +221,10 @@ public class RobotContainer {
     //         },
     //         null));
 
-    QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
-    QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
-    DYNAMIC_FORWARD.whileTrue(drive.sysIdDynamic(Direction.kForward));
-    DYNAMIC_REVERSE.whileTrue(drive.sysIdDynamic(Direction.kReverse));
+    // QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+    // QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
+    // DYNAMIC_FORWARD.whileTrue(drive.sysIdDynamic(Direction.kForward));
+    // DYNAMIC_REVERSE.whileTrue(drive.sysIdDynamic(Direction.kReverse));
     // Drive setting commands
     // DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
@@ -218,7 +244,7 @@ public class RobotContainer {
     //         drive));
 
     // // Drive Modes
-  }
+  //}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -229,3 +255,5 @@ public class RobotContainer {
     return autoChooser.get();
   }
 }
+
+

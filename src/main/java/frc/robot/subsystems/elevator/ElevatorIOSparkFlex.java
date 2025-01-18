@@ -141,8 +141,11 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     
   }
   
-  public void setPower(double power) {
+  public void setLeftPower(double power) {
     elevatorLeftSparkFlex.set(power);
+  }
+
+  public void setRightPower(double power) {
     elevatorRightSparkFlex.set(power);
   }
 
@@ -189,6 +192,8 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   public double getElevatorVoltage() {
     return elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput();
   }
+
+  public void setElevatorHeight() {}
 
   @Override
   public double getAbsoluteEncoderOffset() {

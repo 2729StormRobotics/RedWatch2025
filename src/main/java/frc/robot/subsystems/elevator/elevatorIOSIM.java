@@ -58,7 +58,12 @@ public class ElevatorIOSIM implements ElevatorIO {
       // setElevatorVoltage(appliedVoltage);
   }
   
-  
+    public void setElevatorHeight() {}
+
+    public void setRightPower(double power) {}
+
+    public void setLeftPower(double power) {}
+
     @Override
     public double getElevatorVoltage() {
       return elevatorAppliedVolts;
