@@ -21,7 +21,6 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.kRightElevatorCanI
 import static frc.robot.subsystems.elevator.ElevatorConstants.kStringPotPort;
 
 
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -75,11 +74,6 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   
   @SuppressWarnings("unused")
   private DigitalInput m_ObjectDectector = new DigitalInput(ElevatorConstants.kStringPotPort);
-  @SuppressWarnings("unused")
-  private SparkMax m_elevatorLeftSparkMotor = new SparkMax(ElevatorConstants.kLeftElevatorMotorPort, MotorType.kBrushless); 
-  @SuppressWarnings("unused")
-  private SparkMax m_elevatorRightSparkMotor = new SparkMax(ElevatorConstants.kRightElevatorMotorPort, MotorType.kBrushless); 
-
 
   public final AnalogPotentiometer pot = new AnalogPotentiometer(1);
   public double pot_val;
