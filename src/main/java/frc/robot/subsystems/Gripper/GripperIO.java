@@ -2,11 +2,11 @@ package frc.robot.subsystems.Gripper;
 
 public interface GripperIO {
     
-    boolean isCoralPresent();
+    public default boolean isCoralPresent() {return false;}
 
-    void stop();
+    public default void stop() {}
 
-    void setIn();
+    public default void setIn() {}
 
-    void setOut();
+    public default void setOut() {}
 }

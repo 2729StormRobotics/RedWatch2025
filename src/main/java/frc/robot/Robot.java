@@ -15,12 +15,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.littletonrobotics.junction.LogFileUtil;
+// import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+// import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.networktables.NT4Publisher;
+// import org.littletonrobotics.junction.wpilog.WPILOGReader;
+// import org.littletonrobotics.junction.wpilog.WPILOGWriter; comment for magic box testing
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -39,7 +39,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata
-    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    /* Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
@@ -54,10 +54,10 @@ public class Robot extends LoggedRobot {
       default:
         Logger.recordMetadata("GitDirty", "Unknown");
         break;
-    }
+    } comment for magic box testing*/
 
     // Set up data receivers & replay source
-    switch (Constants.currentMode) {
+    /* switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
@@ -76,13 +76,13 @@ public class Robot extends LoggedRobot {
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
-    }
+    } comment for magic box testing*/
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
     // Start AdvantageKit logger
-    Logger.start();
+    //Logger.start(); comment for magic box testing
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -109,7 +109,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
+  /*@Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -117,7 +117,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
-  }
+  } comment for magic box testing*/
 
   /** This function is called periodically during autonomous. */
   @Override

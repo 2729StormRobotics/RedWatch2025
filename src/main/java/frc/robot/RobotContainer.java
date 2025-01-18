@@ -44,10 +44,12 @@ import frc.robot.subsystems.Gripper.GripperIOSparkMax;
 import frc.robot.commands.GripperInCommand;
 import frc.robot.commands.GripperOutCommand;
 import frc.robot.util.drive.DriveControls;
+/*
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+Comment for magic box testing purposes*/
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,7 +63,7 @@ public class RobotContainer {
   private final GripperIO gripperIO = new GripperIOSparkMax();
   private final Gripper m_gripper = new Gripper(gripperIO);
 
-  private final XboxController controller = new XboxController(0);
+  private final XboxController controller = new XboxController(2);
 
 
   private boolean brakeMode = true;
@@ -71,18 +73,18 @@ public class RobotContainer {
 
   // Controller
   private final CommandJoystick m_translator = new CommandJoystick(1);
-  private final CommandJoystick m_rotator = new CommandJoystick(2);
+  private final CommandJoystick m_rotator = new CommandJoystick(0);
   private final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
   //   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
-  private LoggedDashboardChooser<Command> autoChooser;
+  /*private LoggedDashboardChooser<Command> autoChooser;
   private LoggedDashboardBoolean brakeModeDashboard =
       new LoggedDashboardBoolean("Brake Mode", true);
   private LoggedDashboardBoolean setStartPosition =
       new LoggedDashboardBoolean("Set Start Position", false);
-
+  Comment for magic box testing purposes*/
   // Field
   private final Field2d field;
 
@@ -133,7 +135,7 @@ public class RobotContainer {
         (pose) -> {
           // Do whatever you want with the pose here
           field.setRobotPose(pose);
-          Logger.recordOutput("PathPlanner/RobotPose", pose);
+          //Logger.recordOutput("PathPlanner/RobotPose", pose); comment for magic box testing
         });
 
     // Logging callback for target robot pose
@@ -141,7 +143,7 @@ public class RobotContainer {
         (pose) -> {
           // Do whatever you want with the pose here
           field.getObject("target pose").setPose(pose);
-          Logger.recordOutput("PathPlanner/TargetPose", pose);
+          //Logger.recordOutput("PathPlanner/TargetPose", pose); comment for magic box testing
         });
 
     // Logging callback for the active path, this is sent as a list of poses
@@ -149,7 +151,7 @@ public class RobotContainer {
         (poses) -> {
           // Do whatever you want with the poses here
           field.getObject("path").setPoses(poses);
-          Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
+          //Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0])); comment for magic box testing
         });
 
     // Set up auto routines
@@ -158,10 +160,10 @@ public class RobotContainer {
     //     Commands.startEnd(
     //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
     //         .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); comment for magic box testing
 
     // Set up SysId routines
-    autoChooser.addOption(
+    /*autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
@@ -171,12 +173,13 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        comment for magic box testing*/
     // Configure the button bindings
     configureButtonBindings();
 
     // Set up auto routines
     System.out.println("[Init] Setting up Logged Auto Chooser");
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); comment for magic box testing
   }
   // zero gyro
   public void reset() {
@@ -242,7 +245,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  /*public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+  comment for magic box testing*/
 }
