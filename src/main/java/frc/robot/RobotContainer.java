@@ -40,24 +40,27 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.util.drive.DriveControls;
 import frc.robot.subsystems.hanger.HangerIO;
+import frc.robot.subsystems.hanger.HangerIOSim;
+import frc.robot.subsystems.hanger.HangerIOSparkMax;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final HangerIO hanger = new HangerIO();
-
-  private boolean brakeMode = true;
-
+  private final HangerIO hanger;
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
@@ -68,52 +71,59 @@ public class RobotContainer {
   private final CommandXboxController m_weaponsController = new CommandXboxController(0);
   private final XboxController controller = new XboxController(0);
 
-  //   private final CommandXboxController controller = new CommandXboxController(0);
+  // private final CommandXboxController controller = new
+  // CommandXboxController(0);
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard =
-      new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition =
-      new LoggedDashboardBoolean("Set Start Position", false);
+  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
+  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
 
   // Field
   private final Field2d field;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOReal(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+        drive = new Drive(
+            new GyroIOReal(),
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3));
+        hanger = new HangerIOSparkMax();
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
+        hanger = new HangerIOSim();
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+          hanger = new HangerIO() {};
         break;
     }
 
@@ -148,10 +158,11 @@ public class RobotContainer {
 
     // Set up auto routines
     // NamedCommands.registerCommand(
-    //     "Run Flywheel",
-    //     Commands.startEnd(
-    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-    //         .withTimeout(5.0));
+    // "Run Flywheel",
+    // Commands.startEnd(
+    // () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
+    // flywheel)
+    // .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -172,24 +183,30 @@ public class RobotContainer {
     System.out.println("[Init] Setting up Logged Auto Chooser");
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
   }
+
   // zero gyro
   public void reset() {
     drive.resetYaw();
   }
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     // default subsystem commands
 
-      //Hanger
-      new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {hanger.pull();}));
-      new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {hanger.release();}));
-
-
+    // Hanger
+    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {
+      hanger.pull();
+    }));
+    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {
+      hanger.release();
+    }));
 
     DriveControls.configureControls();
     drive.setDefaultCommand(
@@ -202,11 +219,11 @@ public class RobotContainer {
             },
             drive));
     // RESET_GYRO.whileTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.resetYaw();
-    //         },
-    //         null));
+    // new InstantCommand(
+    // () -> {
+    // drive.resetYaw();
+    // },
+    // null));
 
     QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
     QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
@@ -216,19 +233,19 @@ public class RobotContainer {
     // DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
     // DRIVE_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //           drive.resetYaw();
-    //         },
-    //         drive));
+    // new InstantCommand(
+    // () -> {
+    // drive.stopWithX();
+    // drive.resetYaw();
+    // },
+    // drive));
 
     // DRIVE_HOLD_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //         },
-    //         drive));
+    // new InstantCommand(
+    // () -> {
+    // drive.stopWithX();
+    // },
+    // drive));
 
     // // Drive Modes
   }

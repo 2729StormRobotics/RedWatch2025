@@ -1,47 +1,76 @@
 package frc.robot.subsystems.hanger;
 
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class HangerIOSim implements HangerIO{
-    private static final double LOOP_PERIOD_SECS = 0.02;
-    private static final DCMotor neoMotor = DCMotor.getNeo550(1); //Change to whatever CAN ID it is 
+public class HangerIOSim implements HangerIO {
+  private static final double LOOP_PERIOD_SECS = 0.02;
 
-    private final DCMotorSim turnSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(neoMotor, 0.004, turnReduction),neoMotor);
-    private double appliedVolts = 0.0;
+  private static final DCMotor hangerMotorModel = DCMotor.getNeo550(HangerConstants.kWinchMotorCanId); // Change to
+                                                                                                       // whatever CAN
+                                                                                                       // ID it is
+  public static boolean isClosed = false;
+  private final DCMotorSim hangerSim = new DCMotorSim(
+      LinearSystemId.createDCMotorSystem(hangerMotorModel, 0.004, HangerConstants.hangerReduction),
+      hangerMotorModel);
 
- public void updateInputs(HangerIOInputs inputs) {
+  @Override
+  public void setHangerVoltage(double volts) {
+    hangerSim.setInputVoltage(volts);
+  }
 
-    turnSim.update(LOOP_PERIOD_SECS);
-    
- }
+  @Override
+  public double getHangerVoltage() {
+    return hangerSim.getInputVoltage();
+  }
 
-                                    
-@Override
-public void startMotor(){
-    neoMotor.set(0.2);//Change to whatever speed wanted 
-    
- }
+  @Override
+  public double getHangerAngle() {
+    // NEEDS TO BE TESTED
+    return 0;
+  }
 
-@Override
-public void reverseMotor(){
-    neoMotor.set(-0.2)//Change to whatever speed wanted 
+  @Override
+  public void pull() {
+    hangerSim.setInputVoltage(HangerConstants.motorSpeedOpenHanger);
+    isClosed = true;
+  }
 
-}
+  @Override
+  public void release() {
+    hangerSim.setInputVoltage(-HangerConstants.motorSpeedOpenHanger);
+    isClosed = false;
+  }
 
-@Override
-public void stopMotor (){
-    neoMotor.set(0);
+  @Override
+  public void stop() {
+    hangerSim.setInputVoltage(0);
+  }
 
- }
+  public SequentialCommandGroup retract() {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> {
+          this.pull();
+        }),
+        new WaitCommand(0.5),
+        new InstantCommand(() -> {
+          this.stop();
+        }));
+  }
 
-@Override                                    
-  public void setMotorVoltage(double volts) {
-    appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    turnSim.setInputVoltage(appliedVolts);
+  public SequentialCommandGroup extend() {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> {
+          this.release();
+        }),
+        new WaitCommand(0.5),
+        new InstantCommand(() -> {
+          this.stop();
+        }));
   }
 
 }
