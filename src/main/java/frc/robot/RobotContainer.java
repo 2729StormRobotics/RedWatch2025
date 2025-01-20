@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.Gripper.Intake;
+import frc.robot.commands.Gripper.Outtake;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -39,10 +41,9 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.Gripper.GripperIO;
+import frc.robot.subsystems.Gripper.GripperIOSim;
 import frc.robot.subsystems.Gripper.Gripper;
 import frc.robot.subsystems.Gripper.GripperIOSparkMax;
-import frc.robot.commands.GripperInCommand;
-import frc.robot.commands.GripperOutCommand;
 import frc.robot.util.drive.DriveControls;
 /*
 import org.littletonrobotics.junction.Logger;
@@ -60,8 +61,7 @@ Comment for magic box testing purposes*/
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final GripperIO gripperIO = new GripperIOSparkMax();
-  private final Gripper m_gripper = new Gripper(gripperIO);
+  private final Gripper m_gripper;
 
   private final XboxController controller = new XboxController(2);
 
@@ -100,6 +100,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
+        m_gripper = new Gripper(new GripperIOSparkMax());
         break;
 
       case SIM:
@@ -111,6 +112,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+        m_gripper = new Gripper(new GripperIOSim());
         break;
 
       default:
@@ -122,6 +124,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        m_gripper = new Gripper(new GripperIO() {});
         break;
     }
 
@@ -193,8 +196,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Gripper
-    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {new GripperInCommand(m_gripper);}));
-    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {new GripperOutCommand(m_gripper);}));
+    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {new Intake(m_gripper);}));
+    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {new Outtake(m_gripper);}));
     new JoystickButton(controller, Button.kY.value).onTrue(new InstantCommand(() -> {m_gripper.stop();}));
     
     // default subsystem commands

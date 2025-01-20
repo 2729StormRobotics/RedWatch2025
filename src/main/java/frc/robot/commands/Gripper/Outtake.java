@@ -1,12 +1,12 @@
-package frc.robot.commands;
+package frc.robot.commands.Gripper;
 
 import frc.robot.subsystems.Gripper.Gripper;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class GripperOutCommand extends Command {
+public class Outtake extends Command {
     private final Gripper m_gripper;
 
-    public GripperOutCommand(Gripper gripper) {
+    public Outtake(Gripper gripper) {
         m_gripper = gripper;
         addRequirements(gripper);
     }

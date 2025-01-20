@@ -1,7 +1,8 @@
 package frc.robot.subsystems.Gripper;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.GripperInCommand;
+import frc.robot.commands.Gripper.Intake;
 
 
 public class Gripper extends SubsystemBase {
@@ -21,10 +22,14 @@ public class Gripper extends SubsystemBase {
     }
 
     public void setIn() {
-        new GripperInCommand(this).schedule();
+        io.setIn();
     }
 
     public void setOut() { 
-        new GripperInCommand(this).schedule();
+        io.setOut();
     }
+
+    public Command runIn() {return io.intake();}
+    
+    public Command runOut() {return io.intake();}
 }
