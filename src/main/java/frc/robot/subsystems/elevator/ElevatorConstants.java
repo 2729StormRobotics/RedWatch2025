@@ -23,7 +23,6 @@ public class ElevatorConstants {
     public static final int kLeftElevatorCanId = 2; //ask controls
     public static final int kRightElevatorCanId = 3; //ask controls
 
-
     //string pot info
     public static final int kStringPotPort = 0;
 
@@ -42,7 +41,7 @@ public class ElevatorConstants {
     public double elevatorAppliedVolts = 0.0;
     public double[] elevatorCurrentAmps;
     public double elevatorPositionRad  = 0.0;
-    public double kWheelDiameterMeters = 0.0;
+    public double kWheelDiameterMeters = 0.03;
     public double elevatorPositionMeters = 0.0;
     public double elevatorVelocityMeterPerSec = 0.0;
     public double elevatorVelocityRadPerSec = 0.0;

@@ -123,8 +123,8 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     }
 
 
-  public void setTargetPosition(double position) {
-    elevatorLeftSparkFlex.getClosedLoopController().setReference(position, SparkFlex.ControlType.kPosition);
+  public void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {
+    elevatorLeftSparkFlex.getClosedLoopController().setReference(targetHeight, SparkFlex.ControlType.kPosition);
   }
   
   public void setLeftPower(double power) {
