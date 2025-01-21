@@ -201,12 +201,8 @@ public class RobotContainer {
     // default subsystem commands
 
     // Hanger
-    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {
-      hanger.pull();
-    }));
-    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {
-      hanger.release();
-    }));
+    new JoystickButton(controller, Button.kA.value).onTrue(hanger.retract());
+    new JoystickButton(controller, Button.kB.value).onTrue(hanger.extend());
 
     DriveControls.configureControls();
     drive.setDefaultCommand(

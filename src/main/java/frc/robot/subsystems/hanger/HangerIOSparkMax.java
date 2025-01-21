@@ -64,7 +64,7 @@ public class HangerIOSparkMax implements HangerIO {
   public void stop() {
     hangerSparkMax.set(0);
   }
-
+  @Override
   public SequentialCommandGroup retract() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {
@@ -75,7 +75,7 @@ public class HangerIOSparkMax implements HangerIO {
           this.stop();
         }));
   }
-
+  @Override
   public SequentialCommandGroup extend() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {

@@ -51,6 +51,7 @@ public class HangerIOSim implements HangerIO {
     hangerSim.setInputVoltage(0);
   }
 
+  @Override
   public SequentialCommandGroup retract() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {
@@ -61,7 +62,7 @@ public class HangerIOSim implements HangerIO {
           this.stop();
         }));
   }
-
+  @Override
   public SequentialCommandGroup extend() {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {
