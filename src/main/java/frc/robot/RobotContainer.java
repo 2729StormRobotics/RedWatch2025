@@ -182,7 +182,8 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-        DRIVE_ALIGN_TO_APRILTAG.toggleOnTrue(new AprilTagAlign(m_rotator.getHID(), drive));
+        DRIVE_ALIGN_TO_APRILTAG.whileTrue(new AprilTagAlign(m_rotator.getHID(), drive));
+        DRIVE_ALIGN_TO_APRILTAG.onFalse(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
     RESET_GYRO.onTrue(
         new InstantCommand(

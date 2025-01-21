@@ -87,6 +87,17 @@ public class AprilTagAlign extends Command {
             ));
   }
 
+// public void continueDriving() {
+//   CommandScheduler.getInstance()
+//       .schedule(
+//           DriveCommands.joystickDrive(
+//               m_drivetrain,
+//               () -> -m_translator.getY() * OperatorConstants.translationMultiplier,
+//               () -> -m_translator.getX() * OperatorConstants.translationMultiplier,
+//               () -> m_translator.getTwist() * OperatorConstants.rotationMultiplier
+//           ));
+// }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
