@@ -1,24 +1,23 @@
 package frc.robot.commands.Gripper;
 
-import frc.robot.subsystems.Gripper.Gripper;
+import frc.robot.subsystems.Gripper.GripperIO;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends Command {
-    private final Gripper m_gripper;
+    private final GripperIO m_gripper;
 
-    public Intake(Gripper gripper) {
+    public Intake(GripperIO gripper) {
         m_gripper = gripper;
-        addRequirements(gripper);
-    }
-
-    @Override
-    public void initialize() {
-        m_gripper.setIn();
     }
 
     @Override
     public boolean isFinished() {
-        return m_gripper.isCoralPresent();
+        return !m_gripper.isCoralPresent();
+    }
+
+    @Override
+    public void execute(){
+        m_gripper.setIn();
     }
 
     @Override
