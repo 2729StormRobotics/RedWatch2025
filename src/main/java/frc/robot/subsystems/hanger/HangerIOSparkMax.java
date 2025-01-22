@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import frc.robot.subsystems.hanger.HangerConstants;;
 
 public class HangerIOSparkMax implements HangerIO {
 
@@ -70,7 +71,7 @@ public class HangerIOSparkMax implements HangerIO {
         new InstantCommand(() -> {
           this.pull();
         }),
-        new WaitCommand(0.5),
+        new WaitCommand(HangerConstants.motorWinchTime),
         new InstantCommand(() -> {
           this.stop();
         }));
@@ -81,7 +82,7 @@ public class HangerIOSparkMax implements HangerIO {
         new InstantCommand(() -> {
           this.release();
         }),
-        new WaitCommand(0.5),
+        new WaitCommand(HangerConstants.motorWinchTime),
         new InstantCommand(() -> {
           this.stop();
         }));
