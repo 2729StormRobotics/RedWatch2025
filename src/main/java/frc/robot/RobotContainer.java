@@ -66,10 +66,10 @@ public class RobotContainer {
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Controller
-  private final CommandJoystick m_translator = new CommandJoystick(1);
-  private final CommandJoystick m_rotator = new CommandJoystick(2);
-  private final CommandXboxController m_weaponsController = new CommandXboxController(0);
-  private final XboxController controller = new XboxController(0);
+  // private final CommandJoystick m_translator = new CommandJoystick(1);
+  // private final CommandJoystick m_rotator = new CommandJoystick(2);
+  // private final CommandXboxController m_weaponsController = new CommandXboxController(0);
+  // private final XboxController controller = new XboxController(2);
 
   // private final CommandXboxController controller = new
   // CommandXboxController(0);
@@ -108,6 +108,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         hanger = new HangerIOSim();
+
         break;
 
       default:
@@ -201,8 +202,9 @@ public class RobotContainer {
     // default subsystem commands
 
     // Hanger
-    new JoystickButton(controller, Button.kA.value).onTrue(hanger.retract());
-    new JoystickButton(controller, Button.kB.value).onTrue(hanger.extend());
+
+    // new JoystickButton(controller, Button.kA.value).onTrue(hanger.retract());
+    // new JoystickButton(controller, Button.kB.value).onTrue(hanger.extend());
 
     DriveControls.configureControls();
     drive.setDefaultCommand(
@@ -220,6 +222,10 @@ public class RobotContainer {
     // drive.resetYaw();
     // },
     // null));
+
+    HANG_UP.onTrue(hanger.retract());
+    HANG_DOWN.onTrue(hanger.extend());
+    HANG_STOP.onTrue(new InstantCommand(() -> {hanger.stop();}));
 
     QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
     QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));

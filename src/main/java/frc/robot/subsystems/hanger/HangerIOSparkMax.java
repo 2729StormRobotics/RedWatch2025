@@ -68,10 +68,11 @@ public class HangerIOSparkMax implements HangerIO {
   @Override
   public SequentialCommandGroup retract() {
     return new SequentialCommandGroup(
+      new InstantCommand(() -> {System.out.println("retract");}),
         new InstantCommand(() -> {
           this.pull();
         }),
-        new WaitCommand(HangerConstants.motorWinchTime),
+        new WaitCommand(5),
         new InstantCommand(() -> {
           this.stop();
         }));
@@ -79,10 +80,11 @@ public class HangerIOSparkMax implements HangerIO {
   @Override
   public SequentialCommandGroup extend() {
     return new SequentialCommandGroup(
+        new InstantCommand(() -> {System.out.println("Extend");}),
         new InstantCommand(() -> {
           this.release();
         }),
-        new WaitCommand(HangerConstants.motorWinchTime),
+        new WaitCommand(5),
         new InstantCommand(() -> {
           this.stop();
         }));

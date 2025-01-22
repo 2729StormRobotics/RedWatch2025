@@ -59,6 +59,10 @@ public class DriveControls {
 
   public static Trigger INTAKE_UNTIL_INTAKED;
 
+  public static Trigger HANG_UP;
+  public static Trigger HANG_DOWN;
+  public static Trigger HANG_STOP;
+
   // Shooter Controls
   public static DoubleSupplier SHOOTER_SPEED;
   public static Trigger SHOOTER_FULL_SEND_INTAKE;
@@ -101,6 +105,9 @@ public class DriveControls {
         DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
         DRIVE_SPEAKER_AIM = m_translator.button(1); // uses vision
 
+        HANG_UP = m_weaponsController.a();
+        HANG_DOWN = m_weaponsController.b();
+        HANG_STOP = m_weaponsController.x();
         // ALL BELOW TBD
         // Driver Angle Locks
         LOCK_BACK = m_translator.button(1);
