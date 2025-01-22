@@ -207,6 +207,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     SmartDashboard.putNumber("Elevator Voltage: ", elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput());
     SmartDashboard.putNumber("Elevator Height: ", elevatorLeftSparkFlex.getAnalog().getPosition());
     SmartDashboard.putNumber("Velocity: ", m_ElevatorLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Pot Val", pot_val);
   }
 }
 

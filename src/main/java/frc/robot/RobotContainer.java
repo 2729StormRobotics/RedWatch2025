@@ -63,11 +63,11 @@ import frc.robot.subsystems.elevator.ElevatorIOSIM;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final XboxController controller = new XboxController(0);
+  private final XboxController controller = new XboxController(2);
 
    // Subsystems
   // private final Drive drive;
-  private ElevatorIOSparkFlex elevator = new ElevatorIOSparkFlex() {};
+  private ElevatorIOSparkFlex elevator = new ElevatorIOSparkFlex();
 
   private boolean brakeMode = true;
 
@@ -187,8 +187,8 @@ public class RobotContainer {
 
     public void configureButtonBindings() {
       //elevator
-      new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L1);}));
-      new JoystickButton(controller, Button.kX.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L2);}));
+      // new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L1);}));
+      // new JoystickButton(controller, Button.kX.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L2);}));
       new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {elevator.setRightPower(0.2);}));
       new JoystickButton (controller, Button.kY.value).onTrue (new InstantCommand(() -> {elevator.setLeftPower(0.4);}));
     }
