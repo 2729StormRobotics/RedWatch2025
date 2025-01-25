@@ -49,7 +49,7 @@ public class AprilTagAlign extends Command {
     while (Math.abs(m_turnError) > Constants.VisionConstants.aprilTagAlignTolerance) {
       m_turnError = LimelightHelpers.getTX("limelight"); // Horizontal angle away from target
       m_turnPower = m_controller.calculate(m_turnError); // Calculate PID output
-
+      // System.out.println("Turn Error: " + m_turnPower);
       // Constrain turnPower to a safe range
       m_turnPower = MathUtil.clamp(m_turnPower, -1.0, 1.0);
 
