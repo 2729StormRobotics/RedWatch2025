@@ -138,7 +138,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Drivetrain;
+// import frc.robot.subsystems.Drivetrain;
+import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Vision;
 
 /**
@@ -146,16 +148,16 @@ import frc.robot.subsystems.Vision;
  */
 public class AprilTagAlign extends Command {
   private final Vision m_vision;
-  private final Drivetrain m_drivetrain;
+  private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
   private double m_turnError;
   private double m_turnPower;
 
   /** Creates a new AprilTagAlign. */
-  public AprilTagAlign(Joystick joystick) {
+  public AprilTagAlign(Joystick joystick, Drive drivetrain) {
     m_vision = Vision.getInstance();
-    m_drivetrain = Drivetrain.getInstance();
+    m_drivetrain = drivetrain;
     m_translator = joystick;
     m_controller = new PIDController(
         Constants.VisionConstants.kPTurn,
