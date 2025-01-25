@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -20,7 +21,7 @@ public class AprilTagAlign extends Command {
   private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
-  private double m_turnError;
+  private double m_turnError = 0.0;
   private double m_turnPower;
 
   /** Creates a new AprilTagAlign. */
@@ -38,40 +39,57 @@ public class AprilTagAlign extends Command {
   public void initialize() {
     // Reset PID controller and initialize values
     m_controller.reset();
-    m_turnError = 0;
+    m_turnError = LimelightHelpers.getTX("limelight");
     m_turnPower = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turnError = m_vision.getX(); // Horizontal angle away from target
-    m_turnPower = m_controller.calculate(m_turnError); // Calculate PID output
+    while (Math.abs(m_turnError) > Constants.VisionConstants.aprilTagAlignTolerance) {
+      m_turnError = LimelightHelpers.getTX("limelight"); // Horizontal angle away from target
+      m_turnPower = m_controller.calculate(m_turnError); // Calculate PID output
 
-    // Constrain turnPower to a safe range
-    m_turnPower = MathUtil.clamp(m_turnPower, -1.0, 1.0);
+      // Constrain turnPower to a safe range
+      m_turnPower = MathUtil.clamp(m_turnPower, -1.0, 1.0);
 
-    // Stop turning if error is within tolerance
-    if (Math.abs(m_turnError) < Constants.VisionConstants.aprilTagAlignTolerance) {
-      m_turnPower = 0.0;
+      // Stop turning if error is within tolerance
+      // if (Math.abs(m_turnError) < Constants.VisionConstants.aprilTagAlignTolerance) {
+      //   m_turnPower = 0.0;
+      // }
+
+      // Send debug info to SmartDashboard
+      SmartDashboard.putNumber("turnError", m_turnError);
+      SmartDashboard.putNumber("turnPower", m_turnPower);
+
+      // Drive the robot
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.joystickDrive(
+                  m_drivetrain,
+                  () -> MathUtil.applyDeadband(
+                      -m_translator.getY() * OperatorConstants.translationMultiplier,
+                      OperatorConstants.kDriveDeadband),
+                  () -> MathUtil.applyDeadband(
+                      -m_translator.getX() * OperatorConstants.translationMultiplier,
+                      OperatorConstants.kDriveDeadband),
+                  () -> m_turnPower));
     }
 
-    // Send debug info to SmartDashboard
-    SmartDashboard.putNumber("turnError", m_turnError);
-    SmartDashboard.putNumber("turnPower", m_turnPower);
+    // m_turnPower = 0.0;
 
-    // Drive the robot
-    CommandScheduler.getInstance()
-        .schedule(
-            DriveCommands.joystickDrive(
-                m_drivetrain,
-                () -> MathUtil.applyDeadband(
-                    -m_translator.getY() * OperatorConstants.translationMultiplier,
-                    OperatorConstants.kDriveDeadband),
-                () -> MathUtil.applyDeadband(
-                    -m_translator.getX() * OperatorConstants.translationMultiplier,
-                    OperatorConstants.kDriveDeadband),
-                () -> m_turnPower));
+    // // Drive the robot
+    // CommandScheduler.getInstance()
+    // .schedule(
+    //     DriveCommands.joystickDrive(
+    //         m_drivetrain,
+    //         () -> MathUtil.applyDeadband(
+    //             -m_translator.getY() * OperatorConstants.translationMultiplier,
+    //             OperatorConstants.kDriveDeadband),
+    //         () -> MathUtil.applyDeadband(
+    //             -m_translator.getX() * OperatorConstants.translationMultiplier,
+    //             OperatorConstants.kDriveDeadband),
+    //         () -> m_turnPower));
   }
 
   // Called once the command ends or is interrupted.
