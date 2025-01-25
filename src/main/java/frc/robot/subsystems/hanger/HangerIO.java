@@ -26,6 +26,10 @@ public interface HangerIO {
         return 0;
     }
 
+    public default boolean getIsInCage(){
+        return false;
+    }
+
     public default void setHangerCurrentLimit(int limit) {
     }
 

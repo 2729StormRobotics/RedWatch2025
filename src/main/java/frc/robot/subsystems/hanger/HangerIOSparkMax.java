@@ -2,7 +2,9 @@ package frc.robot.subsystems.hanger;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -10,6 +12,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import frc.robot.subsystems.hanger.HangerConstants;;
 
@@ -19,6 +22,7 @@ public class HangerIOSparkMax implements HangerIO {
   private SparkMaxConfig hangerConfig;
   public static boolean isClosed = false;
   public static Timer timer = new Timer();
+  public SparkLimitSwitch metalDetector;
 
   public HangerIOSparkMax() {
     // Define motor
@@ -31,6 +35,7 @@ public class HangerIOSparkMax implements HangerIO {
 
     // burn motor
     hangerSparkMax.configure(hangerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    metalDetector = hangerSparkMax.getForwardLimitSwitch();
   }
 
   @Override
@@ -47,6 +52,11 @@ public class HangerIOSparkMax implements HangerIO {
   public double getHangerAngle() {
     // NEEDS TO BE TESTED
     return 0;
+  }
+
+  @Override
+  public boolean getIsInCage(){
+    return metalDetector.isPressed();
   }
 
   @Override
@@ -88,6 +98,10 @@ public class HangerIOSparkMax implements HangerIO {
         new InstantCommand(() -> {
           this.stop();
         }));
+  }
+
+  public void periodic(){
+    SmartDashboard.putBoolean("metaldetector", getIsInCage());
   }
 
 }
