@@ -41,6 +41,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import frc.robot.subsystems.arm.ArmIOSparkMax;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSIm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,6 +54,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final ArmIO arm;
 
   private boolean brakeMode = true;
 
@@ -86,6 +90,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
+
+            arm = new ArmIOSparkMax();
+        
         break;
 
       case SIM:
@@ -97,6 +104,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+
+            arm = new ArmIOSIm();
+
         break;
 
       default:
@@ -108,6 +118,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+                arm = new ArmIOSparkMax();
         break;
     }
 
@@ -178,9 +189,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // default subsystem commands
+
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    
+    ROTATECLOCKWISE.onTrue(arm.clockwise());
+    ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
+
+     
 
     RESET_GYRO.onTrue(
         new InstantCommand(

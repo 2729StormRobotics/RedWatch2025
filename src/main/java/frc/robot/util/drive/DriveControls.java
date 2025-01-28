@@ -1,5 +1,6 @@
 package frc.robot.util.drive;
 
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -16,6 +17,11 @@ public class DriveControls {
   private static final Trigger EMPTY_TRIGGER = new Trigger(() -> false);
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
+  //Weapon Controls
+  public static Trigger ROTATECLOCKWISE;
+  public static Trigger ROTATECOUNTERCLOCKWISE;
+  private static Trigger STOP;
+ 
   // Drive controls
   public static DoubleSupplier DRIVE_FORWARD;
   public static DoubleSupplier DRIVE_STRAFE;
@@ -87,6 +93,11 @@ public class DriveControls {
         DYNAMIC_FORWARD = m_weaponsController.b().and(m_weaponsController.rightBumper());
         DYNAMIC_REVERSE = m_weaponsController.a().and(m_weaponsController.rightBumper());
 
+        ROTATECLOCKWISE = m_weaponsController.a();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.b();
+        STOP = m_weaponsController.x();
+
+
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
         DRIVE_STRAFE = () -> (-m_translator.getX());
@@ -135,6 +146,9 @@ public class DriveControls {
         LOCK_PASS = m_translator.button(1); // uses vision
 
         DRIVE_AMP = EMPTY_TRIGGER; // uses vision
+        ROTATECLOCKWISE = m_weaponsController.a();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.b();
+        STOP = m_weaponsController.x();
     }
 
     switch (Constants.operator) {
@@ -196,6 +210,11 @@ public class DriveControls {
         SHOOTER_FULL_SEND = EMPTY_TRIGGER;
         SHOOTER_UNJAM = EMPTY_TRIGGER;
         SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
+
+
+        ROTATECLOCKWISE = m_weaponsController.a();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.b();
+        STOP = m_weaponsController.x();
         break;
 
         // bottom right Left joystick to intake
