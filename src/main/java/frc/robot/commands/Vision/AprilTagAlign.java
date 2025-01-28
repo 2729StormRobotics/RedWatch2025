@@ -46,6 +46,17 @@ public class AprilTagAlign extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.joystickDrive(
+                  m_drivetrain,
+                  () -> MathUtil.applyDeadband(
+                      -m_translator.getY() * OperatorConstants.translationMultiplier,
+                      OperatorConstants.kDriveDeadband),
+                  () -> MathUtil.applyDeadband(
+                      -m_translator.getX() * OperatorConstants.translationMultiplier,
+                      OperatorConstants.kDriveDeadband),
+                  () -> SmartDashboard.getNumber("turnPower", 0)));
     while (Math.abs(m_turnError) > Constants.VisionConstants.aprilTagAlignTolerance) {
       m_turnError = LimelightHelpers.getTX("limelight"); // Horizontal angle away from target
       if (m_turnError > 0) {
@@ -68,17 +79,7 @@ public class AprilTagAlign extends Command {
       SmartDashboard.putNumber("turnPower", m_turnPower);
 
       // Drive the robot
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.joystickDrive(
-                  m_drivetrain,
-                  () -> MathUtil.applyDeadband(
-                      -m_translator.getY() * OperatorConstants.translationMultiplier,
-                      OperatorConstants.kDriveDeadband),
-                  () -> MathUtil.applyDeadband(
-                      -m_translator.getX() * OperatorConstants.translationMultiplier,
-                      OperatorConstants.kDriveDeadband),
-                  () -> m_turnPower));
+      
     }
 
     // m_turnPower = 0.0;
