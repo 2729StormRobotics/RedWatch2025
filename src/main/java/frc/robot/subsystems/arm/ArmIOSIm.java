@@ -24,7 +24,7 @@ public class ArmIOSIm implements ArmIO{
 
     
     public void updateInputs(ArmIOInputs inputs) {
-        ArmIOSIm.update(LOOP_PERIOD_SECS); 
+        ArmIOSIm.updateInputs(LOOP_PERIOD_SECS); 
         ArmIO.ArmIOInputs.armAppliedVolts = getVoltage();
         ArmIO.ArmIOInputs.armPositionRad = getArmAngleRad();
         ArmIO.ArmIOInputs.armPositionDegrees = getArmAngleDegrees();

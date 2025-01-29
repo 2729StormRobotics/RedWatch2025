@@ -196,6 +196,7 @@ public class RobotContainer {
     
     ROTATECLOCKWISE.onTrue(arm.clockwise());
     ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
+    STOP.onTrue(arm.stop());
 
      
 

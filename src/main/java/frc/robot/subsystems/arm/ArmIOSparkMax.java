@@ -29,7 +29,7 @@ public class ArmIOSparkMax implements ArmIO{
     public SparkMaxConfig armSparkMaxConfig;
 
     
-    public void ArmIOSparkMax() {
+    public ArmIOSparkMax() {
     // Define motor
     armSparkMax = new SparkMax(ArmIOConstants.kArmCANID, MotorType.kBrushless);
 
@@ -93,7 +93,7 @@ public class ArmIOSparkMax implements ArmIO{
     public SequentialCommandGroup clockwise(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
-                this.clockwise();
+                this.pivotClockwise();
             }));
         };
 
@@ -101,7 +101,7 @@ public class ArmIOSparkMax implements ArmIO{
     public SequentialCommandGroup counterClockwise(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
-                this.counterClockwise();
+                this.pivotCounterclockwise();
             }));
         };
 
@@ -109,7 +109,7 @@ public class ArmIOSparkMax implements ArmIO{
     public SequentialCommandGroup stop(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
-                this.stop();
+                this.stopArm();
             }));
         };
 

@@ -20,7 +20,7 @@ public class DriveControls {
   //Weapon Controls
   public static Trigger ROTATECLOCKWISE;
   public static Trigger ROTATECOUNTERCLOCKWISE;
-  private static Trigger STOP;
+  public static Trigger STOP;
  
   // Drive controls
   public static DoubleSupplier DRIVE_FORWARD;
