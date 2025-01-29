@@ -67,14 +67,14 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
 
   private final double absoluteEncoderOffset = 0;
-  public final AnalogPotentiometer elevatorPot = new AnalogPotentiometer(0); //idk change it later
+  public final SparkAnalogSensor elevatorPot; //idk change it later
   
 
-  public final SparkAnalogSensor pot;
-  public double pot_val;
+  public double pot_val = 0;
+  public double elevator_height = 0;
   public double offset = 0;
 
-  public final double VoltsToDistanceMeters = 1;
+  public final double VoltsToDistanceMeters = 8.4582;
   
   public final RelativeEncoder m_ElevatorLeftEncoder;
   public final RelativeEncoder m_ElevatorRightEncoder;
@@ -97,7 +97,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     elevatorConfigLeft.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
     elevatorConfigLeft.limitSwitch.reverseLimitSwitchType(Type.kNormallyOpen);
 
-    pot = elevatorLeftSparkFlex.getAnalog();
+    elevatorPot = elevatorLeftSparkFlex.getAnalog();
 
     // Rigt individual config
     elevatorConfigRight = elevatorConfig;
@@ -167,7 +167,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
  
   // Gets the distance from this value to this value. its tweakoing
   public double getDistance(){
-    return pot_val;
+    return elevator_height;
   }
   public double getLeftEncoderDistance() {
     return -m_ElevatorLeftEncoder.getPosition();
@@ -200,8 +200,8 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   // Periodically calculates the value of the pot.
   public void periodic() {
     // This method will be called once per scheduler run
-    pot_val = (elevatorPot.get()*50)-offset;
-    // pot_val = ((pot.get())*50);
+    pot_val = elevatorPot.getPosition();
+    elevator_height = pot_val-offset;
     SmartDashboard.putBoolean("Top Limit Switch Triggered?", isTopLimitTriggered());
     SmartDashboard.putBoolean("Bottom Limit Switch Triggered?", isBottomLimitTriggered());
     SmartDashboard.putNumber("Elevator Voltage: ", elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput());
