@@ -26,38 +26,42 @@ import frc.robot.subsystems.arm.ArmIO.ArmIOInputs;
 import frc.robot.subsystems.arm.ArmIOConstants;
 
 public class ArmIOSparkMax implements ArmIO {
-    public SparkMax armSparkMax1;
-    public SparkMax armSparkMax2;
-    public SparkMaxConfig armSparkMaxConfig;
+    public SparkMax armSparkMaxLeft;
+    public SparkMax armSparkMaxRight;
+    public SparkMaxConfig armConfigRight;
+    public SparkMaxConfig armConfigLeft;
     public SparkLimitSwitch metalDetector;
     public AbsoluteEncoder armAbsoluteEncoder;
 
     public ArmIOSparkMax() {
         // Define motor
-        armSparkMax1 = new SparkMax(ArmIOConstants.kArmCANID, MotorType.kBrushless);
-        armSparkMax2 = new SparkMax(ArmIOConstants.kArmCANID2, MotorType.kBrushless);
+        armSparkMaxLeft = new SparkMax(ArmIOConstants.kArmCANID, MotorType.kBrushless);
+        armSparkMaxRight = new SparkMax(ArmIOConstants.kArmCANID2, MotorType.kBrushless);
 
         // Define Configs for Hanger Motor
 
-        armSparkMaxConfig = new SparkMaxConfig();
-        armSparkMaxConfig.closedLoop.pid(ArmIOConstants.kPArm, ArmIOConstants.kIArm, ArmIOConstants.kDArm);
-        armSparkMaxConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        armSparkMaxConfig.closedLoop.outputRange(ArmIOConstants.kArmMinOutputPower, ArmIOConstants.kArmMaxOutputPower);
-        armSparkMaxConfig.idleMode(IdleMode.kBrake);
+        armConfigRight = new SparkMaxConfig();
+        armConfigRight.closedLoop.pid(ArmIOConstants.kPArm, ArmIOConstants.kIArm, ArmIOConstants.kDArm);
+        armConfigRight.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        armConfigRight.closedLoop.outputRange(ArmIOConstants.kArmMinOutputPower, ArmIOConstants.kArmMaxOutputPower);
+        armConfigRight.idleMode(IdleMode.kBrake);
 
-        armSparkMaxConfig.absoluteEncoder.velocityConversionFactor(0.10472);
+        armConfigRight.absoluteEncoder.velocityConversionFactor(0.10472);
 
         // burn motor
-        armSparkMax1.configure(armSparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        armSparkMax2.configure(armSparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        armSparkMaxLeft.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        armSparkMaxRight.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        metalDetector = armSparkMax1.getForwardLimitSwitch();
-        armAbsoluteEncoder = armSparkMax2.getAbsoluteEncoder();
+        metalDetector = armSparkMaxLeft.getForwardLimitSwitch();
+        armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
+
+        armConfigLeft = new SparkMaxConfig();
+        armConfigLeft.follow(armSparkMaxRight, false);
     }
 
     public void updateInputs(ArmIOInputs inputs) {
-        ArmIO.ArmIOInputs.armCLC = armSparkMaxConfig.closedLoop;
-        ArmIO.ArmIOInputs.armAppliedVolts = (armSparkMax1.getBusVoltage() * armSparkMax1.getAppliedOutput()); // divided
+        ArmIO.ArmIOInputs.armCLC = armConfigRight.closedLoop;
+        ArmIO.ArmIOInputs.armAppliedVolts = (armSparkMaxLeft.getBusVoltage() * armSparkMaxLeft.getAppliedOutput()); // divided
                                                                                                               // by some
                                                                                                               // number?
         ArmIO.ArmIOInputs.armPositionRad = getArmAngleRad();
@@ -67,13 +71,13 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public void pivotClockwise() {
-        armSparkMax1.set(ArmIOConstants.kArmMotorSpeed);
-        armSparkMax2.set(ArmIOConstants.kArmMotorSpeed);
+
+        armSparkMaxRight.set(ArmIOConstants.kArmMotorSpeed);
     }
 
     @Override
     public double getVoltage() {
-        return armSparkMax1.getBusVoltage();
+        return armSparkMaxLeft.getBusVoltage();
     }
 
     @Override
@@ -95,43 +99,40 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public void pivotCounterclockwise() {
-        armSparkMax1.set(-ArmIOConstants.kArmMotorSpeed);
-        armSparkMax2.set(-ArmIOConstants.kArmMotorSpeed);
+
+        armSparkMaxRight.set(-ArmIOConstants.kArmMotorSpeed);
     };
 
     @Override
     public void setVoltage(double voltage) {
-        armSparkMax1.setVoltage(voltage);
-        armSparkMax2.setVoltage(voltage);
+        armSparkMaxRight.setVoltage(voltage);
     }
 
     public void goAngle(double kAngle) {
-        armSparkMax1.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
-        armSparkMax2.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
+        armSparkMaxRight.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
     }
 
     @Override
     public void stopArm() {
-        armSparkMax1.stopMotor();
-        armSparkMax2.stopMotor();
+        armSparkMaxRight.stopMotor();
     };
 
     @Override
     public void setP(double p) {
         ArmIOConstants.kPArm = p;
-        armSparkMaxConfig.closedLoop.p(p);
+        armConfigRight.closedLoop.p(p);
     }
 
     @Override
     public void setI(double i) {
         ArmIOConstants.kIArm = i;
-        armSparkMaxConfig.closedLoop.i(i);
+        armConfigRight.closedLoop.i(i);
     }
 
     @Override
     public void setD(double d) {
         ArmIOConstants.kDArm = d;
-        armSparkMaxConfig.closedLoop.d(d);
+        armConfigRight.closedLoop.d(d);
     }
 
     @Override
