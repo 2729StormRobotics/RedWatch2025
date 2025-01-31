@@ -43,7 +43,7 @@ public interface ElevatorIO {
         return 0.0;
     }
 
-    public default void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {}
+    public default void setElevatorHeight(double targetHeight) {}
     
     /** Enable or disable brake mode on the elevator motor. */
     public default void setElevatorBrakeMode(boolean enable) {}
@@ -56,9 +56,49 @@ public interface ElevatorIO {
         return 0.0;
     }
 
-    public void setRightPower(double power) ;
+    public default void stop() {}
 
-    public void setLeftPower(double power);
+    /**
+     * Sets the proportional constant for velocity control.
+     * 
+     * @param p the proportional constant
+     */
+    public default void setP(double p) {}
+    
+    /**
+     * Sets the integral constant for velocity control.
+     * 
+     * @param i the integral constant
+     */
+    public default void setI(double i) {}
+
+    /**
+     * Sets the derivative constant for velocity control.
+     * 
+     * @param d the derivative constant
+     */
+    public default void setD(double d) {}
+
+    /**
+     * Retrieves the proportional constant for velocity control.
+     * 
+     * @return the proportional constant
+     */
+    public default double getP() { return 0.0; }
+
+    /**
+     * Retrieves the integral constant for velocity control.
+     * 
+     * @return the integral constant
+     */
+    public default double getI() { return 0.0; }
+
+    /**
+     * Retrieves the derivative constant for velocity control.
+     * 
+     * @return the derivative constant
+     */
+    public default double getD() { return 0.0; }
 
 
 }

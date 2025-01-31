@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -16,7 +17,8 @@ public class ElevatorIOSIM implements ElevatorIO {
     private static final double LOOP_PERIOD_SECS = 0.02;
   
     private static final DCMotor elevatorMotorModel = DCMotor.getNeoVortex(1);
-  
+    private PIDController controller = new PIDController(0, 0, 0);
+    private ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     public static final double elevatorReduction = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
     private final DCMotorSim elevatorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(elevatorMotorModel, 0.025, elevatorReduction), elevatorMotorModel);
     public double elevatorAppliedVolts = 0.0;
@@ -35,9 +37,13 @@ public class ElevatorIOSIM implements ElevatorIO {
       elevatorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
       elevatorSim.setInputVoltage(elevatorAppliedVolts);
     }
-
     @Override
-    public void setElevatorHeight(double targetHeight, ElevatorIOInputs inputs) {
+    public void stop() {
+      elevatorAppliedVolts = 0.0;
+      elevatorSim.setInputVoltage(0.0);
+    }
+    @Override
+    public void setElevatorHeight(double targetHeight) {
       // Ensure target is within the allowed range
       if (targetHeight < 0 || targetHeight > inputs.kWheelDiameterMeters) {
           //stop??
@@ -58,12 +64,37 @@ public class ElevatorIOSIM implements ElevatorIO {
       // Apply the computed voltage
       // setElevatorVoltage(appliedVoltage);
   }
+    @Override
+    public void setP(double p) {
+        controller.setP(p);
+    }
+
+    @Override
+    public void setI(double i) {
+        controller.setI(i);
+    }
+
+    @Override
+    public void setD(double d) {
+        controller.setD(d);
+    }
+
+    @Override
+    public double getP() {
+        return controller.getP();
+    }
+
+    @Override
+    public double getI() {
+        return controller.getI();
+    }
+
+    @Override
+    public double getD() {
+        return controller.getD();
+    }
   
     public void setTargetPosition(double position) {}
-
-    public void setRightPower(double power) {}
-
-    public void setLeftPower(double power) {}
 
     @Override
     public double getElevatorVoltage() {

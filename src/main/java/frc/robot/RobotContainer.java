@@ -51,6 +51,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorState;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
@@ -63,21 +65,14 @@ import frc.robot.subsystems.elevator.ElevatorIOSIM;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final XboxController controller = new XboxController(2);
-
    // Subsystems
   // private final Drive drive;
-  private ElevatorIOSparkFlex elevator = new ElevatorIOSparkFlex();
+  private Elevator elevator;
 
   private boolean brakeMode = true;
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
-
-  // Controller
-  private final CommandJoystick m_translator = new CommandJoystick(1);
-  private final CommandJoystick m_rotator = new CommandJoystick(2);
-  private final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
   //   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -104,7 +99,7 @@ public class RobotContainer {
         //         new ModuleIOSparkMax(2),
         //         new ModuleIOSparkMax(3));
         // break;
-        elevator = new ElevatorIOSparkFlex();
+        elevator = new Elevator(new ElevatorIOSparkFlex());
         break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -116,7 +111,7 @@ public class RobotContainer {
         //         new ModuleIOSim(),
         //         new ModuleIOSim());
         // break;
-        // elevator = new ElevatorIOSIM();
+        elevator = new Elevator(new ElevatorIOSIM());
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -128,7 +123,7 @@ public class RobotContainer {
         //         new ModuleIO() {},
         //         new ModuleIO() {});
         // break;
-        // elevator = new ElevatorIO(); 
+        elevator = new Elevator(new ElevatorIO() {});
         break; // Ensure this break is here
     }
 
@@ -189,8 +184,10 @@ public class RobotContainer {
       //elevator
       // new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L1);}));
       // new JoystickButton(controller, Button.kX.value).onTrue(new InstantCommand(() -> {elevator.setTargetPosition(L2);}));
-      new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {elevator.setRightPower(0.2);}));
-      new JoystickButton (controller, Button.kY.value).onTrue (new InstantCommand(() -> {elevator.setLeftPower(0.4);}));
+      ELEVATOR_L1.onTrue(elevator.goToPosition(ElevatorState.L1));
+      ELEVATOR_L2.onTrue(elevator.goToPosition(ElevatorState.L2));
+      ELEVATOR_L3.onTrue(elevator.goToPosition(ElevatorState.L3));
+      ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     }
   
     // // Set up auto routines
