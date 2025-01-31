@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 public class ArmIOConstants {
     public static final int kArmCANID = 0;
+    public static final int kArmCANID2 = 1;
 
     public static final double kArmMotorSpeed = 0.2;
 

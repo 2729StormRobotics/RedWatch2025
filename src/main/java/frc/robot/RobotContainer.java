@@ -43,7 +43,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import frc.robot.subsystems.arm.ArmIOSparkMax;
 import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOSIm;
+import frc.robot.subsystems.arm.ArmIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -105,7 +105,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
 
-            arm = new ArmIOSIm();
+            arm = new ArmIOSim();
 
         break;
 

@@ -5,6 +5,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -18,22 +19,24 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import java.time.Instant;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 
 import frc.robot.subsystems.arm.ArmIOConstants;
 
 public class ArmIOSparkMax implements ArmIO{
-    public RelativeEncoder m_ArmRelativeEncoder;
-    public SparkMax armSparkMax;
+    public SparkMax armSparkMax1;
+    public SparkMax armSparkMax2;
     public SparkMaxConfig armSparkMaxConfig;
-
+    public SparkLimitSwitch metalDetector;
+    public AbsoluteEncoder armAbsoluteEncoder;
+    private PIDController pidController;
     
     public ArmIOSparkMax() {
     // Define motor
-    armSparkMax = new SparkMax(ArmIOConstants.kArmCANID, MotorType.kBrushless);
-
-    m_ArmRelativeEncoder = armSparkMax.getEncoder();
+    armSparkMax1 = new SparkMax(ArmIOConstants.kArmCANID, MotorType.kBrushless);
+    armSparkMax2 = new SparkMax(ArmIOConstants.kArmCANID2, MotorType.kBrushless);
 
     // Define Configs for Hanger Motor
 
@@ -43,50 +46,58 @@ public class ArmIOSparkMax implements ArmIO{
     armSparkMaxConfig.idleMode(IdleMode.kBrake);
 
     // burn motor
-   armSparkMax.configure(armSparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-   SparkLimitSwitch metalDetector = armSparkMax.getForwardLimitSwitch();
+   armSparkMax1.configure(armSparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   armSparkMax2.configure(armSparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    metalDetector = armSparkMax1.getForwardLimitSwitch();
+    armAbsoluteEncoder = armSparkMax2.getAbsoluteEncoder();
+    pidController = new PIDController(ArmIOConstants.kPArm, ArmIOConstants.kIArm, ArmIOConstants.kDArm);
   }
 
     
 
     @Override
     public void pivotClockwise(){
-        armSparkMax.set(ArmIOConstants.kArmMotorSpeed);
+        armSparkMax1.set(ArmIOConstants.kArmMotorSpeed);
+        armSparkMax2.set(ArmIOConstants.kArmMotorSpeed);
     };
 
     @Override
     public double getVoltage(){
-        return armSparkMax.getBusVoltage();
+        return armSparkMax1.getBusVoltage();
     }
 
     @Override
     public double getArmAngleRad(){
-        return armSparkMax.getAbsoluteEncoder().getPosition();
+        return armAbsoluteEncoder.getPosition();
         //this is not right
     }
 
     @Override
     public double getArmAngleDegrees(){
-        return armSparkMax.getAbsoluteEncoder().getPosition() * (180/Math.PI);
+        return armAbsoluteEncoder.getPosition() * (180/Math.PI);
         //this is not righth
     }
 
     @Override
     public double getArmVelocity(){
-        return armSparkMax.getAbsoluteEncoder().getVelocity();
+        return armAbsoluteEncoder.getVelocity();
     }
 
     @Override
     public void pivotCounterclockwise(){
-        armSparkMax.set(-ArmIOConstants.kArmMotorSpeed);
+        armSparkMax1.set(-ArmIOConstants.kArmMotorSpeed);
+        armSparkMax2.set(-ArmIOConstants.kArmMotorSpeed);
     };
 
     public void goAngle(double kAngle){
-        armSparkMax.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
+        armSparkMax1.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
+        armSparkMax2.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
     }
     @Override
     public void stopArm() {
-        armSparkMax.stopMotor();
+        armSparkMax1.stopMotor();
+        armSparkMax2.stopMotor();
     };
 
     @Override
@@ -110,13 +121,6 @@ public class ArmIOSparkMax implements ArmIO{
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
                 this.stopArm();
-            }));
-        };
-
-    public SequentialCommandGroup armPosition(){
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                this.armPosition();
             }));
         };
 

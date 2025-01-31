@@ -38,6 +38,6 @@ public interface ArmIO {
         public static double armVelocityRadPerSec = 0.0;
 
     }
-    public default void updateInputs(ArmIOInputs inputs) {}
+    public default void updateInputs(Double loop_time) {}
 
 }

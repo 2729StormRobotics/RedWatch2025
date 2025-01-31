@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.arm.ArmIO.ArmIOInputs;
 import frc.robot.subsystems.arm.ArmIOConstants;
 
-public class ArmIOSIm implements ArmIO{
+public class ArmIOSim implements ArmIO{
     private static final double LOOP_PERIOD_SECS = 0.02;
     private static final DCMotor armMotorModel = DCMotor.getNeo550(ArmIOConstants.kArmCANID);
 
@@ -24,7 +24,7 @@ public class ArmIOSIm implements ArmIO{
 
     
     public void updateInputs(ArmIOInputs inputs) {
-        ArmIOSIm.updateInputs(LOOP_PERIOD_SECS); 
+        armSim.update(LOOP_PERIOD_SECS); 
         ArmIO.ArmIOInputs.armAppliedVolts = getVoltage();
         ArmIO.ArmIOInputs.armPositionRad = getArmAngleRad();
         ArmIO.ArmIOInputs.armPositionDegrees = getArmAngleDegrees();
