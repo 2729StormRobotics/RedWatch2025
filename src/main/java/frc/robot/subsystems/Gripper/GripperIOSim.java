@@ -11,25 +11,23 @@ public class GripperIOSim implements GripperIO {
     private DigitalInput m_simObjectDectector;
     private SparkMax m_simgripperMotor;
 
-
     public void GripperIO(boolean isSimulation) {
         if (isSimulation) {
-            m_simObjectDectector =  new DigitalInput(GripperConstants.proxmitySensorPort);
+            m_simObjectDectector = new DigitalInput(GripperConstants.proxmitySensorPort);
             m_simgripperMotor = new SparkMax(GripperConstants.gripperMotorPort, MotorType.kBrushless);
         }
 
     }
 
     public boolean isCoralPresent() {
-        //Have to change for the promxity sensor
+        // Have to change for the promxity sensor
         return !m_simObjectDectector.get();
     }
 
-
     public void stop() {
         if (m_simgripperMotor != null) {
-         m_simgripperMotor.set(0);
-    
+            m_simgripperMotor.set(0);
+
         }
     }
 
@@ -38,23 +36,26 @@ public class GripperIOSim implements GripperIO {
             // Simulated motor in
             m_simgripperMotor.set(GripperConstants.motorSpeedInGripper);
         }
-    
-        }
 
-    public void setOut() { 
+    }
+
+    public void setOut() {
         if (m_simgripperMotor != null) {
             m_simgripperMotor.set(GripperConstants.motorSpeedOutGripper);
         }
     }
 
-
     @Override
     public Command intake() {
-        return new InstantCommand(() -> {setIn();});
+        return new InstantCommand(() -> {
+            setIn();
+        });
     }
 
     @Override
     public Command outtake() {
-        return new InstantCommand(() -> {setOut();});
+        return new InstantCommand(() -> {
+            setOut();
+        });
     }
 }

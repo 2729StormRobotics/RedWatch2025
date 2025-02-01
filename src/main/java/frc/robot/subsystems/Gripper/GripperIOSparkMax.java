@@ -24,7 +24,7 @@ public class GripperIOSparkMax implements GripperIO {
         motorConfig.closedLoop.pid(GripperConstants.kPGripper, GripperConstants.kIGripper, GripperConstants.kDGripper);
         motorConfig.idleMode(IdleMode.kCoast);
         motorConfig.smartCurrentLimit(40);
-        
+
         stop();
     }
 
@@ -42,19 +42,23 @@ public class GripperIOSparkMax implements GripperIO {
     public void setIn() {
         m_gripperMotor.set(GripperConstants.motorSpeedInGripper);
     }
-    
+
     @Override
-    public void setOut() { 
+    public void setOut() {
         m_gripperMotor.set(GripperConstants.motorSpeedOutGripper);
     }
 
     @Override
     public Command intake() {
-        return new InstantCommand(() -> {setIn();});
+        return new InstantCommand(() -> {
+            setIn();
+        });
     }
 
     @Override
     public Command outtake() {
-        return new InstantCommand(() -> {setOut();});
+        return new InstantCommand(() -> {
+            setOut();
+        });
     }
 }

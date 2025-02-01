@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.Gripper.Intake;
-import frc.robot.commands.Gripper.Outtake;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -53,9 +51,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 Comment for magic box testing purposes*/
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -64,7 +65,6 @@ public class RobotContainer {
   private final Gripper m_gripper;
 
   private final XboxController controller = new XboxController(2);
-
 
   private boolean brakeMode = true;
 
@@ -76,55 +76,64 @@ public class RobotContainer {
   private final CommandJoystick m_rotator = new CommandJoystick(0);
   private final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
-  //   private final CommandXboxController controller = new CommandXboxController(0);
+  // private final CommandXboxController controller = new
+  // CommandXboxController(0);
 
   // Dashboard inputs
-  /*private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard =
-      new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition =
-      new LoggedDashboardBoolean("Set Start Position", false);
-  Comment for magic box testing purposes*/
+  /*
+   * private LoggedDashboardChooser<Command> autoChooser;
+   * private LoggedDashboardBoolean brakeModeDashboard =
+   * new LoggedDashboardBoolean("Brake Mode", true);
+   * private LoggedDashboardBoolean setStartPosition =
+   * new LoggedDashboardBoolean("Set Start Position", false);
+   * Comment for magic box testing purposes
+   */
   // Field
   private final Field2d field;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOReal(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
+        drive = new Drive(
+            new GyroIOReal(),
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3));
         m_gripper = new Gripper(new GripperIOSparkMax());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
         m_gripper = new Gripper(new GripperIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        m_gripper = new Gripper(new GripperIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+        m_gripper = new Gripper(new GripperIO() {
+        });
         break;
     }
 
@@ -138,7 +147,8 @@ public class RobotContainer {
         (pose) -> {
           // Do whatever you want with the pose here
           field.setRobotPose(pose);
-          //Logger.recordOutput("PathPlanner/RobotPose", pose); comment for magic box testing
+          // Logger.recordOutput("PathPlanner/RobotPose", pose); comment for magic box
+          // testing
         });
 
     // Logging callback for target robot pose
@@ -146,7 +156,8 @@ public class RobotContainer {
         (pose) -> {
           // Do whatever you want with the pose here
           field.getObject("target pose").setPose(pose);
-          //Logger.recordOutput("PathPlanner/TargetPose", pose); comment for magic box testing
+          // Logger.recordOutput("PathPlanner/TargetPose", pose); comment for magic box
+          // testing
         });
 
     // Logging callback for the active path, this is sent as a list of poses
@@ -154,52 +165,70 @@ public class RobotContainer {
         (poses) -> {
           // Do whatever you want with the poses here
           field.getObject("path").setPoses(poses);
-          //Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0])); comment for magic box testing
+          // Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
+          // comment for magic box testing
         });
 
     // Set up auto routines
     // NamedCommands.registerCommand(
-    //     "Run Flywheel",
-    //     Commands.startEnd(
-    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-    //         .withTimeout(5.0));
-    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); comment for magic box testing
+    // "Run Flywheel",
+    // Commands.startEnd(
+    // () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
+    // flywheel)
+    // .withTimeout(5.0));
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+    // AutoBuilder.buildAutoChooser()); comment for magic box testing
 
     // Set up SysId routines
-    /*autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        comment for magic box testing*/
+    /*
+     * autoChooser.addOption(
+     * "Drive SysId (Quasistatic Forward)",
+     * drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * autoChooser.addOption(
+     * "Drive SysId (Quasistatic Reverse)",
+     * drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * autoChooser.addOption(
+     * "Drive SysId (Dynamic Forward)",
+     * drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * autoChooser.addOption(
+     * "Drive SysId (Dynamic Reverse)",
+     * drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     * comment for magic box testing
+     */
     // Configure the button bindings
     configureButtonBindings();
 
     // Set up auto routines
     System.out.println("[Init] Setting up Logged Auto Chooser");
-    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser()); comment for magic box testing
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+    // AutoBuilder.buildAutoChooser()); comment for magic box testing
   }
+
   // zero gyro
   public void reset() {
     drive.resetYaw();
   }
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     // Gripper
-    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {new Intake(m_gripper);}));
-    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {new Outtake(m_gripper);}));
-    new JoystickButton(controller, Button.kY.value).onTrue(new InstantCommand(() -> {m_gripper.stop();}));
-    
+    new JoystickButton(controller, Button.kA.value).onTrue(new InstantCommand(() -> {
+      m_gripper.Intake();
+    }));
+    new JoystickButton(controller, Button.kB.value).onTrue(new InstantCommand(() -> {
+      m_gripper.Outtake();
+    }));
+    new JoystickButton(controller, Button.kY.value).onTrue(new InstantCommand(() -> {
+      m_gripper.stop();
+    }));
+
     // default subsystem commands
     DriveControls.configureControls();
     drive.setDefaultCommand(
@@ -212,11 +241,11 @@ public class RobotContainer {
             },
             drive));
     // RESET_GYRO.whileTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.resetYaw();
-    //         },
-    //         null));
+    // new InstantCommand(
+    // () -> {
+    // drive.resetYaw();
+    // },
+    // null));
 
     QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
     QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
@@ -226,19 +255,19 @@ public class RobotContainer {
     // DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
     // DRIVE_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //           drive.resetYaw();
-    //         },
-    //         drive));
+    // new InstantCommand(
+    // () -> {
+    // drive.stopWithX();
+    // drive.resetYaw();
+    // },
+    // drive));
 
     // DRIVE_HOLD_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //         },
-    //         drive));
+    // new InstantCommand(
+    // () -> {
+    // drive.stopWithX();
+    // },
+    // drive));
 
     // // Drive Modes
   }
@@ -248,8 +277,10 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  /*public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
-  comment for magic box testing*/
+  /*
+   * public Command getAutonomousCommand() {
+   * return autoChooser.get();
+   * }
+   * comment for magic box testing
+   */
 }
