@@ -110,7 +110,7 @@ public class VisionIOPhotonSim implements VisionIO {
     PhotonPipelineResult back_result = getLatestResult(cam2);
     PhotonPipelineResult front_result2 = getLatestResult(cam3);
     
-    PhotonPipelineResult[] results = { front_result };
+    PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
     PhotonPoseEstimator[] photonEstimators = { cam1Estimator, cam2Estimator, cam3Estimator };
 
     inputs.estimate = new Pose2d[] { new Pose2d() };
@@ -127,7 +127,6 @@ public class VisionIOPhotonSim implements VisionIO {
       inputs.camera1Targets = cameraTargets[0];
       inputs.camera2Targets = cameraTargets[1];
       inputs.camera3Targets = cameraTargets[2];
-
 
       
       Pose3d[] tags = getTargetsPositions(results);
