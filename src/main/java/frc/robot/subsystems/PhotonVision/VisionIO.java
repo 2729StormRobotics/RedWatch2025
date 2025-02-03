@@ -38,7 +38,9 @@ public interface VisionIO {
       public double timestamp = 0;
       public double[] timestampArray = new double[0];
 
-      public int[] cameraTargets = new int[0];
+      public int[] camera1Targets = new int[0];
+      public int[] camera2Targets = new int[0];
+      public int[] camera3Targets = new int[0];
 
       public boolean hasEstimate = false;
 
@@ -124,7 +126,7 @@ public interface VisionIO {
 
     // Retrieve IDs of detected April Tags
     public default int[][] getCameraTargets(VisionIOInputs inputs) {
-      return new int[][] { inputs.cameraTargets};
+      return new int[][] { inputs.camera1Targets, inputs.camera2Targets, inputs.camera3Targets };
     }
 
     //  Calculates average timestamp and returns it for the latest timestamp

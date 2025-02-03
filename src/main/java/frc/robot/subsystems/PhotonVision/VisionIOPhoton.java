@@ -11,8 +11,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.PhotonVision.VisionIO.VisionIOInputs;
 
 import static frc.robot.subsystems.PhotonVision.VisionConstants.AMBIGUITY_THRESHOLD;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.camName;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.camRobotToCam;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1RobotToCam;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2RobotToCam;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3RobotToCam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
 
 
@@ -32,27 +36,52 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOPhoton implements VisionIO {
   
-  private final PhotonCamera camera;
-  private final PhotonPoseEstimator cameraEstimator;
+  private final PhotonCamera camera1;
+  private final PhotonPoseEstimator camera1Estimator;
+
+  private final PhotonCamera camera2;
+  private final PhotonPoseEstimator camera2Estimator;
+
+  private final PhotonCamera camera3;
+  private final PhotonPoseEstimator camera3Estimator;
 
   private Pose2d lastEstimate = new Pose2d(); 
+
+   LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false); // **COMMENTED OUT FUNCTION CUZ ITS WEIRD**
+
 
   // Initialzes camera with a name and creates a PhotonPoseEstimator to process vision data
   public VisionIOPhoton() {
     PortForwarder.add(5800, "photonvision.local", 5800);
 
-    camera = new PhotonCamera(camName);
-    cameraEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camRobotToCam);
-    cameraEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // Camera 1
+    camera1 = new PhotonCamera(cam1Name);
+    camera1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam1RobotToCam);
+    camera1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+    // Camera 2
+    camera2 = new PhotonCamera(cam2Name);
+    camera2Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam2RobotToCam);
+    camera2Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+    // Camera 3
+    camera3 = new PhotonCamera(cam3Name);
+    camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam3RobotToCam);
+    camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
   }
 
-  // Defines PhotonPoseEstimator which 
+  // Defines PhotonPoseEstimator which sets current estimate
   private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-    cameraEstimator.setReferencePose(currentEstimate);
-    return new PhotonPoseEstimator[] { cameraEstimator };
+    camera1Estimator.setReferencePose(currentEstimate);
+    camera2Estimator.setReferencePose(currentEstimate);
+    camera3Estimator.setReferencePose(currentEstimate);
+
+    return new PhotonPoseEstimator[] { camera1Estimator, camera2Estimator, camera3Estimator };
   }
 
   // Updates inputs for vision processing
+  @Override
   public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
     lastEstimate = currentEstimate;
     
@@ -71,7 +100,7 @@ public class VisionIOPhoton implements VisionIO {
       inputs.hasEstimate = true;
 
       int[][] cameraTargets = getCameraTargets(results);
-      inputs.cameraTargets = cameraTargets[0];
+      inputs.camera1Targets = cameraTargets[0];
 
       Pose3d[] tags = getTargetsPositions(results);
       Logger.recordOutput("Vision/Targets3D", tags); 
@@ -83,7 +112,9 @@ public class VisionIOPhoton implements VisionIO {
       inputs.hasEstimate = false;
     }
 
-  Logger.recordOutput("Vision/cam/Connected", camera.isConnected()); 
+    Logger.recordOutput("Vision/cam1/Connected", camera1.isConnected());
+    Logger.recordOutput("Vision/cam2/Connected", camera2.isConnected());
+    Logger.recordOutput("Vision/cam3/Connected", camera3.isConnected());
   }
 
   private void printStuff(String name, PhotonPipelineResult result) {
@@ -97,9 +128,14 @@ public class VisionIOPhoton implements VisionIO {
   }
  
   private PhotonPipelineResult[] getAprilTagResults() {
-    PhotonPipelineResult cam_result = getLatestResult(camera);
-    printStuff("cam", cam_result);
-    return new PhotonPipelineResult[] { cam_result };
+    PhotonPipelineResult cam1_result = getLatestResult(camera1);
+    PhotonPipelineResult cam2_result = getLatestResult(camera2);
+    PhotonPipelineResult cam3_result = getLatestResult(camera3);
+    printStuff("cam1", cam1_result);
+    printStuff("cam2", cam2_result);
+    printStuff("cam3", cam3_result);
+
+    return new PhotonPipelineResult[] { cam1_result, cam2_result, cam3_result };
   }
 
 

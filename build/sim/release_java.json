@@ -5,17 +5,17 @@
     "extensions": [
       {
         "name": "Sim GUI",
-        "libName": "/Users/krithikalluri/Documents/GitHub/RedWatch2025/build/jni/release/libhalsim_gui.dylib",
+        "libName": "C:\\Users\\redwa\\RedWatch2025\\build\\jni\\release\\halsim_gui.dll",
         "defaultEnabled": false
       },
       {
         "name": "Use Real DriverStation",
-        "libName": "/Users/krithikalluri/Documents/GitHub/RedWatch2025/build/jni/release/libhalsim_ds_socket.dylib",
+        "libName": "C:\\Users\\redwa\\RedWatch2025\\build\\jni\\release\\halsim_ds_socket.dll",
         "defaultEnabled": false
       }
     ],
     "environment": {},
-    "libraryDir": "/Users/krithikalluri/Documents/GitHub/RedWatch2025/build/jni/release",
+    "libraryDir": "C:\\Users\\redwa\\RedWatch2025\\build\\jni\\release",
     "mainClassName": "frc.robot.Main"
   }
 ]

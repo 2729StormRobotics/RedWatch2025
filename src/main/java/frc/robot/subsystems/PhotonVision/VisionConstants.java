@@ -23,10 +23,12 @@ public class VisionConstants extends SubsystemBase {
   /** Creates a new VisionConstants. */
   public VisionConstants() {}
 
-  public static final String camName = "Main_Camera";
+  public static final String cam1Name = "Back_Camera";
+  public static final String cam3Name = "Left_Camera";
+  public static final String cam2Name = "Right_Camera";
 
   // Change values to the actual distance from the center of the robot, change rotation if needed.
-  public static final Transform3d camRobotToCam = new Transform3d(
+  public static final Transform3d cam1RobotToCam = new Transform3d(
                         new Translation3d(
                                         Units.inchesToMeters(-9),
                                         Units.inchesToMeters(7),
@@ -35,6 +37,26 @@ public class VisionConstants extends SubsystemBase {
                         Rotation2d.fromDegrees(0).getRadians(), 
                         Rotation2d.fromDegrees(0).getRadians()
                         ));
+  public static final Transform3d cam3RobotToCam = new Transform3d(
+                        new Translation3d(
+                                Units.inchesToMeters(-0.25),
+                                Units.inchesToMeters(4.5),
+                                Units.inchesToMeters(11)
+                        ),
+                        new Rotation3d(0, 
+                                Rotation2d.fromDegrees(90 - 61.90).getRadians(), 
+                                Rotation2d.fromDegrees(90).getRadians()));// maybe need to change
+
+  public static final Transform3d cam2RobotToCam = new Transform3d(
+                        new Translation3d(
+                                Units.inchesToMeters(-0.25),
+                                Units.inchesToMeters(-4.5),
+                                Units.inchesToMeters(11)
+                        ),
+                        new Rotation3d(0, 
+                                Rotation2d.fromDegrees(90 - 61.90).getRadians(), 
+                                Rotation2d.fromDegrees(-90).getRadians())); // maybe need to change
+
 
   // The layout of the AprilTags on the field
   public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -45,7 +67,7 @@ public class VisionConstants extends SubsystemBase {
 
   // The standard deviations of our vision estimated poses, which affect
   // correction rate
-  // (Fake values. Experiment and determine estimation noise on an actual robot.)
+  // (Fake values. Experiment and determine estimation noise on an actual robot.) **CHANGE**
   public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 8);
   public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 1);
 
