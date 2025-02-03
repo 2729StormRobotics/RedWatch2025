@@ -73,6 +73,12 @@ public class DriveControls {
   public static Trigger DYNAMIC_FORWARD;
   public static Trigger DYNAMIC_REVERSE;
 
+  public static Trigger ELEVATOR_L1;
+  public static Trigger ELEVATOR_L2;
+  public static Trigger ELEVATOR_L3;
+  public static Trigger ELEVATOR_L4;
+  public static Trigger ELEVATOR_INTAKE;
+
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
