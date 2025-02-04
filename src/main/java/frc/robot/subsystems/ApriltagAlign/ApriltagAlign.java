@@ -10,17 +10,24 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.PhotonVision.VisionConstants;
+import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOPhoton.*;
+import frc.robot.subsystems.PhotonVision.VisionIO.*;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Command to align the robot with the nearest AprilTag using PhotonVision while still allowing translational driving.
  */
-public class ApriltagAlign extends Command {
+
+public class ApriltagAlign extends Command implements VisionIO {
   private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
+
+  public final PhotonCamera camera1 = new PhotonCamera(VisionConstants.cam1Name);
+
   private double m_turnPower;
 
   /**
@@ -50,7 +57,7 @@ public class ApriltagAlign extends Command {
 
   @Override
   public void execute() {
-    var result = m_camera.getLatestResult();
+    var result = getLatestResult(camera1);
 
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();

@@ -36,14 +36,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOPhoton implements VisionIO {
   
-  private final PhotonCamera camera1;
-  private final PhotonPoseEstimator camera1Estimator;
+  public final PhotonCamera camera1;
+  public final PhotonPoseEstimator camera1Estimator;
 
-  private final PhotonCamera camera2;
-  private final PhotonPoseEstimator camera2Estimator;
+  public final PhotonCamera camera2;
+  public final PhotonPoseEstimator camera2Estimator;
 
-  private final PhotonCamera camera3;
-  private final PhotonPoseEstimator camera3Estimator;
+  public final PhotonCamera camera3;
+  public final PhotonPoseEstimator camera3Estimator;
 
   private Pose2d lastEstimate = new Pose2d(); 
 
@@ -127,7 +127,7 @@ public class VisionIOPhoton implements VisionIO {
     }
   }
  
-  private PhotonPipelineResult[] getAprilTagResults() {
+  public PhotonPipelineResult[] getAprilTagResults() {
     PhotonPipelineResult cam1_result = getLatestResult(camera1);
     PhotonPipelineResult cam2_result = getLatestResult(camera2);
     PhotonPipelineResult cam3_result = getLatestResult(camera3);
