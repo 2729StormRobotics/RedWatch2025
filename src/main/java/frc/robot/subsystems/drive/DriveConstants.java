@@ -35,19 +35,19 @@ public final class DriveConstants {
   public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
   public static final double kFrontRightChassisAngularOffset = 0;
   public static final double kBackLeftChassisAngularOffset = Math.PI;
-  public static final double kBackRightChassisAngularOffset = -Math.PI / 2;
+  public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
   // SPARK MAX CAN IDs
   // Subject to change depending on what robot side is the front
-  public static final int kFrontLeftDrivingCanId = 2;
-  public static final int kRearLeftDrivingCanId = 6;
-  public static final int kFrontRightDrivingCanId = 4;
-  public static final int kRearRightDrivingCanId = 8;
+  public static final int kFrontLeftDrivingCanId = 2; //good
+  public static final int kRearLeftDrivingCanId = 6; //good
+  public static final int kFrontRightDrivingCanId = 4; //good
+  public static final int kRearRightDrivingCanId = 8; //good
 
-  public static final int kFrontLeftTurningCanId = 1;
-  public static final int kRearLeftTurningCanId = 5;
-  public static final int kFrontRightTurningCanId = 3;
-  public static final int kRearRightTurningCanId = 7;
+  public static final int kFrontLeftTurningCanId = 1; //good
+  public static final int kRearLeftTurningCanId = 5; //good
+  public static final int kFrontRightTurningCanId = 3; //good
+  public static final int kRearRightTurningCanId = 7; //good
 
   // public static final boolean kGyroReversed = false;
   public static final double kMaxSpeedMetersPerSecond = 5;
