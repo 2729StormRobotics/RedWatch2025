@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 
 /** Control REV Robotics Blinkin LED controller */
 public class BlinkinLEDController {
@@ -140,6 +141,8 @@ public class BlinkinLEDController {
   public static boolean noteInIntake = false;
   public static boolean shooting = false;
   public static boolean pivotArmDown = false;
+  public boolean isBottomLimitTriggered = false;
+  public boolean isTopLimitTriggered = false;
 
   private static BlinkinLEDController m_controller = null;
   private static Spark m_blinkin;
@@ -263,6 +266,10 @@ public class BlinkinLEDController {
       setPattern(BlinkinPattern.GREEN);
     } else if (isEnabled) {
       setAllianceColorSolid();
+    } else if (isTopLimitTriggered) {
+      setPattern(BlinkinPattern.AQUA);
+    } else if (isBottomLimitTriggered) {
+      setPattern(BlinkinPattern.FIRE_LARGE);
     } else {
       setPattern(BlinkinPattern.CP1_2_SPARKLE_1_ON_2);
     }

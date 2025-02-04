@@ -34,6 +34,7 @@ import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 
 /**
  * Module IO implementation for SparkFlex elevator motor controller, SparkFlex
