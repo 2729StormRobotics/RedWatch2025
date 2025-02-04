@@ -31,6 +31,7 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,7 +62,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
   private SparkFlexConfig elevatorConfig;
   private SparkFlexConfig elevatorConfigLeft;
-  private SparkFlexConfig elevatorConfigRight;
+  private SparkFlexConfig elevatorConfigRight = new SparkFlexConfig();
   // private final SparkClosedLoopController elevatorPIDController;
 
   // private final RelativeEncoder elevatorEncoder;
@@ -82,6 +83,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   private double kI = kIElevator;
   private double kD = kDElevator;
 
+  private SoftLimitConfig softLimits = new SoftLimitConfig();
   public ElevatorIOSparkFlex() {
     // need to complete
     elevatorLeftSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
@@ -92,10 +94,18 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     elevatorConfig.closedLoop.p(kPElevator);
     elevatorConfig.closedLoop.i(kIElevator);
     elevatorConfig.closedLoop.d(kDElevator);
-    elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kAnalogSensor);
+    elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     elevatorConfig.closedLoop.outputRange(kElevatorMinOutputPower, kElevatorMaxOutputPower);
     // left individual config
-    elevatorConfigLeft = elevatorConfig;
+    
+    softLimits.forwardSoftLimit(53);
+    softLimits.forwardSoftLimitEnabled(true);
+    softLimits.reverseSoftLimit(-1);
+    softLimits.reverseSoftLimitEnabled(true);
+    elevatorConfig.apply(softLimits);
+    
+    elevatorConfigLeft = new SparkFlexConfig();
+    elevatorConfigLeft.apply(elevatorConfig);
     elevatorConfigLeft.analogSensor.positionConversionFactor(VoltsToDistanceMeters);
     elevatorConfigLeft.limitSwitch.forwardLimitSwitchEnabled(true);
     elevatorConfigLeft.limitSwitch.reverseLimitSwitchEnabled(true);
@@ -105,8 +115,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     elevatorPot = elevatorLeftSparkFlex.getAnalog();
 
     // Rigt individual config
-    elevatorConfigRight = elevatorConfig;
-    elevatorConfigRight.follow(elevatorLeftSparkFlex, true);
+    elevatorConfigRight.apply(elevatorConfig);
 
     // initialize encoders
     m_ElevatorLeftEncoder = elevatorLeftSparkFlex.getEncoder();
@@ -120,9 +129,11 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     // timestampQueue = new LinkedList<>();
     // elevatorPositionQueue = new LinkedList<>();
 
+    elevatorConfigRight.follow(9, true);
     elevatorLeftSparkFlex.configure(elevatorConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elevatorRightSparkFlex.configure(elevatorConfigRight, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+    // elevatorLeftSparkFlex.pauseFollowerMode();
 
   }
 
@@ -159,14 +170,23 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     inputs.elevatorCurrentAmps = new double[] { elevatorLeftSparkFlex.getOutputCurrent() };
 
     // turnPositionQueue.clear();
+    SmartDashboard.putBoolean("Top Limit Switch Triggered?", isTopLimitTriggered());
+    SmartDashboard.putBoolean("Bottom Limit Switch Triggered?", isBottomLimitTriggered());
+    SmartDashboard.putNumber("Elevator Voltage: ",
+        elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput());
+    SmartDashboard.putNumber("Elevator Height: ", getElevatorHeight());
+    SmartDashboard.putNumber("Velocity: ", m_ElevatorLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Pot Val", getPotVal());
+    SmartDashboard.putNumber("left encoder", getLeftEncoderDistance());
+    SmartDashboard.putNumber("right encoder", getRightEncoderDistance());
   }
 
   public double getLeftEncoderDistance() {
-    return -m_ElevatorLeftEncoder.getPosition();
+    return m_ElevatorLeftEncoder.getPosition();
   }
 
   public double getRightEncoderDistance() {
-    return -m_ElevatorRightEncoder.getPosition();
+    return m_ElevatorRightEncoder.getPosition();
   }
 
   @Override
@@ -177,6 +197,13 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   @Override
   public void setElevatorVoltage(double volts) {
     elevatorLeftSparkFlex.setVoltage(volts);
+  }
+
+  @Override
+  public void setElevatorPower(double power) {
+    
+    SmartDashboard.putNumber("power sending", power);
+    elevatorLeftSparkFlex.set(power);
   }
 
   @Override
@@ -235,12 +262,5 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   // Periodically calculates the value of the pot.
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Top Limit Switch Triggered?", isTopLimitTriggered());
-    SmartDashboard.putBoolean("Bottom Limit Switch Triggered?", isBottomLimitTriggered());
-    SmartDashboard.putNumber("Elevator Voltage: ",
-        elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Height: ", getElevatorHeight());
-    SmartDashboard.putNumber("Velocity: ", m_ElevatorLeftEncoder.getVelocity());
-    SmartDashboard.putNumber("Pot Val", getPotVal());
   }
 }

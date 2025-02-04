@@ -93,10 +93,10 @@ public class Elevator extends SubsystemBase {
         );
     }
     // Allows manual command of the flywheel for testing
-    public Command manualCommand(DoubleSupplier voltage) {
+    public Command  manualCommand(DoubleSupplier power) {
         return new FunctionalCommand(
             () -> {},
-            () -> io.setElevatorVoltage(voltage.getAsDouble()),
+            () -> io.setElevatorPower(power.getAsDouble()),
             (stop) -> io.stop(),
             () -> false,
             this
@@ -106,7 +106,7 @@ public class Elevator extends SubsystemBase {
     public Command manualCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
-            () -> io.setElevatorVoltage(voltage),
+            () -> io.setElevatorVoltage(voltage*8),
             (stop) -> io.stop(),
             () -> false,
             this

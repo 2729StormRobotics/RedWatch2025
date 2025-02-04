@@ -37,6 +37,7 @@ public interface ElevatorIO {
 
     /** Run the elevator motor at the specified voltage. */
     public default void setElevatorVoltage(double volts) {}
+    public default void setElevatorPower(double power) {}
 
     /** get elevator voltage. */
     public default double getElevatorVoltage() {

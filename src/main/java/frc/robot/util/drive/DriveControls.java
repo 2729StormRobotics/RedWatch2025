@@ -18,6 +18,7 @@ public class DriveControls {
 
   // Drive controls
   public static DoubleSupplier DRIVE_FORWARD;
+  public static DoubleSupplier ELEVATOR_JOYSTICK;
   public static DoubleSupplier DRIVE_STRAFE;
   public static DoubleSupplier DRIVE_ROTATE;
   public static Trigger DRIVE_SLOW;
@@ -83,6 +84,7 @@ public class DriveControls {
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
+        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/2);
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
         DRIVE_STRAFE = () -> (-m_translator.getX() );

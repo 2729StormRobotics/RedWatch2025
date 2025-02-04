@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -65,19 +66,12 @@ import frc.robot.subsystems.elevator.ElevatorIOSIM;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private Elevator elevator;
+  private final Elevator elevator;
 
   private boolean brakeMode = true;
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
-
-  // Controller
-  private final CommandJoystick m_translator = new CommandJoystick(1);
-  private final CommandJoystick m_rotator = new CommandJoystick(2);
-  private final CommandXboxController m_weaponsController = new CommandXboxController(0);
-
-  //   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -91,10 +85,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    elevator = new Elevator(new ElevatorIOSparkFlex());
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        
+        elevator = new Elevator(new ElevatorIOSparkFlex());
         drive =
             new Drive(
                 new GyroIOReal(),
@@ -197,12 +192,14 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {  
     // default subsystem commands
-      ELEVATOR_L1.onTrue(elevator.goToPosition(ElevatorState.L1));
-      ELEVATOR_L2.onTrue(elevator.goToPosition(ElevatorState.L2));
-      ELEVATOR_L3.onTrue(elevator.goToPosition(ElevatorState.L3));
-      ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
+      // ELEVATOR_L1.onTrue(elevator.goToPosition(ElevatorState.L1));
+      // ELEVATOR_L2.onTrue(elevator.goToPosition(ElevatorState.L2));
+      // ELEVATOR_L3.onTrue(elevator.goToPosition(ElevatorState.L3));
+      // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     
     DriveControls.configureControls();
+    elevator.setDefaultCommand(elevator.manualCommand(ELEVATOR_JOYSTICK));
+    SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
