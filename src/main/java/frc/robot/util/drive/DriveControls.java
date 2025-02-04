@@ -8,7 +8,7 @@ import java.util.function.DoubleSupplier;
 
 public class DriveControls {
   // Controllers
-  public static final CommandJoystick m_translator = new CommandJoystick(1);
+  public static final CommandJoystick m_translator = new CommandJoystick(1) ;
   public static final CommandJoystick m_rotator = new CommandJoystick(2);
   public static final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
@@ -83,20 +83,10 @@ public class DriveControls {
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
-        QUASISTATIC_FORWARD = m_translator.button(5).and(m_translator.button(1));
-        QUASISTATIC_REVERSE = m_translator.button(3).and(m_translator.button(1));
-        DYNAMIC_FORWARD = m_translator.button(6).and(m_translator.button(1));
-        DYNAMIC_REVERSE = m_translator.button(4).and(m_translator.button(1));
-
-        QUASISTATIC_FORWARD = m_weaponsController.y().and(m_weaponsController.rightBumper());
-        QUASISTATIC_REVERSE = m_weaponsController.x().and(m_weaponsController.rightBumper());
-        DYNAMIC_FORWARD = m_weaponsController.b().and(m_weaponsController.rightBumper());
-        DYNAMIC_REVERSE = m_weaponsController.a().and(m_weaponsController.rightBumper());
-
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
-        DRIVE_STRAFE = () -> (-m_translator.getX());
-        DRIVE_ROTATE = () -> (-m_translator.getTwist() * 0.65);
+        DRIVE_STRAFE = () -> (-m_translator.getX() );
+        DRIVE_ROTATE = () -> (-m_rotator.getX());
         RESET_GYRO = m_translator.button(12);
         // Driver Settings
         DRIVE_SLOW = m_translator.button(1); // TBA
