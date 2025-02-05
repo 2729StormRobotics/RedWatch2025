@@ -28,68 +28,62 @@ public class DriveControls {
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
   // Drive controls
-  public static DoubleSupplier DRIVE_FORWARD;
   public static DoubleSupplier ELEVATOR_JOYSTICK;
-  public static DoubleSupplier DRIVE_STRAFE;
-  public static DoubleSupplier DRIVE_ROTATE;
-  public static Trigger DRIVE_SLOW;
-  public static Trigger DRIVE_STOP;
-  public static Trigger DRIVE_HOLD_STOP;
-
-  // drive modes
-  public static Trigger DRIVE_ROBOT_RELATIVE;
-  public static Trigger DRIVE_FIELD_RELATIVE;
-  public static Trigger DRIVE_SPEAKER_AIM;
-
-  // Drive Angle Locks
-  public static Trigger LOCK_BACK;
-  public static Trigger LOCK_PICKUP;
-  public static Trigger LOCK_PASS;
-  public static Trigger LOCK_ON_AMP;
-
-  // Drive Trajectories
-  public static Trigger DRIVE_AMP;
-
-  // Pivot Controls
   public static DoubleSupplier PIVOT_ROTATE;
-  public static Trigger PIVOT_AMP;
-  public static Trigger PIVOT_ZERO;
-  public static Trigger PIVOT_TO_SPEAKER;
-  public static Trigger PIVOT_PODIUM;
-  public static Trigger PIVOT_ANYWHERE;
-  public static Trigger PIVOT_HOLD;
-  public static Trigger PIVOT_AND_REV;
+  public static Trigger PIVOT_L1;
+  public static Trigger PIVOT_L2;
+  public static Trigger PIVOT_L3;
+  public static Trigger PIVOT_L4;
+  public static Trigger PIVOT_INTAKE;
 
-  // Intake Controls
-  public static Trigger INTAKE_IN;
-  public static Trigger INTAKE_OUT;
-  public static Trigger INTAKE_THEN_LOAD;
 
-  // Ground Intake
-  public static Trigger GROUND_INTAKE_IN;
-  public static Trigger GROUND_INTAKE_OUT;
+// Drive controls
+public static DoubleSupplier DRIVE_FORWARD;
+public static DoubleSupplier DRIVE_STRAFE;
+public static DoubleSupplier DRIVE_ROTATE;
+public static DoubleSupplier ELEVATOR_UP;
+public static DoubleSupplier ELEVATOR_DOWN;
 
-  public static Trigger INTAKE_UNTIL_INTAKED;
+public static Trigger DRIVE_SLOW;
+public static Trigger DRIVE_STOP;
+public static Trigger DRIVE_HOLD_STOP;
 
-  // Shooter Controls
-  public static DoubleSupplier SHOOTER_SPEED;
-  public static Trigger SHOOTER_FULL_SEND_INTAKE;
-  public static Trigger SHOOTER_FULL_SEND;
-  public static Trigger SHOOTER_UNJAM;
-  public static Trigger SHOOTER_PREPARE_THEN_SHOOT;
+// drive modes
+public static Trigger DRIVE_ROBOT_RELATIVE;
+public static Trigger DRIVE_FIELD_RELATIVE;
+public static Trigger DRIVE_SPEAKER_AIM;
 
-  public static Trigger RESET_GYRO;
-  // SYSID Controls
-  public static Trigger QUASISTATIC_FORWARD;
-  public static Trigger QUASISTATIC_REVERSE;
-  public static Trigger DYNAMIC_FORWARD;
-  public static Trigger DYNAMIC_REVERSE;
+// Drive Angle Locks
+public static Trigger LOCK_BACK;
+public static Trigger LOCK_PICKUP;
+public static Trigger LOCK_PASS;
+public static Trigger LOCK_ON_AMP;
 
-  public static Trigger ELEVATOR_L1;
-  public static Trigger ELEVATOR_L2;
-  public static Trigger ELEVATOR_L3;
-  public static Trigger ELEVATOR_L4;
-  public static Trigger ELEVATOR_INTAKE;
+// Drive Trajectories
+public static Trigger DRIVE_R1;
+public static Trigger DRIVE_R2;
+public static Trigger DRIVE_R3;
+public static Trigger DRIVE_R4;
+public static Trigger DRIVE_R5;
+public static Trigger DRIVE_R6;
+
+public static Trigger DRIVE_PROCESSOR;
+public static Trigger DRIVE_FEED;
+
+public static Trigger MELTDOWN;
+
+public static Trigger RESET_GYRO;
+// SYSID Controls
+public static Trigger QUASISTATIC_FORWARD;
+public static Trigger QUASISTATIC_REVERSE;
+public static Trigger DYNAMIC_FORWARD;
+public static Trigger DYNAMIC_REVERSE;
+
+public static Trigger ELEVATOR_L1;
+public static Trigger ELEVATOR_L2;
+public static Trigger ELEVATOR_L3;
+public static Trigger ELEVATOR_L4;
+public static Trigger ELEVATOR_INTAKE;
 
   // Setup the controls
   public static void configureControls() {
@@ -127,8 +121,9 @@ public class DriveControls {
         LOCK_ON_AMP = m_translator.button(1);
         LOCK_PASS = m_translator.button(1); // uses vision
 
-        DRIVE_AMP = EMPTY_TRIGGER; // uses vision
+       // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
         break;
+
       case PROGRAMMERS:
       default:
         // Driver controls
@@ -162,7 +157,7 @@ public class DriveControls {
         LOCK_ON_AMP = m_translator.button(1);
         LOCK_PASS = m_translator.button(1); // uses vision
 
-        DRIVE_AMP = EMPTY_TRIGGER; // uses vision
+       // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
     }
 
     switch (Constants.operator) {
@@ -173,13 +168,15 @@ public class DriveControls {
                     - m_weaponsController.getLeftTriggerAxis());
         // all tbd
         // Pivot things
-        PIVOT_AMP = m_weaponsController.b();
-        PIVOT_ZERO = m_weaponsController.a();
-        PIVOT_TO_SPEAKER = m_weaponsController.y();
-        PIVOT_PODIUM = m_weaponsController.y();
-        PIVOT_ANYWHERE = m_weaponsController.button(1); // uses vision
-        PIVOT_HOLD = m_weaponsController.start();
-        PIVOT_AND_REV = new Trigger(() -> (m_weaponsController.getRightTriggerAxis() > 0.5));
+        PIVOT_L1 = m_weaponsController.b();
+        PIVOT_L2 = m_weaponsController.a();
+        PIVOT_L3 = m_weaponsController.y();
+        PIVOT_L4 = m_weaponsController.x();
+        //PIVOT_INTAKE
+        //PIVOT_PODIUM = m_weaponsController.y();
+        //PIVOT_ANYWHERE = m_weaponsController.button(1); // uses vision
+        //PIVOT_HOLD = m_weaponsController.start();
+        //PIVOT_AND_REV = new Trigger(() -> (m_weaponsController.getRightTriggerAxis() > 0.5));
         // intaking things
         INTAKE_IN = m_weaponsController.rightBumper();
         INTAKE_OUT = m_weaponsController.leftBumper();
