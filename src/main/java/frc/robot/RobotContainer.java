@@ -30,12 +30,18 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.gripper.GripperIO;
+import frc.robot.subsystems.gripper.GripperIOSim;
+import frc.robot.subsystems.gripper.GripperIOSparkMax;
 import frc.robot.util.drive.DriveControls;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -51,6 +57,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final ArmIO arm;
+  private final GripperIO m_gripper;
 
   private boolean brakeMode = true;
 
@@ -86,6 +94,8 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
+              arm = new ArmIOSparkMax();
+              m_gripper = new GripperIOSparkMax();
         break;
 
       case SIM:
@@ -97,6 +107,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+                arm = new ArmIOSim();
+                m_gripper = new GripperIOSim();
         break;
 
       default:
@@ -108,6 +120,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+            arm = new ArmIOSparkMax();
+            m_gripper = new GripperIOSim();
         break;
     }
 
@@ -181,6 +195,14 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+
+    ROTATECLOCKWISE.onTrue(arm.clockwise());
+    ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
+    ARMSTOP.onTrue(arm.stop());
+    INTAKE.onTrue(m_gripper.intake());
+    OUTTAKE.onTrue(m_gripper.outtake());
+    GRIPPERSTOP.onTrue(m_gripper.stop());
+
 
     RESET_GYRO.onTrue(
         new InstantCommand(
