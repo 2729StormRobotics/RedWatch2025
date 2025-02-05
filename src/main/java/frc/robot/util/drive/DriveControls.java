@@ -6,11 +6,22 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder.TriFunction;
+
 public class DriveControls {
   // Controllers
   public static final CommandJoystick m_translator = new CommandJoystick(1) ;
   public static final CommandJoystick m_rotator = new CommandJoystick(2);
   public static final CommandXboxController m_weaponsController = new CommandXboxController(0);
+
+  //Misc Subsystem Controls
+  public static Trigger ROTATECLOCKWISE;
+  public static Trigger ROTATECOUNTERCLOCKWISE;
+  public static Trigger ARMSTOP;
+
+  public static Trigger INTAKE;
+  public static Trigger OUTTAKE;
+  public static Trigger GRIPPERSTOP;
 
   // Useful for things that don't need to be triggered
   private static final Trigger EMPTY_TRIGGER = new Trigger(() -> false);
@@ -90,6 +101,16 @@ public class DriveControls {
         DRIVE_STRAFE = () -> (-m_translator.getX() );
         DRIVE_ROTATE = () -> (-m_rotator.getX());
         RESET_GYRO = m_translator.button(12);
+
+        //Misc Subsytem Controls
+        ROTATECLOCKWISE = m_weaponsController.rightBumper();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
+        ARMSTOP = m_weaponsController.y();
+
+        INTAKE = m_weaponsController.a();
+        OUTTAKE = m_weaponsController.b();
+        GRIPPERSTOP = m_weaponsController.x();
+
         // Driver Settings
         DRIVE_SLOW = m_translator.button(1); // TBA
         DRIVE_STOP = m_translator.button(2); // TBA
@@ -115,6 +136,15 @@ public class DriveControls {
         DRIVE_STRAFE = () -> (-m_translator.getX());
         DRIVE_ROTATE = () -> (-m_translator.getTwist());
         RESET_GYRO = m_translator.button(12);
+
+        //Misc Subsytem Controls
+        ROTATECLOCKWISE = m_weaponsController.rightBumper();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
+        ARMSTOP = m_weaponsController.x();
+
+        INTAKE = m_weaponsController.a();
+        OUTTAKE = m_weaponsController.b();
+        GRIPPERSTOP = m_weaponsController.x();
 
         // Driver Settings
         DRIVE_SLOW = m_translator.button(1); // TBA
@@ -159,6 +189,13 @@ public class DriveControls {
         GROUND_INTAKE_IN = m_weaponsController.rightBumper();
         GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
 
+        //Misc Subsytem Controls
+        ROTATECLOCKWISE = m_weaponsController.rightBumper();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
+        ARMSTOP = m_weaponsController.x();
+        INTAKE = m_weaponsController.a();
+        OUTTAKE = m_weaponsController.b();
+        GRIPPERSTOP = m_weaponsController.x();
         // Shooter things
         SHOOTER_SPEED = () -> m_weaponsController.getRightX();
         SHOOTER_FULL_SEND_INTAKE = m_weaponsController.leftStick();
@@ -182,8 +219,14 @@ public class DriveControls {
         PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
         PIVOT_PODIUM = m_weaponsController.button(1);
 
-        INTAKE_IN = m_weaponsController.rightBumper();
-        INTAKE_OUT = m_weaponsController.leftBumper();
+        //Misc Subsytem Controls
+        ROTATECLOCKWISE = m_weaponsController.rightBumper();
+        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
+        ARMSTOP = m_weaponsController.x();
+
+        INTAKE = m_weaponsController.a();
+        OUTTAKE = m_weaponsController.b();
+        GRIPPERSTOP = m_weaponsController.x();
 
         GROUND_INTAKE_IN = m_weaponsController.rightBumper();
         GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
