@@ -63,12 +63,8 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   private SparkFlexConfig elevatorConfig;
   private SparkFlexConfig elevatorConfigLeft;
   private SparkFlexConfig elevatorConfigRight = new SparkFlexConfig();
-  // private final SparkClosedLoopController elevatorPIDController;
-
-  // private final RelativeEncoder elevatorEncoder;
 
   private final double absoluteEncoderOffset = 0;
-  public final SparkAnalogSensor elevatorPot; // idk change it later
 
   public double pot_val = 0;
   public double elevator_height = 0;
@@ -83,27 +79,55 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   private double kI = kIElevator;
   private double kD = kDElevator;
 
-  private SoftLimitConfig softLimits = new SoftLimitConfig();
   public ElevatorIOSparkFlex() {
-    // need to complete
+    // Initialize motors
     elevatorLeftSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
     elevatorRightSparkFlex = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
 
-    // configure motor controllers
+    // Configure motor controllers
+    configureMotors();
+    configureSoftLimits();
+    configureLimitSwitches();
+
+    // Initialize encoders
+    m_ElevatorLeftEncoder = elevatorLeftSparkFlex.getEncoder();
+    m_ElevatorRightEncoder = elevatorRightSparkFlex.getEncoder();
+
+    // Set CAN timeout (consider setting a nonzero value)
+    elevatorLeftSparkFlex.setCANTimeout(50);
+    elevatorRightSparkFlex.setCANTimeout(50);
+
+    // Enable follower mode
+    elevatorConfigRight.follow(elevatorLeftSparkFlex, true);
+    elevatorLeftSparkFlex.pauseFollowerMode();
+    // Apply configurations
+    elevatorLeftSparkFlex.configure(elevatorConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorRightSparkFlex.configure(elevatorConfigRight, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+  }
+
+  // Separate method for configuring motors
+  private void configureMotors() {
     elevatorConfig = new SparkFlexConfig();
     elevatorConfig.closedLoop.p(kPElevator);
     elevatorConfig.closedLoop.i(kIElevator);
     elevatorConfig.closedLoop.d(kDElevator);
     elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     elevatorConfig.closedLoop.outputRange(kElevatorMinOutputPower, kElevatorMaxOutputPower);
-    // left individual config
-    
+  }
+
+  // Separate method for configuring soft limits
+  private void configureSoftLimits() {
+    SoftLimitConfig softLimits = new SoftLimitConfig();
     softLimits.forwardSoftLimit(53);
     softLimits.forwardSoftLimitEnabled(true);
     softLimits.reverseSoftLimit(-1);
     softLimits.reverseSoftLimitEnabled(true);
     elevatorConfig.apply(softLimits);
-    
+  }
+
+  // Separate method for configuring limit switches
+  private void configureLimitSwitches() {
     elevatorConfigLeft = new SparkFlexConfig();
     elevatorConfigLeft.apply(elevatorConfig);
     elevatorConfigLeft.analogSensor.positionConversionFactor(VoltsToDistanceMeters);
@@ -111,30 +135,6 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     elevatorConfigLeft.limitSwitch.reverseLimitSwitchEnabled(true);
     elevatorConfigLeft.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
     elevatorConfigLeft.limitSwitch.reverseLimitSwitchType(Type.kNormallyOpen);
-
-    elevatorPot = elevatorLeftSparkFlex.getAnalog();
-
-    // Rigt individual config
-    elevatorConfigRight.apply(elevatorConfig);
-
-    // initialize encoders
-    m_ElevatorLeftEncoder = elevatorLeftSparkFlex.getEncoder();
-    m_ElevatorRightEncoder = elevatorRightSparkFlex.getEncoder();
-
-    elevatorLeftSparkFlex.setCANTimeout(0);
-    elevatorRightSparkFlex.setCANTimeout(0);
-
-    // initialize PID controller
-
-    // timestampQueue = new LinkedList<>();
-    // elevatorPositionQueue = new LinkedList<>();
-
-    elevatorConfigRight.follow(9, true);
-    elevatorLeftSparkFlex.configure(elevatorConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    elevatorRightSparkFlex.configure(elevatorConfigRight, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    // elevatorLeftSparkFlex.pauseFollowerMode();
-
   }
 
   public void setElevatorHeight(double targetHeight) {
@@ -160,7 +160,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    double kWheelDiameterMeters = 0.0;
+    double kWheelDiameterMeters = 1.0;
 
     inputs.elevatorPositionRad = m_ElevatorLeftEncoder.getPosition() / (kWheelDiameterMeters / 2);
     inputs.elevatorPositionMeters = m_ElevatorLeftEncoder.getPosition();
@@ -201,7 +201,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
   @Override
   public void setElevatorPower(double power) {
-    
+
     SmartDashboard.putNumber("power sending", power);
     elevatorLeftSparkFlex.set(power);
   }
