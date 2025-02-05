@@ -52,7 +52,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.Elevator.ElevatorState;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
@@ -198,7 +197,7 @@ public class RobotContainer {
       // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     
     DriveControls.configureControls();
-    elevator.setDefaultCommand(elevator.manualCommand(ELEVATOR_JOYSTICK));
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));

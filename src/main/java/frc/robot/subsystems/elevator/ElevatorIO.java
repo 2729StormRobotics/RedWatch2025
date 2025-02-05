@@ -2,104 +2,115 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
-import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kSElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kGElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kVElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
-import static frc.robot.subsystems.elevator.ElevatorConstants.MAX_VELOCITY_METERS_PER_SECOND;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kAElevator;
-
 public interface ElevatorIO {
-    @AutoLog
-    public static class ElevatorIOInputs {
-        // public TrapezoidProfile.Constraints MOVEMENT_CONSTRAINTS = new TrapezoidProfile.Constraints(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
-        // public ProfiledPIDController elevatorPIDController = new ProfiledPIDController(kPElevator, kIElevator, kDElevator, MOVEMENT_CONSTRAINTS); //dont know have to fix later
-        public ElevatorFeedforward feedforwardController = new ElevatorFeedforward(kSElevator, kGElevator, kVElevator, kAElevator);
-        
-        public double elevatorAppliedVolts = 0.0;
-        public double[] elevatorCurrentAmps;
-        public double elevatorPositionRad  = 0.0;
-        public double kWheelDiameterMeters = 0.0;
-        public double elevatorPositionMeters = 0.0;
-        public double elevatorVelocityMeterPerSec = 0.0;
-        public double elevatorVelocityRadPerSec = 0.0;
-    }
+  @AutoLog
+  public static class ElevatorIOInputs {
+    public double setpointMeters = 0.0;
+    public double positionMeters = 0.0;
+    public double velocityMetersPerSec = 0.0;
+    public double appliedVoltage = 0.0;
 
-    /** Updates the set of loggable inputs. */
-    public default void updateInputs(ElevatorIOInputs inputs) {}
+    // arrays are used because we have multiple motors
+    public double[] motorTemperature = new double[] {};
+    public double[] motorCurrent = new double[] {};
+  }
 
-    /** Run the elevator motor at the specified voltage. */
-    public default void setElevatorVoltage(double volts) {}
-    public default void setElevatorPower(double power) {}
+  /**
+   * This function updates all the loggable inputs inside the ElevatorInputs object.
+   *
+   * @param inputs an instance of ElevatorInputsAutoLogged that is created in Elevator.java
+   */
+  public default void updateInputs(ElevatorIOInputs inputs) {}
 
-    /** get elevator voltage. */
-    public default double getElevatorVoltage() {
-        return 0.0;
-    }
+  /**
+   * Tells the elevator to start moving towards a setpoint (height)
+   *
+   * @param setpoint the target height the elevator is trying to go to
+   */
+  public default double getSetpoint() {
+    return 0.0;
+  }
 
-    public default void setElevatorHeight(double targetHeight) {}
-    
-    /** Enable or disable brake mode on the elevator motor. */
-    public default void setElevatorBrakeMode(boolean enable) {}
+  public default void goToSetpoint(double setpoint) {}
 
-    public default void setElevatorPIDFF(double p, double i, double d, double ff) {}
+  /** Gets the elevator's instantaneous height */
+  public default double getPosition() {
+    return 0.0;
+  }
 
-    public default void setElevatorVelocity(double velocityRadPerSec) {}
+  /** returns true if the elevator is at the setpoint */
+  public default boolean atSetpoint() {
+    return false;
+  }
 
-    public default double getAbsoluteEncoderOffset() {
-        return 0.0;
-    }
+  public default double getVelocity() {
+    return 0.0;
+  }
+  /**
+   * Sets the elevator's speed
+   *
+   * @param velocity speed factor from -1 to 1 (1 is max velocity)
+   */
+  public default void setVelocity(double velocity) {}
 
-    public default void stop() {}
+  /**
+   * Sets the brakemode of both motors
+   *
+   * @param brakeEnabled true = brake, false = coast
+   */
+  public default void setBrakeMode(boolean brakeEnabled) {}
 
-    /**
-     * Sets the proportional constant for velocity control.
-     * 
-     * @param p the proportional constant
-     */
-    public default void setP(double p) {}
-    
-    /**
-     * Sets the integral constant for velocity control.
-     * 
-     * @param i the integral constant
-     */
-    public default void setI(double i) {}
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default double getP() {
+    return 0.0;
+  }
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default double getI() {
+    return 0.0;
+  }
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default double getD() {
+    return 0.0;
+  }
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default double getFF() {
+    return 0.0;
+  }
 
-    /**
-     * Sets the derivative constant for velocity control.
-     * 
-     * @param d the derivative constant
-     */
-    public default void setD(double d) {}
-
-    /**
-     * Retrieves the proportional constant for velocity control.
-     * 
-     * @return the proportional constant
-     */
-    public default double getP() { return 0.0; }
-
-    /**
-     * Retrieves the integral constant for velocity control.
-     * 
-     * @return the integral constant
-     */
-    public default double getI() { return 0.0; }
-
-    /**
-     * Retrieves the derivative constant for velocity control.
-     * 
-     * @return the derivative constant
-     */
-    public default double getD() { return 0.0; }
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default void setP(double kP) {}
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default void setI(double kI) {}
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default void setD(double kD) {}
+  /**
+   * Only use individual getters and setters for spontaneous changes during runtime. All PID
+   * constants are automatically set when the robot starts up
+   */
+  public default void setFF(double kFF) {}
 
 
+//   STRINGPOT FUNCTIONS
+  
 }

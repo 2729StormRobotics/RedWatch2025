@@ -1,242 +1,154 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.elevator;
 
-import static frc.robot.subsystems.elevator.ElevatorConstants.kDElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kElevatorMaxOutputPower;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kElevatorMinOutputPower;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kIElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kLeftElevatorCanId;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kPElevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.kRightElevatorCanId;
-import static frc.robot.subsystems.elevator.ElevatorConstants.offsetAdd;
-import static frc.robot.subsystems.elevator.ElevatorConstants.offsetMult;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.LimitSwitchConfig.Type;
-import com.revrobotics.spark.config.SoftLimitConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * Module IO implementation for SparkFlex elevator motor controller, SparkFlex
- * turn
- * motor controller (NEO
- * or NEO 550), and analog absolute encoder connected to the RIO
- *
- * <p>
- * NOTE: This implementation should be used as a starting point and adapted to
- * different hardware
- * configurations (e.g. If using a CANcoder, copy from "ModuleIOTalonFX")
- *
- * <p>
- * To calibrate the absolute encoder offsets, point the modules straight (such
- * that forward
- * motion on the elevator motor will propel the robot forward) and copy the
- * reported values from the
- * absolute encoders using AdvantageScope. These values are logged under
- * "/Elevator/ModuleX/TurnAbsolutePositionRad"
- */
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
+
+import frc.robot.Constants;
+
 public class ElevatorIOSparkFlex implements ElevatorIO {
+  private SparkFlex leftMotor;
+  // right follows left
+  private SparkFlex rightMotor;
+  private SparkClosedLoopController leftController;
+  private AbsoluteEncoder leftEncoder;
+  private SparkAnalogSensor string_potentiometer;
 
-  private final SparkFlex elevatorLeftSparkFlex;
-  private final SparkFlex elevatorRightSparkFlex;
+  // used to track the target setpoint of the robot
+  private double setpoint = 0;
 
-  private SparkFlexConfig elevatorConfig;
-  private SparkFlexConfig elevatorConfigLeft;
-  private SparkFlexConfig elevatorConfigRight = new SparkFlexConfig();
-
-  private final double absoluteEncoderOffset = 0;
-
-  public double pot_val = 0;
-  public double elevator_height = 0;
-  public double offset = 0;
-
-  public final double VoltsToDistanceMeters = 8.4582;
-
-  public final RelativeEncoder m_ElevatorLeftEncoder;
-  public final RelativeEncoder m_ElevatorRightEncoder;
-
-  private double kP = kPElevator;
-  private double kI = kIElevator;
-  private double kD = kDElevator;
+  // Because SparkFlex does not have getters for pid, use these variables to keep
+  // track of dynamic
+  // pid values
+  private double kP = ElevatorConstants.kElevatorRealPID[0];
+  private double kI = ElevatorConstants.kElevatorRealPID[1];
+  private double kD = ElevatorConstants.kElevatorRealPID[2];
+  private double kFF = ElevatorConstants.kElevatorRealPID[3];
 
   public ElevatorIOSparkFlex() {
-    // Initialize motors
-    elevatorLeftSparkFlex = new SparkFlex(kLeftElevatorCanId, MotorType.kBrushless);
-    elevatorRightSparkFlex = new SparkFlex(kRightElevatorCanId, MotorType.kBrushless);
+    leftMotor = new SparkFlex(ElevatorConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
+    rightMotor = new SparkFlex(ElevatorConstants.RIGHT_MOTOR_ID, MotorType.kBrushless);
 
-    // Configure motor controllers
-    configureMotors();
-    configureSoftLimits();
-    configureLimitSwitches();
+    leftController = leftMotor.getClosedLoopController();
+    string_potentiometer = leftMotor.getAnalog();
+    leftEncoder = leftMotor.getAbsoluteEncoder();
 
-    // Initialize encoders
-    m_ElevatorLeftEncoder = elevatorLeftSparkFlex.getEncoder();
-    m_ElevatorRightEncoder = elevatorRightSparkFlex.getEncoder();
+    SparkFlexConfig leftConfig = new SparkFlexConfig();
+    leftConfig.smartCurrentLimit(Constants.NEO_CURRENT_LIMIT).idleMode(IdleMode.kCoast);
+    leftConfig.closedLoop
+        .pidf(kP, kI, kD, kFF)
+        .feedbackSensor(FeedbackSensor.kAnalogSensor);
+    leftConfig.encoder
+        .positionConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR)
+        .velocityConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR / 60.0);
+    leftConfig.analogSensor
+        .positionConversionFactor(ElevatorConstants.STRINGPOT_POSITION_CONVERSION_FACTOR)
+        .velocityConversionFactor(1.0);
 
-    // Set CAN timeout (consider setting a nonzero value)
-    elevatorLeftSparkFlex.setCANTimeout(50);
-    elevatorRightSparkFlex.setCANTimeout(50);
+    leftConfig.limitSwitch
+        .forwardLimitSwitchEnabled(true)
+        .forwardLimitSwitchType(Type.kNormallyOpen)
+        .reverseLimitSwitchEnabled(true)
+        .reverseLimitSwitchType(Type.kNormallyOpen);
+    SparkFlexConfig rightConfig = new SparkFlexConfig();
+    rightConfig.apply(leftConfig);
+    rightConfig.follow(leftMotor, true);
 
-    // Enable follower mode
-    elevatorConfigRight.follow(elevatorLeftSparkFlex, true);
-    elevatorLeftSparkFlex.pauseFollowerMode();
-    // Apply configurations
-    elevatorLeftSparkFlex.configure(elevatorConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    elevatorRightSparkFlex.configure(elevatorConfigRight, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    // reset safe kResetSafeParameters switches the motor to default paramaters,
+    // then adds the
+    // changes from the config object
+    // persist paramaters saves these changes to the motor memory so it doesn't get
+    // cooked during
+    // brownouts
+    // only use persist in the BEGINNING, not later
+    leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightMotor.configure(
+        rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    leftMotor.pauseFollowerMode();
   }
 
-  // Separate method for configuring motors
-  private void configureMotors() {
-    elevatorConfig = new SparkFlexConfig();
-    elevatorConfig.closedLoop.p(kPElevator);
-    elevatorConfig.closedLoop.i(kIElevator);
-    elevatorConfig.closedLoop.d(kDElevator);
-    elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-    elevatorConfig.closedLoop.outputRange(kElevatorMinOutputPower, kElevatorMaxOutputPower);
-  }
-
-  // Separate method for configuring soft limits
-  private void configureSoftLimits() {
-    SoftLimitConfig softLimits = new SoftLimitConfig();
-    softLimits.forwardSoftLimit(53);
-    softLimits.forwardSoftLimitEnabled(true);
-    softLimits.reverseSoftLimit(-1);
-    softLimits.reverseSoftLimitEnabled(true);
-    elevatorConfig.apply(softLimits);
-  }
-
-  // Separate method for configuring limit switches
-  private void configureLimitSwitches() {
-    elevatorConfigLeft = new SparkFlexConfig();
-    elevatorConfigLeft.apply(elevatorConfig);
-    elevatorConfigLeft.analogSensor.positionConversionFactor(VoltsToDistanceMeters);
-    elevatorConfigLeft.limitSwitch.forwardLimitSwitchEnabled(true);
-    elevatorConfigLeft.limitSwitch.reverseLimitSwitchEnabled(true);
-    elevatorConfigLeft.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
-    elevatorConfigLeft.limitSwitch.reverseLimitSwitchType(Type.kNormallyOpen);
-  }
-
-  public void setElevatorHeight(double targetHeight) {
-    elevatorLeftSparkFlex.getClosedLoopController().setReference(targetHeight, SparkFlex.ControlType.kPosition);
-  }
-
-  public boolean isTopLimitTriggered() {
-    return elevatorLeftSparkFlex.getForwardLimitSwitch().isPressed();
-  }
-
-  public boolean isBottomLimitTriggered() {
-    return elevatorLeftSparkFlex.getReverseLimitSwitch().isPressed();
-  }
-
-  public double getPotVal() {
-    return elevatorLeftSparkFlex.getAnalog().getPosition();
-  }
-
-  public SparkAnalogSensor StringPot() {
-    return elevatorLeftSparkFlex.getAnalog();
+  private void updateMotorConfig(SparkFlexConfig config) {
+    // DO NOT RESET paramaters becasue we only want to change some paramaters, not
+    // all
+    // DO NOT PERSIST because this is a temporary change that we don't want to save
+    // to memory
+    leftMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    rightMotor.configure(
+        config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
+    inputs.setpointMeters = setpoint;
+    inputs.positionMeters = getPosition();
+    inputs.velocityMetersPerSec = getVelocity();
+    inputs.appliedVoltage = leftMotor.getAppliedOutput() * leftMotor.getBusVoltage();
 
-    double kWheelDiameterMeters = 1.0;
-
-    inputs.elevatorPositionRad = m_ElevatorLeftEncoder.getPosition() / (kWheelDiameterMeters / 2);
-    inputs.elevatorPositionMeters = m_ElevatorLeftEncoder.getPosition();
-    inputs.elevatorVelocityMeterPerSec = m_ElevatorLeftEncoder.getVelocity();
-    inputs.elevatorVelocityRadPerSec = m_ElevatorLeftEncoder.getVelocity() / (kWheelDiameterMeters / 2);
-    inputs.elevatorAppliedVolts = elevatorLeftSparkFlex.getAppliedOutput() * elevatorLeftSparkFlex.getBusVoltage();
-    inputs.elevatorCurrentAmps = new double[] { elevatorLeftSparkFlex.getOutputCurrent() };
-
-    // turnPositionQueue.clear();
-    SmartDashboard.putBoolean("Top Limit Switch Triggered?", isTopLimitTriggered());
-    SmartDashboard.putBoolean("Bottom Limit Switch Triggered?", isBottomLimitTriggered());
-    SmartDashboard.putNumber("Elevator Voltage: ",
-        elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Height: ", getElevatorHeight());
-    SmartDashboard.putNumber("Velocity: ", m_ElevatorLeftEncoder.getVelocity());
-    SmartDashboard.putNumber("Pot Val", getPotVal());
-    SmartDashboard.putNumber("left encoder", getLeftEncoderDistance());
-    SmartDashboard.putNumber("right encoder", getRightEncoderDistance());
-  }
-
-  public double getLeftEncoderDistance() {
-    return m_ElevatorLeftEncoder.getPosition();
-  }
-
-  public double getRightEncoderDistance() {
-    return m_ElevatorRightEncoder.getPosition();
+    inputs.motorCurrent = new double[] { leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent() };
+    inputs.motorTemperature = new double[] { leftMotor.getMotorTemperature(), rightMotor.getMotorTemperature() };
+    SmartDashboard.putNumber("StringPot/Position", getStringPot().getPosition());
+    SmartDashboard.putNumber("StringPot/Velocity", getStringPot().getVelocity());
+    SmartDashboard.putNumber("StringPot/Voltage", getStringPot().getVoltage());
   }
 
   @Override
-  public void setElevatorVelocity(double velocityRadPerSec) {
-    elevatorLeftSparkFlex.getClosedLoopController().setReference(velocityRadPerSec, SparkFlex.ControlType.kVelocity);
+  public double getPosition() {
+    // get the absolute position in radians, then convert to meters
+    return stringPotToElevator(getStringPot().getPosition());
+  }
+
+  public SparkAnalogSensor getStringPot() {
+    return leftMotor.getAnalog();
+  }
+
+  private double elevatorToStringPot(double elevatorHeight) {
+    return 0.0;
+  }
+
+  private double stringPotToElevator(double stringLength) {
+    return stringLength * ElevatorConstants.stringPottoElevatorConversion + ElevatorConstants.ElevatorOffset;
   }
 
   @Override
-  public void setElevatorVoltage(double volts) {
-    elevatorLeftSparkFlex.setVoltage(volts);
+  public void goToSetpoint(double setpoint) {
+    this.setpoint = setpoint;
+    leftController.setReference(elevatorToStringPot(setpoint), ControlType.kPosition);
   }
 
   @Override
-  public void setElevatorPower(double power) {
-
-    SmartDashboard.putNumber("power sending", power);
-    elevatorLeftSparkFlex.set(power);
+  public boolean atSetpoint() {
+    // if the difference between setpoint and position is less than the tolerance
+    return (Math.abs(getSetpoint() - getPosition()) < ElevatorConstants.SETPOINT_TOLERANCE_METERS);
   }
 
   @Override
-  public double getElevatorVoltage() {
-    return elevatorLeftSparkFlex.getBusVoltage() * elevatorLeftSparkFlex.getAppliedOutput();
+  public double getVelocity() {
+    return leftEncoder.getVelocity();
   }
 
   @Override
-  public double getAbsoluteEncoderOffset() {
-    return absoluteEncoderOffset;
+  public void setVelocity(double velocity) {
+    leftMotor.set(velocity);
   }
 
   @Override
-  public void stop() {
-    setElevatorVoltage(0.0);
-  }
-
-  @Override
-  public void setP(double p) {
-    kP = p;
-    elevatorConfigLeft.closedLoop.p(p);
-  }
-
-  @Override
-  public void setI(double i) {
-    kI = i;
-    elevatorConfigLeft.closedLoop.i(i);
-  }
-
-  @Override
-  public void setD(double d) {
-    kD = d;
-    elevatorConfigLeft.closedLoop.d(d);
+  public void setBrakeMode(boolean brakeEnabled) {
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.idleMode(brakeEnabled ? IdleMode.kBrake : IdleMode.kCoast);
+    updateMotorConfig(config);
   }
 
   @Override
@@ -254,13 +166,40 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     return kD;
   }
 
-  public double getElevatorHeight() {
-
-    return getPotVal() * offsetMult + offsetAdd;
+  @Override
+  public double getFF() {
+    return kFF;
   }
 
-  // Periodically calculates the value of the pot.
-  public void periodic() {
-    // This method will be called once per scheduler run
+  @Override
+  public void setP(double kP) {
+    this.kP = kP;
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.closedLoop.p(kP);
+    updateMotorConfig(config);
+  }
+
+  @Override
+  public void setI(double kI) {
+    this.kI = kI;
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.closedLoop.i(kI);
+    updateMotorConfig(config);
+  }
+
+  @Override
+  public void setD(double kD) {
+    this.kD = kD;
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.closedLoop.d(kD);
+    updateMotorConfig(config);
+  }
+
+  @Override
+  public void setFF(double kFF) {
+    this.kFF = kFF;
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.closedLoop.velocityFF(kFF);
+    updateMotorConfig(config);
   }
 }

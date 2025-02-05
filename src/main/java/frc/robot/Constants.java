@@ -149,7 +149,7 @@ public final class Constants {
   public static final int QUADRATURE_COUNTS_PER_REV = 8192; // encoder resolution
   // https://www.revrobotics.com/rev-11-1271/
 
-  public static final int NEO_CURRENT_LIMIT = 80; // amps
+  public static final int NEO_CURRENT_LIMIT = 40; // amps
 
   // {distance, rpm, angle} The distance column must go from lowest to highest, top to bottom
   // manually insert velocity!!!!!
