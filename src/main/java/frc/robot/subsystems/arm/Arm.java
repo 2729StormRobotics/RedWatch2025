@@ -156,7 +156,7 @@ public class Arm extends SubsystemBase {
 
   public Command stop() {
     return new FunctionalCommand(
-        () -> {}, () -> io.setVoltage(0), (stop) -> io.stop(), () -> false, this);
+        () -> {}, () -> io.setVoltage(0), (stop) -> io.stopArm(), () -> false, this);
   }
   // no commmand yalee
 

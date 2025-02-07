@@ -59,22 +59,6 @@ public interface ArmIO {
         return 0.0;
     };
 
-    public default SequentialCommandGroup clockwise() {
-        return new SequentialCommandGroup(null);
-    };
-
-    public default SequentialCommandGroup counterClockwise() {
-        return new SequentialCommandGroup(null);
-    };
-
-    public default SequentialCommandGroup stop() {
-        return new SequentialCommandGroup(null);
-    };
-
-    public default SequentialCommandGroup armPosition() {
-        return new SequentialCommandGroup(null);
-    };
-
     @AutoLog
     public static class ArmIOInputs {
         // public ClosedLoopConfig armCLC = new ClosedLoopConfig();

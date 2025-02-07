@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSparkMax;
@@ -72,7 +73,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Elevator elevator;
-  private final ArmIO arm;
+  private final Arm arm;
   private final GripperIO m_gripper;
 
   private boolean brakeMode = true;
@@ -104,7 +105,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
-              arm = new ArmIOSparkMax();
+              arm = new Arm(new ArmIOSparkMax());
               m_gripper = new GripperIOSparkMax();
         break;
         
@@ -118,7 +119,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-                arm = new ArmIOSim();
+                arm = new Arm(new ArmIOSim());
                 m_gripper = new GripperIOSim();
         break;
 
@@ -133,7 +134,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-            arm = new ArmIOSparkMax();
+            arm = new Arm(new ArmIO() {});
             m_gripper = new GripperIOSim();
         break;
     }
@@ -215,9 +216,9 @@ public class RobotContainer {
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-
-    ROTATECLOCKWISE.onTrue(arm.clockwise());
-    ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
+    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
+    // ROTATECLOCKWISE.onTrue(arm.());
+    // ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
     ARMSTOP.onTrue(arm.stop());
     INTAKE.onTrue(m_gripper.intake());
     OUTTAKE.onTrue(m_gripper.outtake());

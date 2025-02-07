@@ -93,18 +93,4 @@ public class ArmIOSim implements ArmIO {
         sim.setInputVoltage(feedforwardOutput + pidOutput);
     }
 
-    @Override
-    public SequentialCommandGroup clockwise() {
-        return new SequentialCommandGroup(null);
-    };
-
-    @Override
-    public SequentialCommandGroup counterClockwise() {
-        return new SequentialCommandGroup(null);
-    };
-
-    @Override
-    public SequentialCommandGroup stop() {
-        return new SequentialCommandGroup(null);
-    };
 }
