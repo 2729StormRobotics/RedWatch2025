@@ -30,19 +30,16 @@ public class DriveControls {
   // Drive controls
   public static DoubleSupplier ELEVATOR_JOYSTICK;
   public static DoubleSupplier PIVOT_ROTATE;
-  public static Trigger PIVOT_L1;
-  public static Trigger PIVOT_L2;
-  public static Trigger PIVOT_L3;
-  public static Trigger PIVOT_L4;
-  public static Trigger PIVOT_INTAKE;
+  public static Trigger PIVOT_L1_Intake;
+  public static Trigger PIVOT_L2_Intake;
+  public static Trigger PIVOT_L3_Intake;
+  public static Trigger PIVOT_L4_Intake;
 
 
 // Drive controls
 public static DoubleSupplier DRIVE_FORWARD;
 public static DoubleSupplier DRIVE_STRAFE;
 public static DoubleSupplier DRIVE_ROTATE;
-public static DoubleSupplier ELEVATOR_UP;
-public static DoubleSupplier ELEVATOR_DOWN;
 
 public static Trigger DRIVE_SLOW;
 public static Trigger DRIVE_STOP;
@@ -51,7 +48,7 @@ public static Trigger DRIVE_HOLD_STOP;
 // drive modes
 public static Trigger DRIVE_ROBOT_RELATIVE;
 public static Trigger DRIVE_FIELD_RELATIVE;
-public static Trigger DRIVE_SPEAKER_AIM;
+public static Trigger DRIVE_REEF_AIM;
 
 // Drive Angle Locks
 public static Trigger LOCK_BACK;
@@ -112,7 +109,7 @@ public static Trigger ELEVATOR_INTAKE;
 
         // Driver Modes
         DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
-        DRIVE_SPEAKER_AIM = m_translator.button(1); // uses vision
+        DRIVE_REEF_AIM = m_translator.button(1); // uses vision
 
         // ALL BELOW TBD
         // Driver Angle Locks
@@ -168,23 +165,11 @@ public static Trigger ELEVATOR_INTAKE;
                     - m_weaponsController.getLeftTriggerAxis());
         // all tbd
         // Pivot things
-        PIVOT_L1 = m_weaponsController.b();
-        PIVOT_L2 = m_weaponsController.a();
-        PIVOT_L3 = m_weaponsController.y();
-        PIVOT_L4 = m_weaponsController.x();
-        //PIVOT_INTAKE
-        //PIVOT_PODIUM = m_weaponsController.y();
-        //PIVOT_ANYWHERE = m_weaponsController.button(1); // uses vision
-        //PIVOT_HOLD = m_weaponsController.start();
-        //PIVOT_AND_REV = new Trigger(() -> (m_weaponsController.getRightTriggerAxis() > 0.5));
-        // intaking things
-        // INTAKE_IN = m_weaponsController.rightBumper();
-        // INTAKE_OUT = m_weaponsController.leftBumper();
-        // INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
-        // INTAKE_THEN_LOAD = m_weaponsController.x();
-        // // ground intake things
-        // GROUND_INTAKE_IN = m_weaponsController.rightBumper();
-        // GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
+        PIVOT_L1_Intake = m_weaponsController.b();
+        PIVOT_L2_Intake = m_weaponsController.a();
+        PIVOT_L3_Intake = m_weaponsController.y();
+        PIVOT_L4_Intake = m_weaponsController.x();
+        
 
         //Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
@@ -193,13 +178,8 @@ public static Trigger ELEVATOR_INTAKE;
         INTAKE = m_weaponsController.a();
         OUTTAKE = m_weaponsController.b();
         GRIPPERSTOP = m_weaponsController.x();
-        // Shooter things
-        // SHOOTER_SPEED = () -> m_weaponsController.getRightX();
-        // SHOOTER_FULL_SEND_INTAKE = m_weaponsController.leftStick();
-        // SHOOTER_FULL_SEND = m_translator.button(1);
-        // SHOOTER_UNJAM = m_weaponsController.button(1);
-        // SHOOTER_PREPARE_THEN_SHOOT = m_weaponsController.back();
-        // break;
+       
+        break;
       case PROGRAMMERS:
       default:
         // Operator controls
@@ -211,11 +191,7 @@ public static Trigger ELEVATOR_INTAKE;
         // ALL TBD
 
         // isn't reading m_weaponsController.getLeftTriggerAxis, must be an issue with the encoder
-        // PIVOT_AMP = m_weaponsController.button(1);
-        // PIVOT_ZERO = m_weaponsController.button(2);
-        // PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
-        // PIVOT_PODIUM = m_weaponsController.button(1);
-
+      
         //Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
@@ -224,17 +200,6 @@ public static Trigger ELEVATOR_INTAKE;
         INTAKE = m_weaponsController.a();
         OUTTAKE = m_weaponsController.b();
         GRIPPERSTOP = m_weaponsController.x();
-
-        // GROUND_INTAKE_IN = m_weaponsController.rightBumper();
-        // GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
-
-        // // SHOOTER_SPEED = m_weaponsController::getRight;
-
-        // SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
-        // SHOOTER_FULL_SEND = EMPTY_TRIGGER;
-        // SHOOTER_UNJAM = EMPTY_TRIGGER;
-        // SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
-        break;
 
         // bottom right Left joystick to intake
     }
