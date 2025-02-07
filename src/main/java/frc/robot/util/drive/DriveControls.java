@@ -178,13 +178,13 @@ public static Trigger ELEVATOR_INTAKE;
         //PIVOT_HOLD = m_weaponsController.start();
         //PIVOT_AND_REV = new Trigger(() -> (m_weaponsController.getRightTriggerAxis() > 0.5));
         // intaking things
-        INTAKE_IN = m_weaponsController.rightBumper();
-        INTAKE_OUT = m_weaponsController.leftBumper();
-        INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
-        INTAKE_THEN_LOAD = m_weaponsController.x();
-        // ground intake things
-        GROUND_INTAKE_IN = m_weaponsController.rightBumper();
-        GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
+        // INTAKE_IN = m_weaponsController.rightBumper();
+        // INTAKE_OUT = m_weaponsController.leftBumper();
+        // INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
+        // INTAKE_THEN_LOAD = m_weaponsController.x();
+        // // ground intake things
+        // GROUND_INTAKE_IN = m_weaponsController.rightBumper();
+        // GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
 
         //Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
@@ -194,12 +194,12 @@ public static Trigger ELEVATOR_INTAKE;
         OUTTAKE = m_weaponsController.b();
         GRIPPERSTOP = m_weaponsController.x();
         // Shooter things
-        SHOOTER_SPEED = () -> m_weaponsController.getRightX();
-        SHOOTER_FULL_SEND_INTAKE = m_weaponsController.leftStick();
-        SHOOTER_FULL_SEND = m_translator.button(1);
-        SHOOTER_UNJAM = m_weaponsController.button(1);
-        SHOOTER_PREPARE_THEN_SHOOT = m_weaponsController.back();
-        break;
+        // SHOOTER_SPEED = () -> m_weaponsController.getRightX();
+        // SHOOTER_FULL_SEND_INTAKE = m_weaponsController.leftStick();
+        // SHOOTER_FULL_SEND = m_translator.button(1);
+        // SHOOTER_UNJAM = m_weaponsController.button(1);
+        // SHOOTER_PREPARE_THEN_SHOOT = m_weaponsController.back();
+        // break;
       case PROGRAMMERS:
       default:
         // Operator controls
@@ -211,10 +211,10 @@ public static Trigger ELEVATOR_INTAKE;
         // ALL TBD
 
         // isn't reading m_weaponsController.getLeftTriggerAxis, must be an issue with the encoder
-        PIVOT_AMP = m_weaponsController.button(1);
-        PIVOT_ZERO = m_weaponsController.button(2);
-        PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
-        PIVOT_PODIUM = m_weaponsController.button(1);
+        // PIVOT_AMP = m_weaponsController.button(1);
+        // PIVOT_ZERO = m_weaponsController.button(2);
+        // PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
+        // PIVOT_PODIUM = m_weaponsController.button(1);
 
         //Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
@@ -225,15 +225,15 @@ public static Trigger ELEVATOR_INTAKE;
         OUTTAKE = m_weaponsController.b();
         GRIPPERSTOP = m_weaponsController.x();
 
-        GROUND_INTAKE_IN = m_weaponsController.rightBumper();
-        GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
+        // GROUND_INTAKE_IN = m_weaponsController.rightBumper();
+        // GROUND_INTAKE_OUT = m_weaponsController.leftBumper();
 
-        // SHOOTER_SPEED = m_weaponsController::getRight;
+        // // SHOOTER_SPEED = m_weaponsController::getRight;
 
-        SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
-        SHOOTER_FULL_SEND = EMPTY_TRIGGER;
-        SHOOTER_UNJAM = EMPTY_TRIGGER;
-        SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
+        // SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
+        // SHOOTER_FULL_SEND = EMPTY_TRIGGER;
+        // SHOOTER_UNJAM = EMPTY_TRIGGER;
+        // SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
         break;
 
         // bottom right Left joystick to intake

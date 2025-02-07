@@ -223,7 +223,6 @@ public class RobotContainer {
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
 
-
     RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {

@@ -8,6 +8,11 @@ public class ArmConstants {
 
     public static final double kArmMotorSpeed = 0.2;
 
+
+
+  public static final double PID_TOLERANCE = Units.degreesToRadians(1);
+  public static final double PID_VELOCITY_TOLERANCE = 0.5;
+
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 1.3;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3; // TODO
 

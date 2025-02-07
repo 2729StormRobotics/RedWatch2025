@@ -96,7 +96,6 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     inputs.positionMeters = getPosition();
     inputs.velocityMetersPerSec = getVelocity();
     inputs.appliedVoltage = leftMotor.getAppliedOutput() * leftMotor.getBusVoltage();
-
     inputs.motorCurrent = new double[] { leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent() };
     inputs.motorTemperature = new double[] { leftMotor.getMotorTemperature(), rightMotor.getMotorTemperature() };
     SmartDashboard.putNumber("StringPot/Position", getStringPot().getPosition());

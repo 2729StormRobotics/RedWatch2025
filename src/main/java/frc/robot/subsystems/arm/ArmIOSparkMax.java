@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
@@ -17,12 +18,12 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import java.time.Instant;
+import java.util.Dictionary;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 
 import frc.robot.subsystems.arm.ArmIO.ArmIOInputs;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.arm.ArmConstants;
 
 public class ArmIOSparkMax implements ArmIO {
@@ -33,6 +34,15 @@ public class ArmIOSparkMax implements ArmIO {
     public SparkLimitSwitch metalDetector;
     public AbsoluteEncoder armAbsoluteEncoder;
 
+    private double kP = ArmConstants.kPArm;
+    private double kI = ArmConstants.kIArm;
+    private double kD = ArmConstants.kDArm;
+
+    /*
+     * This subsystem uses 2 motors to rotate our pivot arm from 0 - 180 degrees
+     * Inputs are given in Degrees
+     * 
+     */
     public ArmIOSparkMax() {
         // Define motor
         armSparkMaxLeft = new SparkMax(ArmConstants.kArmCANID, MotorType.kBrushless);
@@ -41,12 +51,13 @@ public class ArmIOSparkMax implements ArmIO {
         // Define Configs for Hanger Motor
 
         armConfigRight = new SparkMaxConfig();
-        armConfigRight.closedLoop.pid(ArmConstants.kPArm, ArmConstants.kIArm, ArmConstants.kDArm);
+        armConfigRight.closedLoop.pid(kP, kI, kD);
         armConfigRight.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         armConfigRight.closedLoop.outputRange(ArmConstants.kArmMinOutputPower, ArmConstants.kArmMaxOutputPower);
         armConfigRight.idleMode(IdleMode.kBrake);
 
-        armConfigRight.absoluteEncoder.velocityConversionFactor(0.10472);
+        armConfigRight.absoluteEncoder.velocityConversionFactor(6);
+        armConfigRight.absoluteEncoder.positionConversionFactor(360);
 
         // burn motor
         armSparkMaxLeft.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -60,13 +71,10 @@ public class ArmIOSparkMax implements ArmIO {
     }
 
     public void updateInputs(ArmIOInputs inputs) {
-        ArmIO.ArmIOInputs.armCLC = armConfigRight.closedLoop;
-        ArmIO.ArmIOInputs.armAppliedVolts = (armSparkMaxLeft.getBusVoltage() * armSparkMaxLeft.getAppliedOutput()); // divided
-                                                                                                              // by some
-                                                                                                              // number?
-        ArmIO.ArmIOInputs.armPositionRad = getArmAngleRad();
-        ArmIO.ArmIOInputs.armPositionDegrees = getArmAngleDegrees();
-        ArmIO.ArmIOInputs.armVelocityRadPerSec = getArmVelocity();
+        // inputs.armCLC = armConfigRight.closedLoop;
+        inputs.armAppliedVolts = (armSparkMaxLeft.getBusVoltage() * armSparkMaxLeft.getAppliedOutput());
+        inputs.armPositionDegrees = getArmAngleDegrees();
+        inputs.armVelocityRadPerSec = getArmVelocity();
     }
 
     @Override
@@ -80,15 +88,15 @@ public class ArmIOSparkMax implements ArmIO {
         return armSparkMaxLeft.getBusVoltage();
     }
 
-    @Override
-    public double getArmAngleRad() {
-        return armAbsoluteEncoder.getPosition();
-        // this is not right
-    }
+    // @Override
+    // public double getArmAngleRad() {
+    // return armAbsoluteEncoder.getPosition();
+    // // this is not right
+    // }
 
     @Override
     public double getArmAngleDegrees() {
-        return armAbsoluteEncoder.getPosition() * (180 / Math.PI);
+        return armAbsoluteEncoder.getPosition();
         // this is not righth
     }
 
@@ -108,7 +116,8 @@ public class ArmIOSparkMax implements ArmIO {
         armSparkMaxRight.setVoltage(voltage);
     }
 
-    public void goAngle(double kAngle) {
+    @Override
+    public void setArmPosition(double kAngle) {
         armSparkMaxRight.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
     }
 
@@ -117,61 +126,52 @@ public class ArmIOSparkMax implements ArmIO {
         armSparkMaxRight.stopMotor();
     };
 
-    @Override
-    public void setP(double p) {
-        ArmConstants.kPArm = p;
-        armConfigRight.closedLoop.p(p);
+    private void updateMotorConfig(SparkFlexConfig config) {
+        // DO NOT RESET paramaters becasue we only want to change some paramaters, not
+        // all
+        // DO NOT PERSIST because this is a temporary change that we don't want to save
+        // to memory
+        armSparkMaxLeft.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        armSparkMaxRight.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     @Override
-    public void setI(double i) {
-        ArmConstants.kIArm = i;
-        armConfigRight.closedLoop.i(i);
+    public void setP(double kP) {
+        this.kP = kP;
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.closedLoop.p(kP);
+        updateMotorConfig(config);
     }
 
     @Override
-    public void setD(double d) {
-        ArmConstants.kDArm = d;
-        armConfigRight.closedLoop.d(d);
+    public void setI(double kI) {
+        this.kI = kI;
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.closedLoop.i(kI);
+        updateMotorConfig(config);
+    }
+
+    @Override
+    public void setD(double kD) {
+        this.kD = kD;
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.closedLoop.d(kD);
+        updateMotorConfig(config);
     }
 
     @Override
     public double getP() {
-        return ArmConstants.kPArm;
+        return kP;
     }
 
     @Override
     public double getI() {
-        return ArmConstants.kIArm;
+        return kI;
     }
 
     @Override
     public double getD() {
-        return ArmConstants.kDArm;
+        return kD;
     }
-
-    @Override
-    public SequentialCommandGroup clockwise() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    this.pivotClockwise();
-                }));
-    };
-
-    @Override
-    public SequentialCommandGroup counterClockwise() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    this.pivotCounterclockwise();
-                }));
-    };
-
-    @Override
-    public SequentialCommandGroup stop() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    this.stopArm();
-                }));
-    };
-
 }

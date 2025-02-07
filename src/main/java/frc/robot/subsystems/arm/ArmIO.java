@@ -1,12 +1,9 @@
 package frc.robot.subsystems.arm;
 
-import com.revrobotics.spark.config.ClosedLoopConfig;
+import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.arm.ArmConstants;
+import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public interface ArmIO {
 
@@ -16,7 +13,7 @@ public interface ArmIO {
     public default void pivotCounterclockwise() {
     };
 
-    public default void setArmPosition() {
+    public default void setArmPosition(double position) {
     };
 
     public default void stopArm() {
@@ -78,22 +75,17 @@ public interface ArmIO {
         return new SequentialCommandGroup(null);
     };
 
+    @AutoLog
     public static class ArmIOInputs {
-        // public TrapezoidProfile.Constraints MOVEMENT_CONSTRAINTS = new
-        // TrapezoidProfile.Constraints(ArmIOConstants.MAX_VELOCITY_METERS_PER_SECOND,
-        // ArmIOConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
-        // public ProfiledPIDController armPIDController = new
-        // ProfiledPIDController(ArmIOConstants.kPArm, ArmIOConstants.kIArm,
-        // ArmIOConstants.kDArm, MOVEMENT_CONSTRAINTS); //dont know have to fix later
-        public static ClosedLoopConfig armCLC = new ClosedLoopConfig();
-        public static double armAppliedVolts = 0.0;
-        public static double armPositionRad = 0.0;
-        public static double armPositionDegrees = 0.0;
-        public static double armVelocityRadPerSec = 0.0;
+        // public ClosedLoopConfig armCLC = new ClosedLoopConfig();
+        public double armAppliedVolts = 0.0;
+        public double armPositionRad = 0.0;
+        public double armPositionDegrees = 0.0;
+        public double armVelocityRadPerSec = 0.0;
 
     }
 
-    public default void updateInputs(Double loop_time) {
-    }
+      public default void updateInputs(ArmIOInputs inputs) {}
+
 
 }

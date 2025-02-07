@@ -57,10 +57,10 @@ public class ArmIOSim implements ArmIO {
 
     public void updateInputs(ArmIOInputs inputs) {
         armSim.update(LOOP_PERIOD_SECS);
-        ArmIO.ArmIOInputs.armAppliedVolts = getVoltage();
-        ArmIO.ArmIOInputs.armPositionRad = getArmAngleRad();
-        ArmIO.ArmIOInputs.armPositionDegrees = getArmAngleDegrees();
-        ArmIO.ArmIOInputs.armVelocityRadPerSec = getArmVelocity();
+        inputs.armAppliedVolts = getVoltage();
+        inputs.armPositionRad = getArmAngleRad();
+        inputs.armPositionDegrees = getArmAngleDegrees();
+        inputs.armVelocityRadPerSec = getArmVelocity();
     }
 
     @Override
