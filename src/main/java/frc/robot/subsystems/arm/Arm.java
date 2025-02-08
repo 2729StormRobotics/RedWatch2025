@@ -67,6 +67,10 @@ public class Arm extends SubsystemBase {
     io.setVoltage(voltage);
   }
 
+  public void setSpeed(double speed){
+    io.setSpeed(speed);
+  }
+
   public double getPosition() {
     return inputs.armPositionDegrees;
   }
@@ -148,9 +152,9 @@ public class Arm extends SubsystemBase {
   // Allows manual control of the pivot arm for PID tuning
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(
-        () -> setVoltage(speedSupplier.getAsDouble()),
-        () -> setVoltage(speedSupplier.getAsDouble()),
-        (stop) -> setVoltage(0),
+        () -> setSpeed(speedSupplier.getAsDouble()),
+        () -> setSpeed(speedSupplier.getAsDouble()),
+        (stop) -> setSpeed(0),
         () -> false,
         this);
   }

@@ -3,8 +3,8 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.util.Units;
 
 public class ArmConstants {
-    public static final int kArmCANID = 0;
-    public static final int kArmCANID2 = 1;
+    public static final int kArmCANID = 11;
+    public static final int kArmCANID2 = 12;
 
     public static final double kArmMotorSpeed = 0.2;
 
@@ -28,7 +28,7 @@ public class ArmConstants {
     public static double kPArm = 0.0;
     public static double kIArm = 0.0;
     public static double kDArm = 0.0;
-    public static double kArmMinOutputPower = 0.0;
+    public static double kArmMinOutputPower = -1.0;
     public static double kArmMaxOutputPower = 1.0;
 
     public static class ArmSimConstants {

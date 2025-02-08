@@ -59,20 +59,23 @@ public class ArmIOSparkMax implements ArmIO {
         armConfigRight.absoluteEncoder.velocityConversionFactor(6);
         armConfigRight.absoluteEncoder.positionConversionFactor(360);
 
-        // burn motor
-        armSparkMaxLeft.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        armSparkMaxRight.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        metalDetector = armSparkMaxLeft.getForwardLimitSwitch();
-        armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
-
+        
         armConfigLeft = new SparkMaxConfig();
+        armConfigLeft.apply(armConfigRight);
         armConfigLeft.follow(armSparkMaxRight, false);
+
+        // burn motor
+        armSparkMaxLeft.configure(armConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        armSparkMaxRight.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // armSparkMaxRight.pauseFollowerMode();
+
+        metalDetector = armSparkMaxRight.getForwardLimitSwitch();
+        armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
     }
 
     public void updateInputs(ArmIOInputs inputs) {
         // inputs.armCLC = armConfigRight.closedLoop;
-        inputs.armAppliedVolts = (armSparkMaxLeft.getBusVoltage() * armSparkMaxLeft.getAppliedOutput());
+        inputs.armAppliedVolts = (armSparkMaxRight.getBusVoltage() * armSparkMaxRight.getAppliedOutput());
         inputs.armPositionDegrees = getArmAngleDegrees();
         inputs.armVelocityRadPerSec = getArmVelocity();
     }
@@ -85,7 +88,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public double getVoltage() {
-        return armSparkMaxLeft.getBusVoltage();
+        return armSparkMaxRight.getBusVoltage();
     }
 
     // @Override
@@ -114,6 +117,12 @@ public class ArmIOSparkMax implements ArmIO {
     @Override
     public void setVoltage(double voltage) {
         armSparkMaxRight.setVoltage(voltage);
+    }
+
+    
+    @Override
+    public void setSpeed(double speed) {
+        armSparkMaxRight.set(speed);
     }
 
     @Override

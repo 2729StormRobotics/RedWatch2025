@@ -10,11 +10,11 @@ import com.pathplanner.lib.auto.AutoBuilder.TriFunction;
 
 public class DriveControls {
   // Controllers
-  public static final CommandJoystick m_translator = new CommandJoystick(1) ;
+  public static final CommandJoystick m_translator = new CommandJoystick(1);
   public static final CommandJoystick m_rotator = new CommandJoystick(2);
   public static final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
-  //Misc Subsystem Controls
+  // Misc Subsystem Controls
   public static Trigger ROTATECLOCKWISE;
   public static Trigger ROTATECOUNTERCLOCKWISE;
   public static Trigger ARMSTOP;
@@ -35,65 +35,64 @@ public class DriveControls {
   public static Trigger PIVOT_L3_Intake;
   public static Trigger PIVOT_L4_Intake;
 
+  // Drive controls
+  public static DoubleSupplier DRIVE_FORWARD;
+  public static DoubleSupplier DRIVE_STRAFE;
+  public static DoubleSupplier DRIVE_ROTATE;
 
-// Drive controls
-public static DoubleSupplier DRIVE_FORWARD;
-public static DoubleSupplier DRIVE_STRAFE;
-public static DoubleSupplier DRIVE_ROTATE;
+  public static Trigger DRIVE_SLOW;
+  public static Trigger DRIVE_STOP;
+  public static Trigger DRIVE_HOLD_STOP;
 
-public static Trigger DRIVE_SLOW;
-public static Trigger DRIVE_STOP;
-public static Trigger DRIVE_HOLD_STOP;
+  // drive modes
+  public static Trigger DRIVE_ROBOT_RELATIVE;
+  public static Trigger DRIVE_FIELD_RELATIVE;
+  public static Trigger DRIVE_REEF_AIM;
 
-// drive modes
-public static Trigger DRIVE_ROBOT_RELATIVE;
-public static Trigger DRIVE_FIELD_RELATIVE;
-public static Trigger DRIVE_REEF_AIM;
+  // Drive Angle Locks
+  public static Trigger LOCK_BACK;
+  public static Trigger LOCK_PICKUP;
+  public static Trigger LOCK_PASS;
+  public static Trigger LOCK_ON_AMP;
 
-// Drive Angle Locks
-public static Trigger LOCK_BACK;
-public static Trigger LOCK_PICKUP;
-public static Trigger LOCK_PASS;
-public static Trigger LOCK_ON_AMP;
+  // Drive Trajectories
+  public static Trigger DRIVE_R1;
+  public static Trigger DRIVE_R2;
+  public static Trigger DRIVE_R3;
+  public static Trigger DRIVE_R4;
+  public static Trigger DRIVE_R5;
+  public static Trigger DRIVE_R6;
 
-// Drive Trajectories
-public static Trigger DRIVE_R1;
-public static Trigger DRIVE_R2;
-public static Trigger DRIVE_R3;
-public static Trigger DRIVE_R4;
-public static Trigger DRIVE_R5;
-public static Trigger DRIVE_R6;
+  public static Trigger DRIVE_PROCESSOR;
+  public static Trigger DRIVE_FEED;
 
-public static Trigger DRIVE_PROCESSOR;
-public static Trigger DRIVE_FEED;
+  public static Trigger MELTDOWN;
 
-public static Trigger MELTDOWN;
+  public static Trigger RESET_GYRO;
+  // SYSID Controls
+  public static Trigger QUASISTATIC_FORWARD;
+  public static Trigger QUASISTATIC_REVERSE;
+  public static Trigger DYNAMIC_FORWARD;
+  public static Trigger DYNAMIC_REVERSE;
 
-public static Trigger RESET_GYRO;
-// SYSID Controls
-public static Trigger QUASISTATIC_FORWARD;
-public static Trigger QUASISTATIC_REVERSE;
-public static Trigger DYNAMIC_FORWARD;
-public static Trigger DYNAMIC_REVERSE;
-
-public static Trigger ELEVATOR_L1;
-public static Trigger ELEVATOR_L2;
-public static Trigger ELEVATOR_L3;
-public static Trigger ELEVATOR_L4;
-public static Trigger ELEVATOR_INTAKE;
+  public static Trigger ELEVATOR_L1;
+  public static Trigger ELEVATOR_L2;
+  public static Trigger ELEVATOR_L3;
+  public static Trigger ELEVATOR_L4;
+  public static Trigger ELEVATOR_INTAKE;
 
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
-        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/2);
+        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY() / 2);
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
-        DRIVE_STRAFE = () -> (-m_translator.getX() );
+        DRIVE_STRAFE = () -> (-m_translator.getX());
         DRIVE_ROTATE = () -> (-m_rotator.getX());
         RESET_GYRO = m_translator.button(12);
 
-        //Misc Subsytem Controls
+        // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.y();
@@ -118,7 +117,7 @@ public static Trigger ELEVATOR_INTAKE;
         LOCK_ON_AMP = m_translator.button(1);
         LOCK_PASS = m_translator.button(1); // uses vision
 
-       // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
+        // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
         break;
 
       case PROGRAMMERS:
@@ -129,7 +128,7 @@ public static Trigger ELEVATOR_INTAKE;
         DRIVE_ROTATE = () -> (-m_translator.getTwist());
         RESET_GYRO = m_translator.button(12);
 
-        //Misc Subsytem Controls
+        // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();
@@ -154,45 +153,39 @@ public static Trigger ELEVATOR_INTAKE;
         LOCK_ON_AMP = m_translator.button(1);
         LOCK_PASS = m_translator.button(1); // uses vision
 
-       // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
+        // DRIVE_AMP = EMPTY_TRIGGER; // uses vision
     }
 
     switch (Constants.operator) {
       case KRITHIK:
-        PIVOT_ROTATE =
-            () ->
-                (m_weaponsController.getRightTriggerAxis()
-                    - m_weaponsController.getLeftTriggerAxis());
+        PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 2);
         // all tbd
         // Pivot things
         PIVOT_L1_Intake = m_weaponsController.b();
         PIVOT_L2_Intake = m_weaponsController.a();
         PIVOT_L3_Intake = m_weaponsController.y();
         PIVOT_L4_Intake = m_weaponsController.x();
-        
 
-        //Misc Subsytem Controls
+        // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();
         INTAKE = m_weaponsController.a();
         OUTTAKE = m_weaponsController.b();
         GRIPPERSTOP = m_weaponsController.x();
-       
+
         break;
       case PROGRAMMERS:
       default:
         // Operator controls
-        PIVOT_ROTATE =
-            () ->
-                (m_weaponsController.getRightTriggerAxis()
-                    - m_weaponsController.getLeftTriggerAxis());
+        PIVOT_ROTATE = () -> (m_weaponsController.getRightY());
 
         // ALL TBD
 
-        // isn't reading m_weaponsController.getLeftTriggerAxis, must be an issue with the encoder
-      
-        //Misc Subsytem Controls
+        // isn't reading m_weaponsController.getLeftTriggerAxis, must be an issue with
+        // the encoder
+
+        // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();

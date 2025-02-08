@@ -37,6 +37,9 @@ public interface ArmIO {
 
     public default void setVoltage(double voltage) {
     };
+    
+    public default void setSpeed(double speed) {
+    };
 
     public default void setP(double p) {
     };
