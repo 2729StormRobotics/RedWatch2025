@@ -52,16 +52,23 @@ public class GripperIOSparkMax implements GripperIO {
         m_gripperMotor.set(0);
     }
 
+    /**
+     * Sets motor speed to inwards
+     */
     @Override
     public void setMotorIn() {
         m_gripperMotor.set(GripperConstants.motorSpeedInGripper);
     }
 
+    /**
+     * Sets motor speed to outwards
+     */
     @Override
     public void setMotorOut() {
         m_gripperMotor.set(GripperConstants.motorSpeedOutGripper);
     }
 
+    
     @Override
     public Command intake() {
         return new InstantCommand(() -> {
