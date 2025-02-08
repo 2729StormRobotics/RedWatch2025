@@ -17,10 +17,10 @@ public interface GripperIO {
     public default void stopMotor() {
     }
 
-    public default void setIn() {
+    public default void setMotorIn() {
     }
 
-    public default void setOut() {
+    public default void setMotorOut() {
     }
 
     public default Command intake() {

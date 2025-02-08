@@ -89,6 +89,7 @@ public class Arm extends SubsystemBase {
     Logger.recordOutput("Arm/Setpoint", setpoint);
   }
 
+
   public void addPID(double setpointAdd) {
     this.setpoint += setpointAdd;
     this.setpoint = MathUtil.clamp(

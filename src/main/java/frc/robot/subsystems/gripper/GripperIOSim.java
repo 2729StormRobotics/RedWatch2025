@@ -31,7 +31,7 @@ public class GripperIOSim implements GripperIO {
         }
     }
 
-    public void setIn() {
+    public void setMotorIn() {
         if (m_simgripperMotor != null) {
             // Simulated motor in
             m_simgripperMotor.set(GripperConstants.motorSpeedInGripper);
@@ -39,7 +39,7 @@ public class GripperIOSim implements GripperIO {
 
     }
 
-    public void setOut() {
+    public void setMotorOut() {
         if (m_simgripperMotor != null) {
             m_simgripperMotor.set(GripperConstants.motorSpeedOutGripper);
         }
@@ -48,14 +48,14 @@ public class GripperIOSim implements GripperIO {
     @Override
     public Command intake() {
         return new InstantCommand(() -> {
-            setIn();
+            setMotorIn();
         });
     }
 
     @Override
     public Command outtake() {
         return new InstantCommand(() -> {
-            setOut();
+            setMotorOut();
         });
     }
 }

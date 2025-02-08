@@ -42,26 +42,26 @@ public class GripperIOSparkMax implements GripperIO {
     }
 
     @Override
-    public void setIn() {
+    public void setMotorIn() {
         m_gripperMotor.set(GripperConstants.motorSpeedInGripper);
     }
 
     @Override
-    public void setOut() {
+    public void setMotorOut() {
         m_gripperMotor.set(GripperConstants.motorSpeedOutGripper);
     }
 
     @Override
     public Command intake() {
         return new InstantCommand(() -> {
-            setIn();
+            setMotorIn();
         });
     }
 
     @Override
     public Command outtake() {
         return new InstantCommand(() -> {
-            setOut();
+            setMotorOut();
         });
     }
 
