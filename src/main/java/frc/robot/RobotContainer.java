@@ -191,8 +191,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Set up auto routines
-    System.out.println("[Init] Setting up Logged Auto Chooser");
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // System.out.println("[Init] Setting up Logged Auto Chooser");
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
   }
   // zero gyro
   public void reset() {
@@ -212,17 +212,17 @@ public class RobotContainer {
       // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     
     DriveControls.configureControls();
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+    // elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
+    // arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     // ROTATECLOCKWISE.onTrue(arm.());
     // ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
-    ARMSTOP.onTrue(arm.stop());
-    INTAKE.onTrue(m_gripper.intake());
-    OUTTAKE.onTrue(m_gripper.outtake());
-    GRIPPERSTOP.onTrue(m_gripper.stop());
+    // ARMSTOP.onTrue(arm.stop());
+    // INTAKE.onTrue(m_gripper.intake());
+    // OUTTAKE.onTrue(m_gripper.outtake());
+    // GRIPPERSTOP.onTrue(m_gripper.stop());
 
     RESET_GYRO.onTrue(
         new InstantCommand(
