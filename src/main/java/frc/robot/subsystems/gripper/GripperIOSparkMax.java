@@ -1,6 +1,7 @@
 package frc.robot.subsystems.gripper;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -25,7 +26,7 @@ public class GripperIOSparkMax implements GripperIO {
         // Configure Motor
         motorConfig = new SparkMaxConfig();
         motorConfig.closedLoop.pid(GripperConstants.kPGripper, GripperConstants.kIGripper, GripperConstants.kDGripper);
-        motorConfig.limitSwitch.forwardLimitSwitchEnabled(false);
+        motorConfig.limitSwitch.forwardLimitSwitchEnabled(true);
         motorConfig.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
         motorConfig.idleMode(IdleMode.kCoast);
         motorConfig.smartCurrentLimit(40);
@@ -69,24 +70,4 @@ public class GripperIOSparkMax implements GripperIO {
     }
 
     
-    @Override
-    public Command intake() {
-        return new InstantCommand(() -> {
-            setMotorIn();
-        });
-    }
-
-    @Override
-    public Command outtake() {
-        return new InstantCommand(() -> {
-            setMotorOut();
-        });
-    }
-
-    @Override
-    public Command stop(){
-        return new InstantCommand(() -> {
-            stopMotor();
-        });
-    }
 }
