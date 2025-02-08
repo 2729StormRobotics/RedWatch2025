@@ -27,7 +27,7 @@ public class DriveControls {
   // drive modes
   public static Trigger DRIVE_ROBOT_RELATIVE;
   public static Trigger DRIVE_FIELD_RELATIVE;
-  public static Trigger DRIVE_SPEAKER_AIM;
+  public static Trigger DRIVE_LIMELIGHT_ALIGN;
   public static Trigger DRIVE_PHOTONVISION_ALIGN;
 
   // Drive Angle Locks
@@ -100,7 +100,7 @@ public class DriveControls {
 
         // Driver Modes
         DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
-        DRIVE_SPEAKER_AIM = m_translator.button(1); // uses vision
+        DRIVE_LIMELIGHT_ALIGN = m_translator.button(1); // uses vision
         DRIVE_PHOTONVISION_ALIGN = m_translator.button(3); // uses vision
 
         // ALL BELOW TBD
@@ -147,10 +147,10 @@ public class DriveControls {
                     - m_weaponsController.getLeftTriggerAxis());
         // all tbd
         // Pivot things
-        PIVOT_AMP = m_weaponsController.b();
+        // PIVOT_AMP = m_weaponsController.b();
         PIVOT_ZERO = m_weaponsController.a();
-        PIVOT_TO_SPEAKER = m_weaponsController.y();
-        PIVOT_PODIUM = m_weaponsController.y();
+        // PIVOT_TO_SPEAKER = m_weaponsController.y();
+        // PIVOT_PODIUM = m_weaponsController.y();
         PIVOT_ANYWHERE = m_weaponsController.button(1); // uses vision
         PIVOT_HOLD = m_weaponsController.start();
         PIVOT_AND_REV = new Trigger(() -> (m_weaponsController.getRightTriggerAxis() > 0.5));
@@ -181,10 +181,10 @@ public class DriveControls {
         // ALL TBD
 
         // isn't reading m_weaponsController.getLeftTriggerAxis, must be an issue with the encoder
-        PIVOT_AMP = m_weaponsController.button(1);
+        // PIVOT_AMP = m_weaponsController.button(1);
         PIVOT_ZERO = m_weaponsController.button(2);
-        PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
-        PIVOT_PODIUM = m_weaponsController.button(1);
+        // PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
+        // PIVOT_PODIUM = m_weaponsController.button(1);
 
         INTAKE_IN = m_weaponsController.rightBumper();
         INTAKE_OUT = m_weaponsController.leftBumper();

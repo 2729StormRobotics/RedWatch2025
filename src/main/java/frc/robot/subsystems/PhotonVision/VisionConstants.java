@@ -23,7 +23,7 @@ public class VisionConstants extends SubsystemBase {
   /** Creates a new VisionConstants. */
   public VisionConstants() {}
 
-  public static final String cam1Name = "Back_Camera";
+  public static final String cam1Name = "Front_Camera";
   public static final String cam3Name = "Left_Camera";
   public static final String cam2Name = "Right_Camera";
 
