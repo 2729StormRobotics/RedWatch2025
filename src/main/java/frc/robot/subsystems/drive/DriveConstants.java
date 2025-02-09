@@ -68,5 +68,10 @@ public final class DriveConstants {
   public static final double kTurnAngleTolerance = 0.05;
   public static final double kTurnAngleRateTolerance = 0.02;
 
+
+  public static final double kTranslationP = 3.50;
+  public static final double kTranslationI = 0.0;
+  public static final double kTranslationD = 0.0;
+  
   public static final double angleThreshold = 3;
 }
