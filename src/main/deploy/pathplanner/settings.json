@@ -5,8 +5,10 @@
   "pathFolders": [
     "I1 Inbound",
     "I1 Outbound",
+    "I2 Inbound",
+    "S3 Outbound",
     "S4 Outbound",
-    "S3 Outbound"
+    "S5 Outbound"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
