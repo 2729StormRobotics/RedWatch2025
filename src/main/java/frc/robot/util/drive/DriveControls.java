@@ -18,6 +18,7 @@ public class DriveControls {
   public static Trigger ROTATECLOCKWISE;
   public static Trigger ROTATECOUNTERCLOCKWISE;
   public static Trigger ARMSTOP;
+  public static Trigger CALIBRATEARM;
 
   public static Trigger INTAKE;
   public static Trigger OUTTAKE;
@@ -26,6 +27,7 @@ public class DriveControls {
   // Useful for things that don't need to be triggered
   private static final Trigger EMPTY_TRIGGER = new Trigger(() -> false);
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
+
 
   // Drive controls
   public static DoubleSupplier ELEVATOR_JOYSTICK;
@@ -92,10 +94,13 @@ public class DriveControls {
         DRIVE_ROTATE = () -> (-m_rotator.getX());
         RESET_GYRO = m_translator.button(12);
 
+
+
         // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.y();
+        CALIBRATEARM = m_weaponsController.rightStick();
 
         INTAKE = m_weaponsController.a();
         OUTTAKE = m_weaponsController.b();
@@ -132,6 +137,7 @@ public class DriveControls {
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();
+        CALIBRATEARM = m_weaponsController.rightStick();
 
         INTAKE = m_weaponsController.a();
         OUTTAKE = m_weaponsController.b();
@@ -188,6 +194,7 @@ public class DriveControls {
         // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
+        CALIBRATEARM = m_weaponsController.rightStick();
         ARMSTOP = m_weaponsController.x();
 
         INTAKE = m_weaponsController.a();

@@ -19,6 +19,12 @@ public interface ArmIO {
     public default void stopArm() {
     };
 
+    public default void changeOffset(double newOffset){
+
+    }
+
+    public default boolean getHallEffect(){return false;};
+
     public default double getVoltage() {
         return 0.0;
     };
