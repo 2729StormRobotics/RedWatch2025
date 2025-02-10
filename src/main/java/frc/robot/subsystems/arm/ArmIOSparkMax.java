@@ -31,8 +31,9 @@ public class ArmIOSparkMax implements ArmIO {
     public SparkMax armSparkMaxRight;
     public SparkMaxConfig armConfigRight;
     public SparkMaxConfig armConfigLeft;
-    public SparkLimitSwitch metalDetector;
+    public SparkLimitSwitch hallEffect;
     public AbsoluteEncoder armAbsoluteEncoder;
+    public double armEncoderOffset;
 
     private double kP = ArmConstants.kPArm;
     private double kI = ArmConstants.kIArm;
@@ -69,7 +70,7 @@ public class ArmIOSparkMax implements ArmIO {
         armSparkMaxRight.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // armSparkMaxRight.pauseFollowerMode();
 
-        metalDetector = armSparkMaxRight.getForwardLimitSwitch();
+        hallEffect = armSparkMaxRight.getForwardLimitSwitch();
         armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
     }
 
@@ -87,6 +88,16 @@ public class ArmIOSparkMax implements ArmIO {
     }
 
     @Override
+    public boolean getHallEffect(){
+        return hallEffect.isPressed();
+    }
+
+    @Override
+    public void changeOffset(double newOffset){
+        armEncoderOffset += newOffset;
+    }   
+
+    @Override
     public double getVoltage() {
         return armSparkMaxRight.getBusVoltage();
     }
@@ -99,7 +110,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public double getArmAngleDegrees() {
-        return armAbsoluteEncoder.getPosition();
+        return armAbsoluteEncoder.getPosition() + armEncoderOffset;
         // this is not righth
     }
 

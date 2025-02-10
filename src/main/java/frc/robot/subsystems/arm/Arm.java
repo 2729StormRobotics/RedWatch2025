@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 
 /*
  * NEED TO MAKE LIGAMENTS and Mechanisms
@@ -19,6 +22,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Arm extends SubsystemBase {
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
+
+  PowerDistribution m_PDH = new PowerDistribution(20,ModuleType.kRev);
+
 
   private LoggedNetworkNumber logP;
   private LoggedNetworkNumber logI;
@@ -45,6 +51,8 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Arm Position", inputs.armPositionDegrees);
     SmartDashboard.putNumber("Arm Velocity", inputs.armVelocityRadPerSec);
     SmartDashboard.putNumber("Arm Current", inputs.armAppliedVolts);
+    SmartDashboard.putData("PDH", m_PDH);
+
 
     // Update the PID constants if they have changed
     if (logP.get() != io.getP())
@@ -67,8 +75,14 @@ public class Arm extends SubsystemBase {
     io.setVoltage(voltage);
   }
 
+  //true is right side, false is left
+  public boolean getSide(){
+    return io.getArmAngleDegrees() >= 90;
+  }
+
   public void setSpeed(double speed){
-    io.setSpeed(speed);
+    if( !((speed > 0 && getSide() && io.getHallEffect()) || (speed < 0 && !getSide() && io.getHallEffect())) )
+    {io.setSpeed(speed);}
   }
 
   public double getPosition() {
@@ -119,6 +133,18 @@ public class Arm extends SubsystemBase {
         (stop) -> setVoltage(0),
         () -> false,
         this);
+  }
+
+  public Command CalibrateArm(){
+    return new FunctionalCommand(
+      () -> {}, 
+      () -> {setSpeed(-0.1);},
+      (stop) -> {
+        io.changeOffset(-io.getArmAngleDegrees());
+        io.stopArm();
+      }, 
+       () -> !getSide(),
+       this);
   }
 
   public Command PIDCommandForever(double setpoint) {
