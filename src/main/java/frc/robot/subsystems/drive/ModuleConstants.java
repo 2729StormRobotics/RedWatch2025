@@ -61,6 +61,6 @@ public final class ModuleConstants {
   public static final IdleMode kDrivingMotorIdleMode = IdleMode.kCoast;
   public static final IdleMode kTurningMotorIdleMode = IdleMode.kCoast;
 
-  public static final int kDrivingMotorCurrentLimit = 35; // amps
+  public static final int kDrivingMotorCurrentLimit = 70; // amps
   public static final int kTurningMotorCurrentLimit = 20; // amps
 }
