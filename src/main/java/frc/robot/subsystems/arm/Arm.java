@@ -90,7 +90,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double getVelocity() {
-    return inputs.armPositionDegrees;
+    return io.getArmVelocity();
   }
 
   public boolean atSetpoint() {

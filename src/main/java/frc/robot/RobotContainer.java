@@ -218,13 +218,13 @@ public class RobotContainer {
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    // arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
+    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     // ROTATECLOCKWISE.onTrue(arm.());
     // ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
-    // ARMSTOP.onTrue(arm.stop());
-    // INTAKE.onTrue(m_gripper.intake());
-    // OUTTAKE.onTrue(m_gripper.outtake());
-    // GRIPPERSTOP.onTrue(m_gripper.stop());
+    ARMSTOP.onTrue(arm.stop());
+    INTAKE.onTrue(m_gripper.intake());
+    OUTTAKE.onTrue(m_gripper.outtake());
+    GRIPPERSTOP.onTrue(m_gripper.stop());
     CALIBRATEARM.onTrue(arm.CalibrateArm());
 
     RESET_GYRO.onTrue(
