@@ -15,6 +15,18 @@
           "data": {
             "pathName": "5R - I2"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I2 - 4R"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4R - I2"
+          }
         }
       ]
     }
