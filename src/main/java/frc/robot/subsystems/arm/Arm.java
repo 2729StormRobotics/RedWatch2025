@@ -138,7 +138,7 @@ public class Arm extends SubsystemBase {
   public Command CalibrateArm(){
     return new FunctionalCommand(
       () -> {}, 
-      () -> {setSpeed(-0.1);},
+      () -> {setSpeed(0.1);},
       (stop) -> {
         io.changeOffset(-io.getArmAngleDegrees());
         io.stopArm();
