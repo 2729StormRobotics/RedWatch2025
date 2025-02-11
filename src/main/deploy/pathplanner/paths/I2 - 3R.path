@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.584002884342172,
-        "y": 1.7864954953509895
+        "x": 2.443039772727273,
+        "y": 2.0655823863636362
       },
       "isLocked": false,
       "linkedName": "i2"
     },
     {
       "anchor": {
-        "x": 3.63675,
-        "y": 2.94275
+        "x": 3.121,
+        "y": 3.8006392045454542
       },
       "prevControl": {
-        "x": 2.8215997574209815,
-        "y": 2.0106972653881994
+        "x": 3.121,
+        "y": 2.2522145557967566
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 57.3534692442662
+    "rotation": -1.1457628381751341
   },
   "reversed": false,
   "folder": "I2 Outbound",

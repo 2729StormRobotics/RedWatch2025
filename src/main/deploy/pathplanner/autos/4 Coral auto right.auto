@@ -27,6 +27,12 @@
           "data": {
             "pathName": "4R - I2"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I2 - 4L"
+          }
         }
       ]
     }
