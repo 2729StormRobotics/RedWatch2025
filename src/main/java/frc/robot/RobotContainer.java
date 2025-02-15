@@ -48,7 +48,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
-
+import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperIO;
 import frc.robot.subsystems.gripper.GripperIOSim;
 import frc.robot.subsystems.gripper.GripperIOSparkMax;
@@ -76,7 +76,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Elevator elevator;
   private final Arm arm;
-  private final GripperIO m_gripper;
+  private final Gripper m_gripper;
 
   private boolean brakeMode = true;
 
@@ -108,7 +108,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
               arm = new Arm(new ArmIOSparkMax());
-              m_gripper = new GripperIOSparkMax();
+              m_gripper = new Gripper(new GripperIOSparkMax());
         break;
         
       case SIM:
@@ -122,7 +122,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
                 arm = new Arm(new ArmIOSim());
-                m_gripper = new GripperIOSim();
+                m_gripper = new Gripper( new GripperIOSim());
         break;
 
       default:
@@ -137,7 +137,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
             arm = new Arm(new ArmIO() {});
-            m_gripper = new GripperIOSim();
+            m_gripper = new Gripper(new GripperIOSim());
         break;
     }
 
@@ -214,7 +214,7 @@ public class RobotContainer {
       // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     
     DriveControls.configureControls();
-    // elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
@@ -222,7 +222,7 @@ public class RobotContainer {
     // ROTATECLOCKWISE.onTrue(arm.());
     // ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
     ARMSTOP.onTrue(arm.stop());
-    INTAKE.onTrue(m_gripper.intake());
+    INTAKE.onTrue(m_gripper.Intake());
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     CALIBRATEARM.onTrue(arm.CalibrateArm());

@@ -164,7 +164,7 @@ public class DriveControls {
 
     switch (Constants.operator) {
       case KRITHIK:
-        PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 2);
+        PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 10);
         // all tbd
         // Pivot things
         PIVOT_L1_Intake = m_weaponsController.b();

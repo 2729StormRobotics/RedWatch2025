@@ -81,8 +81,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setSpeed(double speed){
-    if( !((speed > 0 && getSide() && io.getHallEffect()) || (speed < 0 && !getSide() && io.getHallEffect())) )
-    {io.setSpeed(speed);}
+    io.setSpeed(speed);
   }
 
   public double getPosition() {

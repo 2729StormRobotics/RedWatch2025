@@ -56,13 +56,18 @@ public class ArmIOSparkMax implements ArmIO {
         armConfigRight.closedLoop.outputRange(ArmConstants.kArmMinOutputPower, ArmConstants.kArmMaxOutputPower);
         armConfigRight.idleMode(IdleMode.kBrake);
 
+        armConfigRight.softLimit.forwardSoftLimit(0);
+        armConfigRight.softLimit.forwardSoftLimitEnabled(true);
+        armConfigRight.softLimit.reverseSoftLimit(180);
+        armConfigRight.softLimit.reverseSoftLimitEnabled(true);
+
         armConfigRight.absoluteEncoder.velocityConversionFactor(6);
         armConfigRight.absoluteEncoder.positionConversionFactor(360);
 
         
         armConfigLeft = new SparkMaxConfig();
         armConfigLeft.apply(armConfigRight);
-        armConfigLeft.follow(armSparkMaxRight, false);
+        armConfigLeft.follow(armSparkMaxRight, true);
 
         // burn motor
         armSparkMaxLeft.configure(armConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
+
 public class ArmIOSim implements ArmIO {
     private static final double LOOP_PERIOD_SECS = 0.02;
     private static final DCMotor armMotorModel = DCMotor.getNEO(ArmConstants.kArmCANID);
@@ -30,7 +31,7 @@ public class ArmIOSim implements ArmIO {
 
     // private final EncoderSim encoder = new EncoderSim(new
     // Encoder(DigitalSource(), null));
-    // private final Encoder m_encoder;
+    private final Encoder m_encoder;
     public final EncoderSim m_encoderSim;
     private SingleJointedArmSim sim = new SingleJointedArmSim(
             armMotorModel,
@@ -44,9 +45,9 @@ public class ArmIOSim implements ArmIO {
             0.1);
 
     public ArmIOSim() {
-        // m_encoder = new Encoder(ArmConstants.ArmSimConstants.kEncoderAChannel,
-                // ArmConstants.ArmSimConstants.kEncoderBChannel);
-        m_encoderSim = new EncoderSim(3);
+        m_encoder = new Encoder(ArmConstants.ArmSimConstants.kEncoderAChannel,
+                ArmConstants.ArmSimConstants.kEncoderBChannel);
+        m_encoderSim = new EncoderSim(m_encoder);
         m_encoderSim.setDistancePerPulse(ArmConstants.ArmSimConstants.kArmEncoderDistPerPulse);
         m_controller = new ProfiledPIDController(ArmConstants.ArmSimConstants.kArmSimPID[0],
                 ArmConstants.ArmSimConstants.kArmSimPID[1], ArmConstants.ArmSimConstants.kArmSimPID[2],
