@@ -19,9 +19,9 @@ public class ArmConstants {
     public static final double kArmMotorStop = 0;
 
     public static final double kL1 = 0.0;
-    public static final double kL2 = 0.0;
-    public static final double kL3 = 0.0;
-    public static final double kL4 = 0.0;
+    public static final double kL2 = 32.0;
+    public static final double kL3 = 32.0;
+    public static final double kL4 = 60.0;
     public static final double kIntake = 0.0;
     public static final double kOneMore = 0; // ?????
 

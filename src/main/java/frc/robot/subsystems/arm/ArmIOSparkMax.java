@@ -157,7 +157,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public void setP(double kP) {
-        this.kP = kP;
+        this.kP = kP;   
         SparkFlexConfig config = new SparkFlexConfig();
         config.closedLoop.p(kP);
         updateMotorConfig(config);
