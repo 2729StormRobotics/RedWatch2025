@@ -1,0 +1,12 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Elevator": "Subsystem"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
