@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.arm.ArmIO.ArmIOInputs;
 import frc.robot.subsystems.arm.ArmConstants;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -27,7 +29,7 @@ public class ArmIOSim implements ArmIO {
     private final DCMotorSim armSim = new DCMotorSim(
             LinearSystemId.createDCMotorSystem(armMotorModel, 0.004, armReduction),
             armMotorModel);
-    private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(0, 0);
+            private ArmFeedforward m_feedforward = new ArmFeedforward(0, 0, 0, 0);
 
     // private final EncoderSim encoder = new EncoderSim(new
     // Encoder(DigitalSource(), null));
@@ -89,9 +91,83 @@ public class ArmIOSim implements ArmIO {
         m_controller.setGoal(kArmPositionPlaceholder);
         // With the setpoint value we run PID control like normal
         double pidOutput = m_controller.calculate(getArmAngleDegrees());
-        double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
+        double feedforwardOutput = m_feedforward.calculate(getArmAngleDegrees(),m_controller.getSetpoint().velocity);
 
         sim.setInputVoltage(feedforwardOutput + pidOutput);
     }
+
+  @Override
+  public void setP(double p) {
+    m_controller.setP(p);
+  }
+
+  @Override
+  public void setI(double i) {
+    m_controller.setI(i);
+  }
+
+  @Override
+  public void setD(double d) {
+    m_controller.setD(d);
+  }
+
+  @Override
+  public void setkS(double kS) {
+    m_feedforward =
+        new ArmFeedforward(kS, m_feedforward.getKg(), m_feedforward.getKv(), m_feedforward.getKa());
+  }
+
+  @Override
+  public void setkG(double kG) {
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), kG, m_feedforward.getKv(), m_feedforward.getKa());
+  }
+
+  @Override
+  public void setkV(double kV) {
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), m_feedforward.getKg(), kV, m_feedforward.getKa());
+  }
+
+  @Override
+  public void setkA(double kA) {
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), m_feedforward.getKg(), m_feedforward.getKv(), kA);
+  }
+
+  @Override
+  public double getP() {
+    return m_controller.getP();
+  }
+
+  @Override
+  public double getI() {
+    return m_controller.getI();
+  }
+
+  @Override
+  public double getD() {
+    return m_controller.getD();
+  }
+
+  @Override
+  public double getkS() {
+    return m_feedforward.getKs();
+  }
+
+  @Override
+  public double getkG() {
+    return m_feedforward.getKg();
+  }
+
+  @Override
+  public double getkV() {
+    return m_feedforward.getKv();
+  }
+
+  @Override
+  public double getkA() {
+    return m_feedforward.getKa();
+  }
 
 }

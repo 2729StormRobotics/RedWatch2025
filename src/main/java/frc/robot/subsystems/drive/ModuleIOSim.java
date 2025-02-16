@@ -114,6 +114,6 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public double getTurnPositionError(double angle) {
-    return turnFeedback.getPositionError();
+    return turnFeedback.getErrorDerivative();
   }
 }

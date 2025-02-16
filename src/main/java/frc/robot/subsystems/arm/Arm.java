@@ -53,6 +53,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Arm Current", inputs.armAppliedVolts);
     SmartDashboard.putData("PDH", m_PDH);
 
+    checkAndResetABSEncoder();
 
     // Update the PID constants if they have changed
     if (logP.get() != io.getP())
@@ -67,6 +68,15 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
   }
 
+  public void checkAndResetABSEncoder() {
+    boolean isPressed = io.getHallEffect();
+    if ((isPressed) && (getSide())){
+      io.changeOffset((180-io.getArmAngleDegrees()));
+    }
+    if ((isPressed) && (!getSide())){
+      io.changeOffset((0-io.getArmAngleDegrees()));
+    }
+  }
   public void setPosition(double position) {
     io.setArmPosition(position);
   }
@@ -76,7 +86,7 @@ public class Arm extends SubsystemBase {
   }
 
   //true is right side, false is left
-  public boolean getSide(){
+  private boolean getSide(){
     return io.getArmAngleDegrees() >= 90;
   }
 
@@ -201,7 +211,7 @@ public class Arm extends SubsystemBase {
           setVoltage(0);
         },
         () -> {
-          return io.getArmAngleDegrees() < 1;
+          return io.getArmAngleDegrees() < 5;
         },
         this);
   }
