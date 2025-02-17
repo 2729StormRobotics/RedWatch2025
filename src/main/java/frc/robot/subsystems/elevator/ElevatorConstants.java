@@ -88,8 +88,8 @@ public class ElevatorConstants {
 
     public static class ElevatorSimConstants {
         public static final double[] kElevatorSimPID = { 15, 0, 0, 0 };
-        public static final int kEncoderAChannel = 2;
-        public static final int kEncoderBChannel = 3;
+        public static final int kEncoderAChannel = 7;
+        public static final int kEncoderBChannel = 8;
         // Convert from encoder steps to meters
 
         // 4096 pulses per revolution

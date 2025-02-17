@@ -1,0 +1,193 @@
+{
+  "hubs": [
+    {
+      "x": 222,
+      "y": 110,
+      "width": 1100,
+      "height": 650,
+      "state": {
+        "sidebar": {
+          "width": 300,
+          "expanded": []
+        },
+        "tabs": {
+          "selected": 9,
+          "tabs": [
+            {
+              "type": 0,
+              "path": "../docs/INDEX.md"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Line Graph"
+            },
+            {
+              "type": 5,
+              "uuid": "5ab15ihsszc9ckog4om05viuexk56m5a",
+              "fields": [],
+              "listFields": [
+                []
+              ],
+              "options": {
+                "game": "2024 Field",
+                "unitDistance": "meters",
+                "unitRotation": "radians",
+                "origin": "right",
+                "size": 0.75,
+                "allianceBumpers": "auto",
+                "allianceOrigin": "blue",
+                "orientation": "blue left, red right"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Odometry"
+            },
+            {
+              "type": 10,
+              "uuid": "8drq1s4sus4h08dpxms1bt9k5nsx3v37",
+              "fields": [
+                null,
+                null,
+                null
+              ],
+              "listFields": [],
+              "options": {},
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Mechanism"
+            },
+            {
+              "type": 9,
+              "uuid": "n4bjn3k60sevhhecnfpgpnffgql3gom2",
+              "fields": [
+                null,
+                null,
+                null
+              ],
+              "listFields": [],
+              "options": {
+                "maxSpeed": 4.5,
+                "rotationUnits": "radians",
+                "arrangement": "0,1,2,3",
+                "sizeLeftRight": 0.65,
+                "sizeFrontBack": 0.65,
+                "forwardDirection": "up"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Swerve"
+            },
+            {
+              "type": 8,
+              "uuid": "6ufhshqfavufvm2stdfy0n2tn7ljke7n",
+              "fields": [],
+              "listFields": [],
+              "options": {
+                "ids": [
+                  0,
+                  1,
+                  2
+                ],
+                "layouts": [
+                  "Logitech F310",
+                  "Xbox Controller (Blue)",
+                  "None"
+                ]
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Joysticks"
+            },
+            {
+              "type": 11,
+              "uuid": "ki5pdjjezku1osugxj5ld2trlrcmnqas",
+              "fields": [
+                null,
+                null,
+                null
+              ],
+              "listFields": [],
+              "options": {
+                "width": 960,
+                "height": 720,
+                "coordinates": "xr,yd",
+                "origin": "ul",
+                "pointShape": "plus",
+                "pointSize": "medium",
+                "groupSize": 0
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Points"
+            },
+            {
+              "type": 12,
+              "title": "Metadata"
+            },
+            {
+              "type": 3,
+              "field": null,
+              "title": "Console"
+            },
+            {
+              "type": 6,
+              "uuid": "e5c063xkubhsyf5a6clyu5c5abhn3e76",
+              "fields": [],
+              "listFields": [
+                [],
+                []
+              ],
+              "options": {
+                "field": "Evergreen",
+                "alliance": "red",
+                "robot": "KitBot",
+                "unitDistance": "meters",
+                "unitRotation": "radians"
+              },
+              "configHidden": false,
+              "visualizer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -0.6816870920506369,
+                  7.808306275648292,
+                  -10.971506828592476
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "title": "3D Field"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "3.2.1"
+}

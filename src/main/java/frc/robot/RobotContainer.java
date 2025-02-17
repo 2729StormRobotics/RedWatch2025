@@ -27,6 +27,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -79,6 +81,9 @@ public class RobotContainer {
   private final Gripper m_gripper;
 
   private boolean brakeMode = true;
+
+
+  private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
@@ -169,6 +174,13 @@ public class RobotContainer {
           field.getObject("path").setPoses(poses);
           Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
         });
+
+
+    
+    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
+    elevatorRoot.append(elevator.getElevatorMechanism());
+    // add subsystem mechanisms
+    SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
     // Set up auto routines
     // NamedCommands.registerCommand(

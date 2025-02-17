@@ -1,9 +1,16 @@
 {
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
-      "/SmartDashboard/Elevator": "Subsystem"
+      "/SmartDashboard/Arm": "Subsystem",
+      "/SmartDashboard/Auto Choices": "String Chooser",
+      "/SmartDashboard/Elevator": "Subsystem",
+      "/SmartDashboard/Elevator Mechanism": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Gripper": "Subsystem",
+      "/SmartDashboard/commandscheduler": "Scheduler"
     }
   },
   "NetworkTables Info": {

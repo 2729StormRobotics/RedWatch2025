@@ -33,8 +33,8 @@ public class ArmIOSim implements ArmIO {
 
     // private final EncoderSim encoder = new EncoderSim(new
     // Encoder(DigitalSource(), null));
-    private final Encoder m_encoder;
-    public final EncoderSim m_encoderSim;
+    // private final Encoder m_encoder;
+    // public final EncoderSim m_encoderSim;
     private SingleJointedArmSim sim = new SingleJointedArmSim(
             armMotorModel,
             ArmConstants.ArmSimConstants.kArmReduction,
@@ -47,10 +47,10 @@ public class ArmIOSim implements ArmIO {
             0.1);
 
     public ArmIOSim() {
-        m_encoder = new Encoder(ArmConstants.ArmSimConstants.kEncoderAChannel,
-                ArmConstants.ArmSimConstants.kEncoderBChannel);
-        m_encoderSim = new EncoderSim(m_encoder);
-        m_encoderSim.setDistancePerPulse(ArmConstants.ArmSimConstants.kArmEncoderDistPerPulse);
+        // m_encoder = new Encoder(ArmConstants.ArmSimConstants.kEncoderAChannel,
+        //         ArmConstants.ArmSimConstants.kEncoderBChannel);
+        // m_encoderSim = new EncoderSim(m_encoder);
+        // m_encoderSim.setDistancePerPulse(ArmConstants.ArmSimConstants.kArmEncoderDistPerPulse);
         m_controller = new ProfiledPIDController(ArmConstants.ArmSimConstants.kArmSimPID[0],
                 ArmConstants.ArmSimConstants.kArmSimPID[1], ArmConstants.ArmSimConstants.kArmSimPID[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
