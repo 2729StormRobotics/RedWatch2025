@@ -46,6 +46,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     leftEncoder = leftMotor.getAbsoluteEncoder();
 
     SparkFlexConfig leftConfig = new SparkFlexConfig();
+    leftConfig.idleMode(IdleMode.kBrake);
     leftConfig.smartCurrentLimit(Constants.NEO_CURRENT_LIMIT).idleMode(IdleMode.kCoast);
     leftConfig.closedLoop
         .pidf(kP, kI, kD, kFF)
@@ -136,6 +137,8 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
   @Override
   public void setVelocity(double velocity) {
+    SmartDashboard.putNumber("Manual Power", velocity);
+
     leftMotor.set(velocity);
   }
 

@@ -123,12 +123,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setVelocity(double velocity) {
-    if (io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT
-        || io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
-      io.setVelocity(0);
-    } else {
-      io.setVelocity(velocity);
-    }
+    io.setVelocity(velocity);
   }
 
   /** Runs PID Command and keeps running it after it reaches setpoint */
@@ -150,7 +145,7 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (interrupted) -> setVelocity(0),
+        (stop) -> setVelocity(0),
         () -> atSetpoint(),
         this);
   }
@@ -164,14 +159,18 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setVelocity(speed),
         () -> setVelocity(speed),
-        (interrupted) -> setVelocity(0),
+        (stop) -> setVelocity(0),
         () -> false,
         this);
   }
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
-    SmartDashboard.putNumber("Manual Power", speedSupplier.getAsDouble());
-    return ManualCommand(speedSupplier.getAsDouble());
+    return new FunctionalCommand(
+        () -> io.setVelocity(speedSupplier.getAsDouble()),
+        () -> io.setVelocity(speedSupplier.getAsDouble()),
+        (stop) -> io.setVelocity(0),
+        () -> false,
+        this);
   }
 
   public Command quasistaticForward() {

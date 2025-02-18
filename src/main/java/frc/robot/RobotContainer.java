@@ -259,7 +259,7 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
-
+    SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
@@ -272,8 +272,9 @@ public class RobotContainer {
     GRIPPERSTOP.onTrue(m_gripper.stop());
 
     // Set Positions
-    DriveControls.L1.onTrue(elevator.PIDCommand(10));
-    DriveControls.L2.onTrue(elevator.PIDCommand(3));
+    // DriveControls.L1.onTrue(arm.PIDCommand(32));
+    // DriveControls.L2.onTrue(arm.PIDCommand(90));
+    // DriveControls.L3.onTrue(arm.PIDCommand(120));
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
     // DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
     //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));

@@ -29,7 +29,7 @@ public class ArmConstants {
     public static final double kIntake = 0.0;
     public static final double kOneMore = 0; // ?????
 
-    public static double kPArm = 0.0;
+    public static double kPArm = 0.01;
     public static double kIArm = 0.0;
     public static double kDArm = 0.0;
     public static double kArmMinOutputPower = -1.0;

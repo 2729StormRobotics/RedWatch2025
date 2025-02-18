@@ -93,7 +93,6 @@ public class DriveControls {
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
-        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY() / 2);
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
         DRIVE_STRAFE = () -> (-m_translator.getX());
@@ -170,13 +169,15 @@ public class DriveControls {
 
     switch (Constants.operator) {
       case KRITHIK:
+      ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/3);
+
         PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 10);
         // all tbd
         // Pivot things
         L1 = m_weaponsController.b();
         L2 = m_weaponsController.a();
-        L3 = m_weaponsController.y();
-        L4 = m_weaponsController.x();
+        L3 = m_weaponsController.x();
+        L4 = m_weaponsController.y();
 
         // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();

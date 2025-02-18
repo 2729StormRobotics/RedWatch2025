@@ -51,31 +51,33 @@ public class ArmIOSparkMax implements ArmIO {
         // Define Configs for Hanger Motor
 
         armConfigRight = new SparkMaxConfig();
-        armConfigRight.closedLoop.pid(kP, kI, kD);
-        armConfigRight.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        armConfigRight.closedLoop.outputRange(ArmConstants.kArmMinOutputPower, ArmConstants.kArmMaxOutputPower);
-        armConfigRight.idleMode(IdleMode.kBrake);
+        armConfigRight.idleMode(IdleMode.kCoast);
+        armConfigRight.limitSwitch.reverseLimitSwitchEnabled(false);
 
-        armConfigRight.softLimit.forwardSoftLimit(0);
-        armConfigRight.softLimit.forwardSoftLimitEnabled(true);
-        armConfigRight.softLimit.reverseSoftLimit(180);
-        armConfigRight.softLimit.reverseSoftLimitEnabled(true);
+        // armConfigRight.softLimit.forwardSoftLimit(0);
+        // armConfigRight.softLimit.forwardSoftLimitEnabled(true);
+        // armConfigRight.softLimit.reverseSoftLimit(180);
+        // armConfigRight.softLimit.reverseSoftLimitEnabled(true);
 
-        armConfigRight.absoluteEncoder.velocityConversionFactor(6);
-        armConfigRight.absoluteEncoder.positionConversionFactor(360);
 
         
         armConfigLeft = new SparkMaxConfig();
         armConfigLeft.apply(armConfigRight);
-        armConfigLeft.follow(armSparkMaxRight, true);
+        armConfigLeft.closedLoop.pid(kP, kI, kD);
+        armConfigLeft.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        armConfigLeft.closedLoop.outputRange(ArmConstants.kArmMinOutputPower, ArmConstants.kArmMaxOutputPower);
+        armConfigLeft.absoluteEncoder.velocityConversionFactor(6);
+        armConfigLeft.absoluteEncoder.positionConversionFactor(360);
+
+        armConfigRight.follow(armSparkMaxLeft, true);
 
         // burn motor
         armSparkMaxLeft.configure(armConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         armSparkMaxRight.configure(armConfigRight, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // armSparkMaxRight.pauseFollowerMode();
 
-        hallEffect = armSparkMaxRight.getForwardLimitSwitch();
-        armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
+        hallEffect = armSparkMaxRight.getReverseLimitSwitch();
+        armAbsoluteEncoder = armSparkMaxLeft.getAbsoluteEncoder();
     }
 
     public void updateInputs(ArmIOInputs inputs) {
@@ -88,7 +90,7 @@ public class ArmIOSparkMax implements ArmIO {
     @Override
     public void pivotClockwise() {
 
-        armSparkMaxRight.set(ArmConstants.kArmMotorSpeed);
+        armSparkMaxLeft.set(ArmConstants.kArmMotorSpeed);
     }
 
     @Override
@@ -126,28 +128,28 @@ public class ArmIOSparkMax implements ArmIO {
     @Override
     public void pivotCounterclockwise() {
 
-        armSparkMaxRight.set(-ArmConstants.kArmMotorSpeed);
+        armSparkMaxLeft.set(-ArmConstants.kArmMotorSpeed);
     };
 
     @Override
     public void setVoltage(double voltage) {
-        armSparkMaxRight.setVoltage(voltage);
+        armSparkMaxLeft.setVoltage(voltage);
     }
 
     
     @Override
     public void setSpeed(double speed) {
-        armSparkMaxRight.set(speed);
+        armSparkMaxLeft.set(speed);
     }
 
     @Override
     public void setArmPosition(double kAngle) {
-        armSparkMaxRight.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
+        armSparkMaxLeft.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
     }
 
     @Override
     public void stopArm() {
-        armSparkMaxRight.stopMotor();
+        armSparkMaxLeft.stopMotor();
     };
 
     private void updateMotorConfig(SparkFlexConfig config) {

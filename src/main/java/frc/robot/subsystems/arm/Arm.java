@@ -78,6 +78,8 @@ public class Arm extends SubsystemBase {
 
     checkAndResetABSEncoder();
 
+    
+
     // Update the PID constants if they have changed
     if (logP.get() != io.getP())
       io.setP(logP.get());
