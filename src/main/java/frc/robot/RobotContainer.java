@@ -65,7 +65,7 @@ import frc.robot.subsystems.elevator.ElevatorIOSIM;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
+//   private final Elevator elevator;
 
   private boolean brakeMode = true;
 
@@ -88,7 +88,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         
-        elevator = new Elevator(new ElevatorIOSparkFlex());
+        // elevator = new Elevator(new ElevatorIOSparkFlex());
         drive =
             new Drive(
                 new GyroIOReal(),
@@ -100,7 +100,7 @@ public class RobotContainer {
         
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        elevator = new Elevator(new ElevatorIOSIM());
+        // elevator = new Elevator(new ElevatorIOSIM());
         drive =
             new Drive(
                 new GyroIO() {},
@@ -112,7 +112,7 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        elevator = new Elevator(new ElevatorIO() {});
+        // elevator = new Elevator(new ElevatorIO() {});
 
         drive =
             new Drive(
@@ -197,7 +197,7 @@ public class RobotContainer {
       // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
     
     DriveControls.configureControls();
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+    //elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
