@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -169,6 +172,36 @@ public class Elevator extends SubsystemBase {
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return ManualCommand(speedSupplier.getAsDouble());
   }
-}
 
-// add quasistatic and dynamic for sysid later !!!!!
+  public Command quasistaticForward() {
+    return SysId.quasistatic(Direction.kForward)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "quasistatic-forward")));
+  }
+
+  public Command quasistaticBack() {
+    return SysId.quasistatic(Direction.kReverse)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "quasistatic-reverse")));
+  }
+
+  public Command dynamicForward() {
+    return SysId.dynamic(Direction.kForward)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "dynamic-forward")));
+  }
+
+  public Command dynamicBack() {
+    return SysId.dynamic(Direction.kReverse)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "dynamic-reverse")));
+  }
+}

@@ -8,6 +8,10 @@ public class ArmConstants {
 
     public static final double kArmMotorSpeed = 0.2;
 
+    public static final double RAMP_RATE = 0.5;
+    public static final double STEP_VOLTAGE = 1.0;
+    public static final double ARM_MIN_ANGLE = 0.0;
+    public static final double ARM_MAX_ANGLE = 180.0;
 
 
   public static final double PID_TOLERANCE = Units.degreesToRadians(1);

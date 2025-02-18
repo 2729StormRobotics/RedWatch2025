@@ -31,6 +31,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -38,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSparkMax;
@@ -183,16 +187,9 @@ public class RobotContainer {
     // add subsystem mechanisms
     SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
-    // Set up auto routines
-    // NamedCommands.registerCommand(
-    // "Run Flywheel",
-    // Commands.startEnd(
-    // () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
-    // flywheel)
-    // .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up SysId routines
+    // Set up Drive SysId routines
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -203,6 +200,30 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Set up Elevator SysId routines
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Forward)",
+        elevator.quasistaticForward());
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Reverse)",
+        elevator.quasistaticBack());
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Forward)", elevator.dynamicForward());
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Reverse)", elevator.dynamicBack());
+    
+    // Set up ArmSysId routines
+    autoChooser.addOption(
+        "Arm SysId (Quasistatic Forward)",
+        arm.quasistaticForward());
+    autoChooser.addOption(
+        "Arm SysId (Quasistatic Reverse)",
+        arm.quasistaticBack());
+    autoChooser.addOption(
+        "Arm SysId (Dynamic Forward)", arm.dynamicForward());
+    autoChooser.addOption(
+        "Arm SysId (Dynamic Reverse)", arm.dynamicBack());
     // Configure the button bindings
     configureButtonBindings();
 
@@ -238,19 +259,31 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
-            
+
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-    ARMSTOP.onTrue(arm.stop());
-    CALIBRATEARM.onTrue(arm.CalibrateArm());
 
     // Gripper Commands
     INTAKE.onTrue(m_gripper.Intake());
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
+
+    // Set Positions
+    DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
+
+    DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
+
+    DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
+
+    DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
+
   }
 
   /**

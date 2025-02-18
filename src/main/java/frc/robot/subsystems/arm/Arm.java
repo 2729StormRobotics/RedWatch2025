@@ -5,11 +5,26 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
@@ -25,6 +40,14 @@ public class Arm extends SubsystemBase {
 
   PowerDistribution m_PDH = new PowerDistribution(20,ModuleType.kRev);
 
+
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutVoltage m_appliedVoltage = Volts.mutable(0);
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutAngle m_angle = Radians.mutable(0);
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reall?ocation.
+  private final MutAngularVelocity m_velocity = RotationsPerSecond.mutable(0);
+  private SysIdRoutine SysId;
 
   private LoggedNetworkNumber logP;
   private LoggedNetworkNumber logI;
@@ -66,6 +89,24 @@ public class Arm extends SubsystemBase {
       io.setD(logD.get());
 
     Logger.processInputs("Arm", inputs);
+
+    SysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.per(Second).of(ArmConstants.RAMP_RATE),
+                Volts.of(ArmConstants.STEP_VOLTAGE),
+                null),
+            new SysIdRoutine.Mechanism(
+                v -> io.setVoltage(v.in(Volts)),
+                (sysidLog) -> {
+                  sysidLog
+                      .motor("pivot")
+                      .voltage(m_appliedVoltage.mut_replace(inputs.armAppliedVolts, Volts))
+                      .angularPosition(m_angle.mut_replace(inputs.armPositionRad, Rotations))
+                      .angularVelocity(
+                          m_velocity.mut_replace(inputs.armVelocityRadPerSec, RotationsPerSecond));
+                },
+                this));
   }
 
   public void checkAndResetABSEncoder() {
@@ -214,5 +255,36 @@ public class Arm extends SubsystemBase {
           return io.getArmAngleDegrees() < 5;
         },
         this);
+  }
+  public Command quasistaticForward() {
+    return SysId.quasistatic(Direction.kForward)
+        .until(() -> io.getArmAngleDegrees() > ArmConstants.ARM_MAX_ANGLE)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-forward")));
+  }
+
+  public Command quasistaticBack() {
+    return SysId.quasistatic(Direction.kReverse)
+        .until(() -> io.getArmAngleDegrees() < ArmConstants.ARM_MIN_ANGLE)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-reverse")));
+  }
+
+  public Command dynamicForward() {
+    return SysId.dynamic(Direction.kForward)
+        .until(() -> io.getArmAngleDegrees() > ArmConstants.ARM_MAX_ANGLE)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "dynamic-forward")));
+  }
+
+  public Command dynamicBack() {
+    return SysId.dynamic(Direction.kReverse)
+        .until(() -> io.getArmAngleDegrees() < ArmConstants.ARM_MIN_ANGLE)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "dynamic-reverse")));
   }
 }

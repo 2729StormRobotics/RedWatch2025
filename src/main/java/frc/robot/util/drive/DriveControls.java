@@ -29,6 +29,12 @@ public class DriveControls {
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
 
+  // Main Button Controls
+  public static Trigger L1;
+  public static Trigger L2;
+  public static Trigger L3;
+  public static Trigger L4;
+
   // Drive controls
   public static DoubleSupplier ELEVATOR_JOYSTICK;
   public static DoubleSupplier PIVOT_ROTATE;
@@ -91,7 +97,7 @@ public class DriveControls {
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
         DRIVE_STRAFE = () -> (-m_translator.getX());
-        DRIVE_ROTATE = () -> (-m_rotator.getX());
+        DRIVE_ROTATE = () -> (-m_translator.getTwist());
         RESET_GYRO = m_translator.button(12);
 
 
@@ -102,9 +108,9 @@ public class DriveControls {
         ARMSTOP = m_weaponsController.y();
         CALIBRATEARM = m_weaponsController.rightStick();
 
-        INTAKE = m_weaponsController.a();
-        OUTTAKE = m_weaponsController.b();
-        GRIPPERSTOP = m_weaponsController.x();
+        INTAKE = m_weaponsController.rightBumper();
+        OUTTAKE = m_weaponsController.leftBumper();
+        GRIPPERSTOP = m_weaponsController.start();
 
         // Driver Settings
         DRIVE_SLOW = m_translator.button(1); // TBA
@@ -167,10 +173,10 @@ public class DriveControls {
         PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 10);
         // all tbd
         // Pivot things
-        PIVOT_L1_Intake = m_weaponsController.b();
-        PIVOT_L2_Intake = m_weaponsController.a();
-        PIVOT_L3_Intake = m_weaponsController.y();
-        PIVOT_L4_Intake = m_weaponsController.x();
+        L1 = m_weaponsController.b();
+        L2 = m_weaponsController.a();
+        L3 = m_weaponsController.y();
+        L4 = m_weaponsController.x();
 
         // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
