@@ -6,21 +6,19 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public class ElevatorConstants {
-    public static double STRINGPOT_POSITION_CONVERSION_FACTOR = 1;
+    public static double STRINGPOT_POSITION_CONVERSION_FACTOR = 6.6292;
 
     public static double stringPottoElevatorConversion = 1;
     public static double ElevatorOffset = 1;
 
     // PID values for elevator to be tested
-    public static final double kPElevator = 0.0;
+    public static final double kPElevator = 0.001;
     public static final double kIElevator = 0.0;
     public static final double kDElevator = 0.0;
     public static final double kSElevator = 0.0;
     public static final double kGElevator = 0.0;
     public static final double kVElevator = 0.0;
     public static final double kAElevator = 0.0;
-    public static final double kElevatorMinOutputPower = 0.0;
-    public static final double kElevatorMaxOutputPower = 0.0;
 
     public static final double ELEVATOR_TOLERANCE = 1;
     // add MOVEMENT CONSTRAINTS
@@ -46,12 +44,7 @@ public class ElevatorConstants {
     public static final double L4 = 4.0;
     public static final double INTAKE = 4.0;
 
-    public static final double offsetAdd = 0;
-    public static final double offsetMult = 0;
 
-    // motor speeds
-    public static final double kMotorSpeedUp = 0.0;
-    public static final double kMotorSpeedDown = -kMotorSpeedUp;
 
     public static final double ELEVATOR_PID_TOLERANCE = Units.degreesToRadians(1);
     public static final double ELEVATOR_PID_VELOCITY_TOLERANCE = 0.5;
@@ -82,7 +75,7 @@ public class ElevatorConstants {
     /** Tolerance used when checking if the elevator is at the setpoint */
     public static double SETPOINT_TOLERANCE_METERS = 0.01;
 
-    public static final double[] kElevatorRealPID = { 0, 0, 0, 0 };
+    public static final double[] kElevatorRealPID = { 0.2, 0, 0, 0 };
 
     public static final double ELEVATOR_MASS_KG = 5;
 

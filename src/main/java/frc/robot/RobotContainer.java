@@ -202,28 +202,28 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Set up Elevator SysId routines
-    autoChooser.addOption(
-        "Elevator SysId (Quasistatic Forward)",
-        elevator.quasistaticForward());
-    autoChooser.addOption(
-        "Elevator SysId (Quasistatic Reverse)",
-        elevator.quasistaticBack());
-    autoChooser.addOption(
-        "Elevator SysId (Dynamic Forward)", elevator.dynamicForward());
-    autoChooser.addOption(
-        "Elevator SysId (Dynamic Reverse)", elevator.dynamicBack());
+    // autoChooser.addOption(
+    //     "Elevator SysId (Quasistatic Forward)",
+    //     elevator.quasistaticForward());
+    // autoChooser.addOption(
+    //     "Elevator SysId (Quasistatic Reverse)",
+    //     elevator.quasistaticBack());
+    // autoChooser.addOption(
+    //     "Elevator SysId (Dynamic Forward)", elevator.dynamicForward());
+    // autoChooser.addOption(
+    //     "Elevator SysId (Dynamic Reverse)", elevator.dynamicBack());
     
-    // Set up ArmSysId routines
-    autoChooser.addOption(
-        "Arm SysId (Quasistatic Forward)",
-        arm.quasistaticForward());
-    autoChooser.addOption(
-        "Arm SysId (Quasistatic Reverse)",
-        arm.quasistaticBack());
-    autoChooser.addOption(
-        "Arm SysId (Dynamic Forward)", arm.dynamicForward());
-    autoChooser.addOption(
-        "Arm SysId (Dynamic Reverse)", arm.dynamicBack());
+    // // Set up ArmSysId routines
+    // autoChooser.addOption(
+    //     "Arm SysId (Quasistatic Forward)",
+    //     arm.quasistaticForward());
+    // autoChooser.addOption(
+    //     "Arm SysId (Quasistatic Reverse)",
+    //     arm.quasistaticBack());
+    // autoChooser.addOption(
+    //     "Arm SysId (Dynamic Forward)", arm.dynamicForward());
+    // autoChooser.addOption(
+    //     "Arm SysId (Dynamic Reverse)", arm.dynamicBack());
     // Configure the button bindings
     configureButtonBindings();
 
@@ -272,17 +272,20 @@ public class RobotContainer {
     GRIPPERSTOP.onTrue(m_gripper.stop());
 
     // Set Positions
-    DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
+    DriveControls.L1.onTrue(elevator.PIDCommand(10));
+    DriveControls.L2.onTrue(elevator.PIDCommand(3));
+    // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
+    // DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
 
-    DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
+    // DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
 
-    DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
+    // DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
 
-    DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
+    // DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
 
   }
 

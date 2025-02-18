@@ -106,7 +106,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   @Override
   public double getPosition() {
     // get the absolute position in radians, then convert to meters
-    return stringPotToElevator(getStringPot().getPosition());
+    return getStringPot().getPosition();
   }
 
   public SparkAnalogSensor getStringPot() {
@@ -117,14 +117,10 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     return 0.0;
   }
 
-  private double stringPotToElevator(double stringLength) {
-    return stringLength * ElevatorConstants.stringPottoElevatorConversion + ElevatorConstants.ElevatorOffset;
-  }
-
   @Override
   public void goToSetpoint(double setpoint) {
     this.setpoint = setpoint;
-    leftController.setReference(elevatorToStringPot(setpoint), ControlType.kPosition);
+    leftController.setReference((setpoint), ControlType.kPosition);
   }
 
   @Override

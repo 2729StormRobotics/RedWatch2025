@@ -170,6 +170,7 @@ public class Elevator extends SubsystemBase {
   }
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
+    SmartDashboard.putNumber("Manual Power", speedSupplier.getAsDouble());
     return ManualCommand(speedSupplier.getAsDouble());
   }
 

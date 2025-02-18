@@ -6,9 +6,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -16,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -38,9 +34,6 @@ public class ArmIOSparkMax implements ArmIO {
     public AbsoluteEncoder armAbsoluteEncoder;
     public double armEncoderOffset;
 
-    private final SparkClosedLoopController pidController;
-    private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
-
     private double kP = ArmConstants.kPArm;
     private double kI = ArmConstants.kIArm;
     private double kD = ArmConstants.kDArm;
@@ -59,25 +52,22 @@ public class ArmIOSparkMax implements ArmIO {
 
         armConfigRight = new SparkMaxConfig();
         armConfigRight.closedLoop.pid(kP, kI, kD);
-
         armConfigRight.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        armConfigRight.closedLoop.maxMotion.maxAcceleration(0.3).maxVelocity(0.3);
         armConfigRight.closedLoop.outputRange(ArmConstants.kArmMinOutputPower, ArmConstants.kArmMaxOutputPower);
         armConfigRight.idleMode(IdleMode.kBrake);
 
         armConfigRight.softLimit.forwardSoftLimit(0);
-        armConfigRight.softLimit.forwardSoftLimitEnabled(false);
+        armConfigRight.softLimit.forwardSoftLimitEnabled(true);
         armConfigRight.softLimit.reverseSoftLimit(180);
-        armConfigRight.softLimit.reverseSoftLimitEnabled(false);
+        armConfigRight.softLimit.reverseSoftLimitEnabled(true);
 
         armConfigRight.absoluteEncoder.velocityConversionFactor(6);
         armConfigRight.absoluteEncoder.positionConversionFactor(360);
 
+        
         armConfigLeft = new SparkMaxConfig();
         armConfigLeft.apply(armConfigRight);
         armConfigLeft.follow(armSparkMaxRight, true);
-
-        pidController = armSparkMaxRight.getClosedLoopController();
 
         // burn motor
         armSparkMaxLeft.configure(armConfigLeft, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -86,7 +76,6 @@ public class ArmIOSparkMax implements ArmIO {
 
         hallEffect = armSparkMaxRight.getForwardLimitSwitch();
         armAbsoluteEncoder = armSparkMaxRight.getAbsoluteEncoder();
-
     }
 
     public void updateInputs(ArmIOInputs inputs) {
@@ -103,14 +92,14 @@ public class ArmIOSparkMax implements ArmIO {
     }
 
     @Override
-    public boolean getHallEffect() {
+    public boolean getHallEffect(){
         return hallEffect.isPressed();
     }
 
     @Override
-    public void changeOffset(double newOffset) {
+    public void changeOffset(double newOffset){
         armEncoderOffset += newOffset;
-    }
+    }   
 
     @Override
     public double getVoltage() {
@@ -145,6 +134,7 @@ public class ArmIOSparkMax implements ArmIO {
         armSparkMaxRight.setVoltage(voltage);
     }
 
+    
     @Override
     public void setSpeed(double speed) {
         armSparkMaxRight.set(speed);
@@ -152,12 +142,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public void setArmPosition(double kAngle) {
-
-        double feedforwardOutput = feedforward.calculate(getArmAngleDegrees(), 0);
-
-        SmartDashboard.putNumber("Arm/FeedforwardOutput", feedforwardOutput);
-        pidController.setReference(kAngle, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0,
-                feedforwardOutput);
+        armSparkMaxRight.getClosedLoopController().setReference(kAngle, ControlType.kPosition);
     }
 
     @Override
@@ -177,7 +162,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public void setP(double kP) {
-        this.kP = kP;
+        this.kP = kP;   
         SparkFlexConfig config = new SparkFlexConfig();
         config.closedLoop.p(kP);
         updateMotorConfig(config);
@@ -213,52 +198,4 @@ public class ArmIOSparkMax implements ArmIO {
     public double getD() {
         return kD;
     }
-    @Override
-  public void setFF(double ff) {
-    // pidController.setFF(ff);
-  }
-
-  @Override
-  public void setkS(double kS) {
-    feedforward =
-        new ArmFeedforward(kS, feedforward.getKg(), feedforward.getKv(), feedforward.getKa());
-  }
-
-  @Override
-  public void setkG(double kG) {
-    feedforward =
-        new ArmFeedforward(feedforward.getKs(), kG, feedforward.getKv(), feedforward.getKa());
-  }
-
-  @Override
-  public void setkV(double kV) {
-    feedforward =
-        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), kV, feedforward.getKa());
-  }
-
-  @Override
-  public void setkA(double kA) {
-    feedforward =
-        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), feedforward.getKv(), kA);
-  }
-
-  @Override
-  public double getkS() {
-    return feedforward.getKs();
-  }
-
-  @Override
-  public double getkG() {
-    return feedforward.getKg();
-  }
-
-  @Override
-  public double getkV() {
-    return feedforward.getKv();
-  }
-
-  @Override
-  public double getkA() {
-    return feedforward.getKa();
-  }
 }
