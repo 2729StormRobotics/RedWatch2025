@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.FieldConstants;
 import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.util.drive.AllianceFlipUtil;
 import java.util.List;
@@ -412,6 +413,26 @@ public class Drive extends SubsystemBase {
   }
 
   public Command goToThaPose(Pose2d endPose) {
+    List<Waypoint> bezierPoints = PathPlannerPath.waypointsFromPoses(getPose(), endPose);
+
+    // Create the path using the bezier points created above
+    PathPlannerPath path =
+        new PathPlannerPath(
+            bezierPoints,
+            kPathConstraints, // The constraints for this path. If using a differential drivetrain,
+            // the angular constraints have no effect.
+            new IdealStartingState(0.0, getPose().getRotation()),
+            new GoalEndState(
+                0.0,
+                Rotation2d.fromDegrees(
+                    -90)) // Goal end state. You can set a holonomic rotation here. If using a
+            // differential drivetrain, the rotation will have no effect.
+            );
+    return AutoBuilder.followPath(path);
+  }
+  public Command goToReefPose(int reefPose) {
+
+    Pose2d endPose = FieldConstants.Reef.centerFaces[reefPose];
     List<Waypoint> bezierPoints = PathPlannerPath.waypointsFromPoses(getPose(), endPose);
 
     // Create the path using the bezier points created above

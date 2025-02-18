@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -135,8 +136,6 @@ public class DriveCommands {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == Alliance.Red;
   }
-
-  /** Drive robot while pointing at a specific point on the field. */
   public static Command joystickAnglePoint(
       Drive drive,
       DoubleSupplier xSupplier,

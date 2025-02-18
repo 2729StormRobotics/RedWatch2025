@@ -113,7 +113,7 @@ public class DriveControls {
 
         // Driver Modes
         DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
-        DRIVE_REEF_AIM = m_translator.button(1); // uses vision
+        DRIVE_REEF_AIM = m_translator.button(1);
 
         // ALL BELOW TBD
         // Driver Angle Locks

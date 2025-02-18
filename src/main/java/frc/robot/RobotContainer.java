@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-
-
 import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
@@ -65,12 +63,13 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
 
-
-
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -82,7 +81,6 @@ public class RobotContainer {
 
   private boolean brakeMode = true;
 
-
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // LEDs
@@ -90,59 +88,64 @@ public class RobotContainer {
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard =
-      new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition =
-      new LoggedDashboardBoolean("Set Start Position", false);
+  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
+  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
 
   // Field
   private final Field2d field;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        
+
         elevator = new Elevator(new ElevatorIOSparkFlex());
-        drive =
-            new Drive(
-                new GyroIOReal(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
-              arm = new Arm(new ArmIOSparkMax());
-              m_gripper = new Gripper(new GripperIOSparkMax());
+        drive = new Drive(
+            new GyroIOReal(),
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3));
+        arm = new Arm(new ArmIOSparkMax());
+        m_gripper = new Gripper(new GripperIOSparkMax());
         break;
-        
+
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         elevator = new Elevator(new ElevatorIOSIM());
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-                arm = new Arm(new ArmIOSim());
-                m_gripper = new Gripper( new GripperIOSim());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
+        arm = new Arm(new ArmIOSim());
+        m_gripper = new Gripper(new GripperIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        elevator = new Elevator(new ElevatorIO() {});
+        elevator = new Elevator(new ElevatorIO() {
+        });
 
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-            arm = new Arm(new ArmIO() {});
-            m_gripper = new Gripper(new GripperIOSim());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+        arm = new Arm(new ArmIO() {
+        });
+        m_gripper = new Gripper(new GripperIOSim());
         break;
     }
 
@@ -175,8 +178,6 @@ public class RobotContainer {
           Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
         });
 
-
-    
     MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
     elevatorRoot.append(elevator.getElevatorMechanism());
     // add subsystem mechanisms
@@ -184,10 +185,11 @@ public class RobotContainer {
 
     // Set up auto routines
     // NamedCommands.registerCommand(
-    //     "Run Flywheel",
-    //     Commands.startEnd(
-    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-    //         .withTimeout(5.0));
+    // "Run Flywheel",
+    // Commands.startEnd(
+    // () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
+    // flywheel)
+    // .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -206,75 +208,49 @@ public class RobotContainer {
 
     // Set up auto routines
     // System.out.println("[Init] Setting up Logged Auto Chooser");
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
+    // AutoBuilder.buildAutoChooser());
   }
+
   // zero gyro
   public void reset() {
     drive.resetYaw();
   }
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {  
-    // default subsystem commands
-      // ELEVATOR_L1.onTrue(elevator.goToPosition(ElevatorState.L1));
-      // ELEVATOR_L2.onTrue(elevator.goToPosition(ElevatorState.L2));
-      // ELEVATOR_L3.onTrue(elevator.goToPosition(ElevatorState.L3));
-      // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
-    
+  private void configureButtonBindings() {
     DriveControls.configureControls();
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+
+    // Drive Commands
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-    // ROTATECLOCKWISE.onTrue(arm.());
-    // ROTATECOUNTERCLOCKWISE.onTrue(arm.counterClockwise());
-    ARMSTOP.onTrue(arm.stop());
-    INTAKE.onTrue(m_gripper.Intake());
-    OUTTAKE.onTrue(m_gripper.outtake());
-    GRIPPERSTOP.onTrue(m_gripper.stop());
-    CALIBRATEARM.onTrue(arm.CalibrateArm());
-
     RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {
               drive.resetYaw();
             },
             drive));
-    // RESET_GYRO.whileTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.resetYaw();
-    //         },
-    //         null));
+            
+    // Elevator Commands
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
-    // QUASISTATIC_FORWARD.whileTrue(drive.sysIdQuasistatic(Direction.kForward));
-    // QUASISTATIC_REVERSE.whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
-    // DYNAMIC_FORWARD.whileTrue(drive.sysIdDynamic(Direction.kForward));
-    // DYNAMIC_REVERSE.whileTrue(drive.sysIdDynamic(Direction.kReverse));
-    // Drive setting commands
-    // DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
+    // Arm Commands
+    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
+    ARMSTOP.onTrue(arm.stop());
+    CALIBRATEARM.onTrue(arm.CalibrateArm());
 
-    // DRIVE_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //           drive.resetYaw();
-    //         },
-    //         drive));
-
-    // DRIVE_HOLD_STOP.onTrue(
-    //     new InstantCommand(
-    //         () -> {
-    //           drive.stopWithX();
-    //         },
-    //         drive));
-
-    // // Drive Modes
+    // Gripper Commands
+    INTAKE.onTrue(m_gripper.Intake());
+    OUTTAKE.onTrue(m_gripper.outtake());
+    GRIPPERSTOP.onTrue(m_gripper.stop());
   }
 
   /**
