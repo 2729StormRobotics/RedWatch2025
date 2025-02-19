@@ -26,7 +26,7 @@ public class GripperIOSparkMax implements GripperIO {
         // Configure Motor
         motorConfig = new SparkMaxConfig();
         motorConfig.closedLoop.pid(GripperConstants.kPGripper, GripperConstants.kIGripper, GripperConstants.kDGripper);
-        motorConfig.limitSwitch.forwardLimitSwitchEnabled(true);
+        motorConfig.limitSwitch.forwardLimitSwitchEnabled(false);
         motorConfig.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
         motorConfig.idleMode(IdleMode.kCoast);
         motorConfig.smartCurrentLimit(40);
@@ -42,7 +42,7 @@ public class GripperIOSparkMax implements GripperIO {
      */
     @Override
     public boolean isCoralPresent() {
-        return m_objectDetector.isPressed();
+        return m_gripperMotor.getForwardLimitSwitch().isPressed();
     }
 
     /**

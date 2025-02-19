@@ -14,18 +14,18 @@ public class ArmConstants {
     public static final double ARM_MAX_ANGLE = 180.0;
 
 
-  public static final double PID_TOLERANCE = Units.degreesToRadians(1);
-  public static final double PID_VELOCITY_TOLERANCE = 0.5;
+  public static final double PID_TOLERANCE = (1);
+  public static final double PID_VELOCITY_TOLERANCE = 1;
 
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 1.3;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3; // TODO
 
     public static final double kArmMotorStop = 0;
 
-    public static final double kL1 = 0.0;
-    public static final double kL2 = 32.0;
-    public static final double kL3 = 32.0;
-    public static final double kL4 = 60.0;
+    public static final double kL1 = 55;
+    public static final double kL2 = 51.2;
+    public static final double kL3 = 50.9;
+    public static final double kL4 = 90.0;
     public static final double kIntake = 0.0;
     public static final double kOneMore = 0; // ?????
 

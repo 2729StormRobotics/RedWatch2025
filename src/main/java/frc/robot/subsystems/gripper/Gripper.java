@@ -47,9 +47,9 @@ public class Gripper extends SubsystemBase {
         return new FunctionalCommand(
                 () -> {
                 },
-                () -> io.setVoltage(GripperConstants.motorSpeedInGripper),
-                (stop) -> setVoltage(0),
-                () -> io.isCoralPresent(),
+                () -> io.setMotorIn(),
+                (stop) -> io.stopMotor(),
+                () -> false,
                 this);
 
     }
@@ -58,9 +58,9 @@ public class Gripper extends SubsystemBase {
         return new FunctionalCommand(
                 () -> {
                 },
-                () -> io.setVoltage(GripperConstants.motorSpeedOutGripper),
-                (stop) -> setVoltage(0),
-                () -> io.isCoralPresent(),
+                () -> io.setMotorOut(),
+                (stop) -> io.stopMotor(),
+                () -> false,
                 this);
 
     }

@@ -34,6 +34,7 @@ public class DriveControls {
   public static Trigger L2;
   public static Trigger L3;
   public static Trigger L4;
+  public static Trigger INTAKE_POS;
 
   // Drive controls
   public static DoubleSupplier ELEVATOR_JOYSTICK;
@@ -99,8 +100,9 @@ public class DriveControls {
         DRIVE_ROTATE = () -> (-m_translator.getTwist());
         RESET_GYRO = m_translator.button(12);
 
+        MELTDOWN = m_weaponsController.back();
 
-
+        INTAKE_POS = m_translator.button(6);
         // Misc Subsytem Controls
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
@@ -183,9 +185,6 @@ public class DriveControls {
         ROTATECLOCKWISE = m_weaponsController.rightBumper();
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();
-        INTAKE = m_weaponsController.a();
-        OUTTAKE = m_weaponsController.b();
-        GRIPPERSTOP = m_weaponsController.x();
 
         break;
       case PROGRAMMERS:
@@ -203,10 +202,6 @@ public class DriveControls {
         ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         CALIBRATEARM = m_weaponsController.rightStick();
         ARMSTOP = m_weaponsController.x();
-
-        INTAKE = m_weaponsController.a();
-        OUTTAKE = m_weaponsController.b();
-        GRIPPERSTOP = m_weaponsController.x();
 
         // bottom right Left joystick to intake
     }

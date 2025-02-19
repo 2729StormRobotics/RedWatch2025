@@ -146,8 +146,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(io.getArmAngleDegrees() - setpoint) < ArmConstants.PID_TOLERANCE
-        && Math.abs(getVelocity()) < ArmConstants.PID_VELOCITY_TOLERANCE;
+    return Math.abs(io.getArmAngleDegrees() - setpoint) < ArmConstants.PID_TOLERANCE;
   }
 
   public void runPID() {

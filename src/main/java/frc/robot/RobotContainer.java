@@ -263,6 +263,7 @@ public class RobotContainer {
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
+    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {elevator.setVelocity(0);}, elevator),arm.stop(), m_gripper.stop()));
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
 
@@ -276,17 +277,19 @@ public class RobotContainer {
     // DriveControls.L2.onTrue(arm.PIDCommand(90));
     // DriveControls.L3.onTrue(arm.PIDCommand(120));
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
-    // DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
-    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
+    DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
 
-    // DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
-    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
+    DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL2))));
 
-    // DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
-    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
+    DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL3))));
 
-    // DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
+    DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL4))));
+        DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(9.57),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(179))));
 
   }
 

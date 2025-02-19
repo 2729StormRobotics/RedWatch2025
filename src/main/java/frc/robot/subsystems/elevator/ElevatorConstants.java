@@ -38,10 +38,10 @@ public class ElevatorConstants {
     // height constants'
     public static final double MIN_HEIGHT = 0.0;
     public static final double MAX_HEIGHT = 10.0;
-    public static final double L1 = 1.0;
-    public static final double L2 = 2.0;
-    public static final double L3 = 3.0;
-    public static final double L4 = 4.0;
+    public static final double L1 = 2.4;
+    public static final double L2 = 5.1;
+    public static final double L3 = 14.3;
+    public static final double L4 = 28.85;
     public static final double INTAKE = 4.0;
 
 
@@ -73,7 +73,7 @@ public class ElevatorConstants {
     /** When the elevator is on the bottom, what does the encoder say */
     public static double ELEVATOR_OFFSET_METERS = 0.0;
     /** Tolerance used when checking if the elevator is at the setpoint */
-    public static double SETPOINT_TOLERANCE_METERS = 0.01;
+    public static double SETPOINT_TOLERANCE_METERS = 0.2;
 
     public static final double[] kElevatorRealPID = { 1.45, 0, 0, 0 };
 
