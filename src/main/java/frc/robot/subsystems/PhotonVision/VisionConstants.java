@@ -59,7 +59,7 @@ public class VisionConstants extends SubsystemBase {
 
 
   // The layout of the AprilTags on the field
-  public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+  public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
 
   // Change values as needed **CHANGE**
   public static final double AMBIGUITY_THRESHOLD = 0.5;

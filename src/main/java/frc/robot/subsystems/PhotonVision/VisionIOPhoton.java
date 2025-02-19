@@ -28,8 +28,12 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -158,4 +162,13 @@ public class VisionIOPhoton implements VisionIO {
          * ) < MAX_DISTANCE
          */;
   }
+
+
+  /**
+   * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
+   * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
+   * This should only be used when there are targets visible.
+   *
+   * @param estimatedPose The estimated pose to guess standard deviations for.
+   */
 }

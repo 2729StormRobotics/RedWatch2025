@@ -16,14 +16,14 @@ public class TurnAngleCommand extends Command {
   private Rotation2d angle;
 
   private static PIDController angleController =
-      new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
+      new PIDController(kTurnAngleP, kTurnAngleI, kTurnAngleD);
 
   public TurnAngleCommand(Drive drive, Rotation2d angle) {
     addRequirements(drive);
     this.drive = drive;
     this.angle = angle;
 
-    angleController.setTolerance(kTurnSpeakerTolerance, kTurnSpeakerRateTolerance);
+    angleController.setTolerance(kTurnAngleTolerance, kTurnAngleRateTolerance);
     angleController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
