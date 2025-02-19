@@ -23,9 +23,10 @@ public class Gripper extends SubsystemBase {
         Logger.recordOutput("Gripper Position", inputs.gripperPositionDegrees);
         Logger.recordOutput("Gripper Velocity", inputs.gripperVelocityRadPerSec);
         Logger.recordOutput("Gripper Current", inputs.gripperAppliedVolts);
-        SmartDashboard.putNumber("Gripper Position", inputs.gripperPositionDegrees);
-        SmartDashboard.putNumber("Gripper Velocity", inputs.gripperVelocityRadPerSec);
-        SmartDashboard.putNumber("Gripper Current", inputs.gripperAppliedVolts);
+        SmartDashboard.putNumber("Gripper/Position", inputs.gripperPositionDegrees);
+        SmartDashboard.putNumber("Gripper/Velocity", inputs.gripperVelocityRadPerSec);
+        SmartDashboard.putNumber("Gripper/Current", inputs.gripperAppliedVolts);
+        SmartDashboard.putBoolean("Gripper/IsCoralDetected", io.isCoralPresent());
     }
 
     public void setVoltage(double voltage) {
