@@ -49,7 +49,7 @@ public class GripperIOSparkMax implements GripperIO {
      * Sets motor speed to 0
      */
     @Override
-    public void stopMotor() {
+    public void stop() {
         m_gripperMotor.set(0);
     }
 

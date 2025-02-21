@@ -46,7 +46,7 @@ public class GripperIOSim implements GripperIO {
     }
 
     @Override
-    public Command intake() {
+    public Command Intake() {
         return new InstantCommand(() -> {
             setMotorIn();
         });
