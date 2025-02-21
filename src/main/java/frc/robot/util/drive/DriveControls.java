@@ -8,8 +8,8 @@ import java.util.function.DoubleSupplier;
 
 public class DriveControls {
   // Controllers
-  public static final CommandJoystick m_translator = new CommandJoystick(1) ;
-  public static final CommandJoystick m_rotator = new CommandJoystick(2);
+  public static final CommandJoystick m_translator = new CommandJoystick(0) ;
+  public static final CommandJoystick m_rotator = new CommandJoystick(1);
   public static final CommandXboxController m_weaponsController = new CommandXboxController(0);
 
   // Useful for things that don't need to be triggered
@@ -88,7 +88,7 @@ public class DriveControls {
         // Driver controls
         DRIVE_FORWARD = () -> (-m_translator.getY());
         DRIVE_STRAFE = () -> (-m_translator.getX() );
-        DRIVE_ROTATE = () -> (-m_rotator.getX());
+        DRIVE_ROTATE = () -> (m_rotator.getTwist()/2); // Add negative to make turning inverted 
         RESET_GYRO = m_translator.button(12);
         // Driver Settings
         DRIVE_SLOW = m_translator.button(1); // TBA
