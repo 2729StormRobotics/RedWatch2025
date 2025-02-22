@@ -2,3 +2,4 @@
 .gradle/8.11/fileHashes/fileHashes.lock
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
 .gradle/8.11/checksums/checksums.lock
+build/jni/release/wpimath.pdb

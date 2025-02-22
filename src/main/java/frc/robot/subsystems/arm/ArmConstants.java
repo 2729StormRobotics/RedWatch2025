@@ -25,8 +25,8 @@ public class ArmConstants {
     public static final double kL1 = 55;
     public static final double kL2 = 51.2;
     public static final double kL3 = 50.9;
-    public static final double kL4 = 90.0;
-    public static final double kIntake = 0.0;
+    public static final double kL4 = 57.0;
+    public static final double kIntake = 78.8;
     public static final double kOneMore = 0; // ?????
 
     public static double kPArm = 0.01;

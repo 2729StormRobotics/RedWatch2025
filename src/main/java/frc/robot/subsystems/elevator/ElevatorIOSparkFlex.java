@@ -67,6 +67,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     rightConfig.apply(leftConfig);
     rightConfig.follow(leftMotor, true);
 
+    rightConfig.idleMode(IdleMode.kBrake);
     // reset safe kResetSafeParameters switches the motor to default paramaters,
     // then adds the
     // changes from the config object
@@ -127,7 +128,7 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
   @Override
   public boolean atSetpoint() {
     // if the difference between setpoint and position is less than the tolerance
-    return (Math.abs(getSetpoint() - getPosition()) < ElevatorConstants.SETPOINT_TOLERANCE_METERS);
+    return (Math.abs(this.setpoint - getPosition()) < ElevatorConstants.SETPOINT_TOLERANCE_METERS);
   }
 
   @Override

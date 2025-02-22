@@ -95,9 +95,9 @@ public class DriveControls {
     switch (Constants.driver) {
       case KRITHIK:
         // Driver controls
-        DRIVE_FORWARD = () -> (-m_translator.getY());
-        DRIVE_STRAFE = () -> (-m_translator.getX());
-        DRIVE_ROTATE = () -> (-m_translator.getTwist());
+        DRIVE_FORWARD = () -> ((-m_translator.getY() * 3)/4);
+        DRIVE_STRAFE = () -> ((-m_translator.getX() * 3)/4);
+        DRIVE_ROTATE = () -> ((-m_translator.getTwist()*0.5));
         RESET_GYRO = m_translator.button(12);
 
         MELTDOWN = m_weaponsController.back();
@@ -114,12 +114,12 @@ public class DriveControls {
         GRIPPERSTOP = m_weaponsController.start();
 
         // Driver Settings
-        DRIVE_SLOW = m_translator.button(1); // TBA
+        DRIVE_SLOW = m_translator.button(2); // TBA
         DRIVE_STOP = m_translator.button(2); // TBA
         DRIVE_HOLD_STOP = m_translator.button(3); // TBA
 
         // Driver Modes
-        DRIVE_ROBOT_RELATIVE = m_translator.button(4); // TBA
+        DRIVE_ROBOT_RELATIVE = m_translator.button(2); // TBA
         DRIVE_REEF_AIM = m_translator.button(1);
 
         // ALL BELOW TBD
@@ -171,9 +171,9 @@ public class DriveControls {
 
     switch (Constants.operator) {
       case KRITHIK:
-      ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/3);
+      ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 
-        PIVOT_ROTATE = () -> (-m_weaponsController.getRightY() / 10);
+        PIVOT_ROTATE = () -> (-m_weaponsController.getRightX() / 10);
         // all tbd
         // Pivot things
         L1 = m_weaponsController.b();

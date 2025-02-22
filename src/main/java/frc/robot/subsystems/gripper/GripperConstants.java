@@ -9,7 +9,7 @@ public class GripperConstants {
 
     public static final double motorSpeedInGripper = 0.6; // Have to update after testing
 
-    public static final double motorSpeedOutGripper = -0.2;
+    public static final double motorSpeedOutGripper = -0.6;
 
     public static final double kPGripper = 0;
     public static final double kIGripper = 0;
