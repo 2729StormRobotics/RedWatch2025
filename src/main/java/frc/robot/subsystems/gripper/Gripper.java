@@ -29,38 +29,35 @@ public class Gripper extends SubsystemBase {
         SmartDashboard.putBoolean("Gripper/IsCoralDetected", io.isCoralPresent());
     }
 
-    public void setVoltage(double voltage) {
-        io.setVoltage(voltage);
-    }
-
     public double getVoltage(double voltage) {
         return io.getVoltage();
     }
 
     public Command stop() {
         return new FunctionalCommand(
-                () -> {
-                }, () -> io.setVoltage(0), (stop) -> io.stopMotor(), () -> false, this);
+                () -> {}, 
+                () -> io.stop(), 
+                (stop) -> io.stop(), 
+                () -> false,
+                this);
     }
 
     public Command Intake() {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> io.setMotorIn(),
-                (stop) -> io.stopMotor(),
-                () -> false,
+                (stop) -> io.stop(),
+                () -> io.isCoralPresent(),
                 this);
 
     }
 
     public Command outtake() {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> io.setMotorOut(),
-                (stop) -> io.stopMotor(),
-                () -> false,
+                (stop) -> io.stop(),
+                () -> !io.isCoralPresent(),
                 this);
 
     }

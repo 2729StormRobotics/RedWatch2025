@@ -10,12 +10,7 @@ public interface GripperIO {
         return false;
     }
 
-    public default void setVoltage( double voltage ){}
-
     public default double getVoltage(){return 0.0;}
-
-    public default void stopMotor() {
-    }
 
     public default void setMotorIn() {
     }
@@ -23,7 +18,7 @@ public interface GripperIO {
     public default void setMotorOut() {
     }
 
-    public default Command intake() {
+    public default Command Intake() {
         return null;
     }
 
@@ -31,9 +26,7 @@ public interface GripperIO {
         return null;
     }
 
-    public default Command stop(){
-        return null;
- 
+    public default void stop(){
     }
 
     @AutoLog
