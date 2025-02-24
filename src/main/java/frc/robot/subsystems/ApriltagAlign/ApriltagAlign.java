@@ -39,9 +39,12 @@ public class ApriltagAlign extends Command implements VisionIO {
   public ApriltagAlign(Joystick joystick, Drive drivetrain) {
     m_drivetrain = drivetrain;
     m_translator = joystick;
+    // IF TURNING IS TOO SLOW INCREASE KP **TEST**
+    // IF OVERSHOOTS or OSCILLATES change KD (INCREASE if wiggling back and forth) (DECREASE if stops rotating too early or jittery)
+    // IF ROBOT IS OFF BY A FEW DEGREES CONSISTENTLY or CORRECTS TO SLOW increase kI (DECREASE if overshooting and oscillating)
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn, Constants.VisionConstants.kDTurn);
 
-    // Reset PID controller and set tolerance
+    // Reset PID controller and set tolerance (if tolerance too sensitive increase, if not precise decrease) **TEST**
     m_controller.reset();
     m_controller.setTolerance(Constants.VisionConstants.aprilTagAlignTolerance);
 
@@ -57,8 +60,10 @@ public class ApriltagAlign extends Command implements VisionIO {
 
   @Override
   public void execute() {
+    // get latest apriltag detection results
     var result = getLatestResult(camera1);
 
+    // If theres an april tag calculate the best target's yaw angle
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
       double targetYaw = target.getYaw();
@@ -67,6 +72,7 @@ public class ApriltagAlign extends Command implements VisionIO {
       m_turnPower = m_controller.calculate(targetYaw);
 
       // Apply small stabilization gain
+      // increase KSTurn if robot drifting decrease if robot is jittery **TEST**
       m_turnPower += Math.copySign(Constants.VisionConstants.kSTurn, targetYaw);
 
       // Constrain turn power
@@ -81,7 +87,7 @@ public class ApriltagAlign extends Command implements VisionIO {
       SmartDashboard.putNumber("Target Yaw", targetYaw);
       SmartDashboard.putNumber("Turn Power", m_turnPower);
 
-      // Drive the robot with translational and rotational inputs
+      // Drive the robot with translational and rotational inputs **TEST** Increase deadband if small joystick moves cause unintended movement
       CommandScheduler.getInstance()
           .schedule(
               frc.robot.commands.DriveCommands.joystickDrive(
@@ -95,7 +101,7 @@ public class ApriltagAlign extends Command implements VisionIO {
                   () -> m_turnPower));
 
     } else {
-      // No target detected: Do nothing and clear SmartDashboard indicators
+      // Else if no target detected: Do nothing and clear SmartDashboard indicators
       m_turnPower = 0.0;
       SmartDashboard.putString("AprilTagAlign", "No Targets - Idle");
     }
@@ -105,6 +111,7 @@ public class ApriltagAlign extends Command implements VisionIO {
   public void end(boolean interrupted) {
     CommandScheduler.getInstance()
         .schedule(
+            // STOP THE ROBOT completely when ended
             frc.robot.commands.DriveCommands.joystickDrive(
                 m_drivetrain,
                 () -> 0.0,  // X translation (stopped)
