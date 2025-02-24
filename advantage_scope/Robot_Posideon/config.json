@@ -16,27 +16,27 @@
     }
   ],
   "position": [
-    0.12,
     0,
-    0.06
+    0,
+    0
   ],
   "cameras": [
     {
-      "name": "Note Camera",
+      "name": "Front_Camera",
       "rotations": [
         {
           "axis": "y",
-          "degrees": 10
+          "degrees": -12
         },
         {
           "axis": "z",
-          "degrees": -20
+          "degrees": 0
         }
       ],
       "position": [
-        0.55,
-        0.44,
-        0.23
+        0.1286,
+        0.1778,
+        0.254
       ],
       "resolution": [
         960,
@@ -45,21 +45,21 @@
       "fov": 90
     },
     {
-      "name": "Back Right Camera",
+      "name": "Left_Camera",
       "rotations": [
         {
           "axis": "y",
-          "degrees": -31.875
+          "degrees": 28.1
         },
         {
           "axis": "z",
-          "degrees": 155
+          "degrees": 180
         }
       ],
       "position": [
-        -0.55,
-        0.44,
-        0.23
+        -0.635,
+        0.1143,
+        0.2794
       ],
       "resolution": [
         960,
@@ -68,40 +68,21 @@
       "fov": 90
     },
     {
-      "name": "Back Left Camera",
+      "name": "Right_Camera",
       "rotations": [
         {
           "axis": "y",
-          "degrees": -31.875
+          "degrees": 28.1
         },
         {
           "axis": "z",
-          "degrees": 245
+          "degrees": -90
         }
       ],
       "position": [
-        -0.55,
-        -0.44,
-        0.23
-      ],
-      "resolution": [
-        960,
-        720
-      ],
-      "fov": 90
-    },
-    {
-      "name": "Front Camera",
-      "rotations": [
-        {
-          "axis": "y",
-          "degrees": -31
-        }
-      ],
-      "position": [
-        0.55,
-        -0.44,
-        0.23
+        -0.00635,
+        -0.1143,
+        0.2794
       ],
       "resolution": [
         960,

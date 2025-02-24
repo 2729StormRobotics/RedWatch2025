@@ -8,12 +8,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 public class GripperIOSim implements GripperIO {
-    private DigitalInput m_simObjectDectector;
+    // private SimD m_simObjectDectector;
     private SparkMax m_simgripperMotor;
 
     public void GripperIO(boolean isSimulation) {
         if (isSimulation) {
-            m_simObjectDectector = new DigitalInput(GripperConstants.beambreakPort);
+            // m_simObjectDectector = new DigitalInput(GripperConstants.beambreakPort);
             m_simgripperMotor = new SparkMax(GripperConstants.gripperMotorPort, MotorType.kBrushless);
         }
 
@@ -21,7 +21,8 @@ public class GripperIOSim implements GripperIO {
 
     public boolean isCoralPresent() {
         // Have to change for the promxity sensor
-        return !m_simObjectDectector.get();
+        // return !m_simObjectDectector.get();
+        return false;
     }
 
     public void stopMotor() {

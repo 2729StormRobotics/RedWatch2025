@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6365063713592232,
-        "y": 7.361038000606795
+        "x": 1.7523928268251274,
+        "y": 7.199698907045839
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4442380124246816,
-        "y": 6.560102381964417
+        "x": 2.489951468808296,
+        "y": 6.45411225284503
       },
       "isLocked": false,
       "linkedName": "I1"
     },
     {
       "anchor": {
-        "x": 3.6821393355582526,
-        "y": 5.119417475728155
+        "x": 3.598868634259258,
+        "y": 5.22789966724537
       },
       "prevControl": {
-        "x": 3.262269039246114,
-        "y": 5.529790365494483
+        "x": 3.109514207745107,
+        "y": 5.779110772197337
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
-    "maxAngularVelocity": 540.0,
+    "maxAngularVelocity": 1040.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
@@ -48,7 +48,7 @@
   "folder": "I1 Outbound",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -54.0
+    "rotation": 126.0
   },
   "useDefaultConstraints": true
 }
