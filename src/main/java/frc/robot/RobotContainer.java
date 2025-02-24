@@ -195,6 +195,8 @@ public class RobotContainer {
       // ELEVATOR_L2.onTrue(elevator.goToPosition(ElevatorState.L2));
       // ELEVATOR_L3.onTrue(elevator.goToPosition(ElevatorState.L3));
       // ELEVATOR_L4.onTrue(elevator.goToPosition(ElevatorState.L4));
+
+      ledController.orange();
     
     DriveControls.configureControls();
     //elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
