@@ -43,6 +43,8 @@ public class DriveControls {
   public static Trigger PIVOT_L2_Intake;
   public static Trigger PIVOT_L3_Intake;
   public static Trigger PIVOT_L4_Intake;
+  public static Trigger PULLHANGER;
+  public static Trigger EXTENDHANGER;
 
   // Drive controls
   public static DoubleSupplier DRIVE_FORWARD;
@@ -101,6 +103,9 @@ public class DriveControls {
         RESET_GYRO = m_translator.button(12);
 
         MELTDOWN = m_weaponsController.back();
+
+        PULLHANGER = m_weaponsController.rightTrigger();
+        EXTENDHANGER = m_weaponsController.rightTrigger();
 
         INTAKE_POS = m_translator.button(6);
         // Misc Subsytem Controls
