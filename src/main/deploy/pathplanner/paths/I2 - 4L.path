@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 1040.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularAcceleration": 1540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 57.3534692442662
+    "rotation": 147.353
   },
   "reversed": false,
   "folder": "I2 Outbound",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": 145.0
   },
   "useDefaultConstraints": true
 }

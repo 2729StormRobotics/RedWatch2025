@@ -42,10 +42,12 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -65,10 +67,10 @@ import java.util.Queue;
  */
 public class ModuleIOSparkMax implements ModuleIO {
 
-  private final SparkMax driveSparkMax;
+  private final SparkFlex driveSparkMax;
   private final SparkMax turnSparkMax;
 
-  private final SparkMaxConfig driveConfig;
+  private final SparkFlexConfig driveConfig;
   private final SparkMaxConfig turnConfig;
 
   private final SparkClosedLoopController drivePIDController;
@@ -86,23 +88,23 @@ public class ModuleIOSparkMax implements ModuleIO {
   public ModuleIOSparkMax(int index) {
     switch (index) {
       case 0: // Front Left
-        driveSparkMax = new SparkMax(kFrontLeftDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkFlex(kFrontLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kFrontLeftTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kFrontLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 1: // Front Right
-        driveSparkMax = new SparkMax(kFrontRightDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkFlex(kFrontRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kFrontRightTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset =
             DriveConstants.kFrontRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 2: // Back Left
-        driveSparkMax = new SparkMax(kRearLeftDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkFlex(kRearLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kRearLeftTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kBackLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 3: // Back Right
-        driveSparkMax = new SparkMax(kRearRightDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkFlex(kRearRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kRearRightTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kBackRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
@@ -110,7 +112,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         throw new RuntimeException("Invalid module index");
     }
 
-    driveConfig = new SparkMaxConfig();
+    driveConfig = new SparkFlexConfig();
     turnConfig = new SparkMaxConfig();
 
     // Configure motor current limit, voltage compensation, and brake modes

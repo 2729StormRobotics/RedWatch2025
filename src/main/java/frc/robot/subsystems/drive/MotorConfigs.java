@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import static frc.robot.subsystems.drive.ModuleConstants.kDrivingEncoderPositionFactor;
@@ -12,7 +13,7 @@ import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorCurrentLim
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorIdleMode;
 
 public final class MotorConfigs {
-    public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
+    public static final SparkFlexConfig drivingConfig = new SparkFlexConfig();
     public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
 
     static {

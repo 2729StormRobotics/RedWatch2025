@@ -61,13 +61,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
+//~
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
-
-import frc.robot.subsystems.hanger.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -84,7 +82,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Arm arm;
   private final Gripper m_gripper;
-  private final HangerIO hanger;
+  // private final HangerIO hanger;
 
   private boolean brakeMode = true;
 
@@ -118,7 +116,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(3));
         arm = new Arm(new ArmIOSparkMax());
         m_gripper = new Gripper(new GripperIOSparkMax());
-        hanger = new HangerIOSparkMax();
+        // hanger = new HangerIOSparkMax();
         break;
 
       case SIM:
@@ -133,7 +131,7 @@ public class RobotContainer {
             new ModuleIOSim());
         arm = new Arm(new ArmIOSim());
         m_gripper = new Gripper(new GripperIOSim());
-        hanger = new HangerIOSim();
+        // hanger = new HangerIOSim();
 
         break;
 
@@ -156,7 +154,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIO() {
         });
         m_gripper = new Gripper(new GripperIOSim());
-        hanger = new HangerIOSparkMax();
+        // hanger = new HangerIOSparkMax();
 
         break;
     }
@@ -282,8 +280,8 @@ public class RobotContainer {
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
 
-    PULLHANGER.onTrue(hanger.retract());
-    EXTENDHANGER.onTrue(hanger.extend());
+    // PULLHANGER.onTrue(hanger.retract());
+    // EXTENDHANGER.onTrue(hanger.extend());
 
     // Set Positions
     // DriveControls.L1.onTrue(arm.PIDCommand(32));
