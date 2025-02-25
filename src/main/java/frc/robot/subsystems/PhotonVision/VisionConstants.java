@@ -36,7 +36,7 @@ public class VisionConstants extends SubsystemBase {
                                         Units.inchesToMeters(4.5)),
                         //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(0).getRadians(), 
+                                Rotation2d.fromDegrees(145).getRadians(), 
                                 Rotation2d.fromDegrees(0).getRadians()
                         ));
   public static final Transform3d cam3RobotToCam = new Transform3d(
@@ -47,7 +47,7 @@ public class VisionConstants extends SubsystemBase {
                         ),
                         //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(0 ).getRadians(), 
+                                Rotation2d.fromDegrees(130 ).getRadians(), 
                                 Rotation2d.fromDegrees(0).getRadians()));// maybe need to change
 
   public static final Transform3d cam2RobotToCam = new Transform3d(
