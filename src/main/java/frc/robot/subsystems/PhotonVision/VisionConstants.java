@@ -29,37 +29,41 @@ public class VisionConstants extends SubsystemBase {
 
   // Change values to the actual distance from the center of the robot, change rotation if needed.
   public static final Transform3d cam1RobotToCam = new Transform3d(
+                        //
                         new Translation3d(
-                                        Units.inchesToMeters(-9),
-                                        Units.inchesToMeters(7),
-                                        Units.inchesToMeters(10)),
+                                        Units.inchesToMeters(-12.654956),
+                                        Units.inchesToMeters(-17),
+                                        Units.inchesToMeters(4.5)),
+                        //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                        Rotation2d.fromDegrees(0).getRadians(), 
-                        Rotation2d.fromDegrees(0).getRadians()
+                                Rotation2d.fromDegrees(0).getRadians(), 
+                                Rotation2d.fromDegrees(0).getRadians()
                         ));
   public static final Transform3d cam3RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(-0.25),
-                                Units.inchesToMeters(4.5),
-                                Units.inchesToMeters(11)
+                                Units.inchesToMeters(-12.654956),
+                                Units.inchesToMeters(-17),
+                                Units.inchesToMeters(4.5)
                         ),
+                        //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(90 - 61.90).getRadians(), 
-                                Rotation2d.fromDegrees(90).getRadians()));// maybe need to change
+                                Rotation2d.fromDegrees(0 ).getRadians(), 
+                                Rotation2d.fromDegrees(0).getRadians()));// maybe need to change
 
   public static final Transform3d cam2RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(-0.25),
+                                Units.inchesToMeters(9),
                                 Units.inchesToMeters(-4.5),
-                                Units.inchesToMeters(11)
+                                Units.inchesToMeters(3)
                         ),
+                        
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(90 - 61.90).getRadians(), 
-                                Rotation2d.fromDegrees(-90).getRadians())); // maybe need to change
+                                Rotation2d.fromDegrees(0).getRadians(), 
+                                Rotation2d.fromDegrees(0).getRadians())); // maybe need to change
 
 
   // The layout of the AprilTags on the field
-  public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
+  public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
   // Change values as needed **CHANGE**
   public static final double AMBIGUITY_THRESHOLD = 0.5;
