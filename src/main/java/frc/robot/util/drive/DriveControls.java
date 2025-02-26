@@ -1,7 +1,9 @@
 package frc.robot.util.drive;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -28,7 +30,6 @@ public class DriveControls {
   private static final Trigger EMPTY_TRIGGER = new Trigger(() -> false);
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
-
   // Main Button Controls
   public static Trigger L1;
   public static Trigger L2;
@@ -39,10 +40,6 @@ public class DriveControls {
   // Drive controls
   public static DoubleSupplier ELEVATOR_JOYSTICK;
   public static DoubleSupplier PIVOT_ROTATE;
-  public static Trigger PIVOT_L1_Intake;
-  public static Trigger PIVOT_L2_Intake;
-  public static Trigger PIVOT_L3_Intake;
-  public static Trigger PIVOT_L4_Intake;
   public static Trigger PULLHANGER;
   public static Trigger EXTENDHANGER;
 
@@ -86,37 +83,24 @@ public class DriveControls {
   public static Trigger DYNAMIC_FORWARD;
   public static Trigger DYNAMIC_REVERSE;
 
-  public static Trigger ELEVATOR_L1;
-  public static Trigger ELEVATOR_L2;
-  public static Trigger ELEVATOR_L3;
-  public static Trigger ELEVATOR_L4;
-  public static Trigger ELEVATOR_INTAKE;
+
+  // POV Buttons
+  public static POVButton DPAD_UP;
+  public static POVButton DPAD_RIGHT;
+  public static POVButton DPAD_DOWN;
+  public static POVButton DPAD_LEFT;
+
 
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
         // Driver controls
-        DRIVE_FORWARD = () -> ((-m_translator.getY() * 4)/4);
-        DRIVE_STRAFE = () -> ((-m_translator.getX() * 4)/4);
-        DRIVE_ROTATE = () -> ((-m_translator.getTwist()*1));
+        DRIVE_FORWARD = () -> ((-m_translator.getY() * 4) / 4);
+        DRIVE_STRAFE = () -> ((-m_translator.getX() * 4) / 4);
+        DRIVE_ROTATE = () -> ((-m_rotator.getTwist() * 1));
         RESET_GYRO = m_translator.button(12);
 
-        MELTDOWN = m_weaponsController.back();
-
-        PULLHANGER = m_weaponsController.rightTrigger();
-        EXTENDHANGER = m_weaponsController.rightTrigger();
-
-        INTAKE_POS = m_translator.button(6);
-        // Misc Subsytem Controls
-        ROTATECLOCKWISE = m_weaponsController.rightBumper();
-        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
-        ARMSTOP = m_weaponsController.y();
-        CALIBRATEARM = m_weaponsController.rightStick();
-
-        INTAKE = m_weaponsController.rightBumper();
-        OUTTAKE = m_weaponsController.leftBumper();
-        GRIPPERSTOP = m_weaponsController.start();
 
         // Driver Settings
         DRIVE_SLOW = m_translator.button(2); // TBA
@@ -176,19 +160,22 @@ public class DriveControls {
 
     switch (Constants.operator) {
       case KRITHIK:
-      ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 
+        INTAKE = m_weaponsController.rightBumper();
+        OUTTAKE = m_weaponsController.leftBumper();
+        GRIPPERSTOP = m_weaponsController.b();
+        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
+
+        MELTDOWN = m_weaponsController.b();
         PIVOT_ROTATE = () -> (-m_weaponsController.getRightX() / 10);
         // all tbd
         // Pivot things
-        L1 = m_weaponsController.b();
-        L2 = m_weaponsController.a();
-        L3 = m_weaponsController.x();
-        L4 = m_weaponsController.y();
-
+        L1 = m_weaponsController.povUp();
+        L2 = m_weaponsController.povRight();
+        L3 = m_weaponsController.povDown();
+        L4 = m_weaponsController.povLeft();
+        INTAKE_POS = m_weaponsController.a();
         // Misc Subsytem Controls
-        ROTATECLOCKWISE = m_weaponsController.rightBumper();
-        ROTATECOUNTERCLOCKWISE = m_weaponsController.leftBumper();
         ARMSTOP = m_weaponsController.x();
 
         break;
