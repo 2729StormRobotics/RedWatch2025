@@ -5,39 +5,117 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "S3 - 1L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "S3 - 1L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Setpoint"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "1L - I1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1L - I1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeSetpoint"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "I1 - 3L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "I1 - 3L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Setpoint"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3L - I1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3L - I1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeSetpoint"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "I1 - 3R"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "I1 - 3R"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Setpoint"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3R - I1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3R - I1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeSetpoint"
+                }
+              }
+            ]
           }
         }
       ]

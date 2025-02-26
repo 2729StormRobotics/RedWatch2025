@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0313636363636363,
-        "y": 4.209474431818181
+        "x": 3.0420000000000003,
+        "y": 4.1419999999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2061915245470813,
-        "y": 4.7786010946019095
+        "x": 2.990423453975229,
+        "y": 4.386621871262883
       },
       "isLocked": false,
       "linkedName": "3L"
@@ -20,8 +20,8 @@
         "y": 0.6984118852459017
       },
       "prevControl": {
-        "x": 2.452857325781204,
-        "y": 1.708623759245103
+        "x": 1.572403681600292,
+        "y": 1.5678530121403886
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,7 @@
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 1040.0,
-    "maxAngularAcceleration": 1540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

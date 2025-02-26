@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.756029206837698,
-        "y": 2.5681227332802847
+        "x": 5.085042003356137,
+        "y": 2.7209110319169842
       },
       "isLocked": false,
       "linkedName": "5R"
@@ -20,8 +20,8 @@
         "y": 0.6984118852459017
       },
       "prevControl": {
-        "x": 3.7338447228429157,
-        "y": 2.045279525944998
+        "x": 3.6702367788573858,
+        "y": 2.0013277213909575
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,7 @@
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 1040.0,
-    "maxAngularAcceleration": 1540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.101164772727273,
-        "y": 3.840525568181818
+        "x": 3.0420000000000003,
+        "y": 3.8787499999999993
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3395158946586365,
-        "y": 4.366394629915992
+        "x": 3.2803511219313637,
+        "y": 4.404619061734174
       },
       "isLocked": false,
       "linkedName": "3R"
@@ -36,7 +36,7 @@
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 1040.0,
-    "maxAngularAcceleration": 1540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

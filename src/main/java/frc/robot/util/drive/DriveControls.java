@@ -98,7 +98,7 @@ public class DriveControls {
         // Driver controls
         DRIVE_FORWARD = () -> ((-m_translator.getY() * 4) / 4);
         DRIVE_STRAFE = () -> ((-m_translator.getX() * 4) / 4);
-        DRIVE_ROTATE = () -> ((-m_rotator.getTwist() * 1));
+        DRIVE_ROTATE = () -> ((-m_rotator.getTwist() * 0.5));
         RESET_GYRO = m_translator.button(12);
 
 
@@ -161,8 +161,8 @@ public class DriveControls {
     switch (Constants.operator) {
       case KRITHIK:
 
-        INTAKE = m_weaponsController.rightBumper();
-        OUTTAKE = m_weaponsController.leftBumper();
+        INTAKE = m_weaponsController.rightTrigger(0.3);
+        OUTTAKE = m_weaponsController.leftTrigger(0.3);
         GRIPPERSTOP = m_weaponsController.b();
         ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 

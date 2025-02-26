@@ -20,6 +20,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -159,6 +160,9 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand("L2Setpoint", elevator.PIDCommand(ElevatorConstants.L2));
+    NamedCommands.registerCommand("IntakeSetpoint", elevator.PIDCommand(ElevatorConstants.INTAKE));
+
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
@@ -206,6 +210,9 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Set up Named Commands
+    
 
     // Set up Elevator SysId routines
     // autoChooser.addOption(
@@ -274,7 +281,7 @@ public class RobotContainer {
     MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {elevator.setVelocity(0);}, elevator),arm.stop(), m_gripper.stop()));
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-
+    
     // Gripper Commands
     INTAKE.onTrue(m_gripper.Intake());
     OUTTAKE.onTrue(m_gripper.outtake());
@@ -316,6 +323,7 @@ public class RobotContainer {
     DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
         
     DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
+
 
   }
 
