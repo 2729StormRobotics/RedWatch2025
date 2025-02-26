@@ -26,7 +26,7 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -12
+          "degrees": 145
         },
         {
           "axis": "z",
@@ -34,9 +34,9 @@
         }
       ],
       "position": [
-        0.1286,
-        0.1778,
-        0.254
+        -0.3214,
+        -0.4318,
+        0.1143
       ],
       "resolution": [
         960,
@@ -49,17 +49,17 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": 28.1
+          "degrees": 130
         },
         {
           "axis": "z",
-          "degrees": 180
+          "degrees": 0
         }
       ],
       "position": [
-        -0.635,
-        0.1143,
-        0.2794
+        -0.3214,
+        -0.4318,
+        0.1143
       ],
       "resolution": [
         960,
@@ -72,17 +72,17 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": 28.1
+          "degrees": 0
         },
         {
           "axis": "z",
-          "degrees": -90
+          "degrees": 0
         }
       ],
       "position": [
-        -0.00635,
+        0.2286,
         -0.1143,
-        0.2794
+        0.0762
       ],
       "resolution": [
         960,
