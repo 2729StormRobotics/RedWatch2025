@@ -47,7 +47,7 @@ public class Gripper extends SubsystemBase {
                 () -> {},
                 () -> io.setMotorIn(),
                 (stop) -> io.stop(),
-                () -> io.isCoralPresent(),
+                () -> false,
                 this);
 
     }
@@ -57,7 +57,7 @@ public class Gripper extends SubsystemBase {
                 () -> {},
                 () -> io.setMotorOut(),
                 (stop) -> io.stop(),
-                () -> !io.isCoralPresent(),
+                () -> false,
                 this);
 
     }
