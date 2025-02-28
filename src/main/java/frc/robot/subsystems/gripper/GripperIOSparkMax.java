@@ -72,6 +72,7 @@ public class GripperIOSparkMax implements GripperIO {
      */
     @Override
     public void setMotorOut() {
+        ledController.off();
         m_gripperMotor.set(GripperConstants.motorSpeedOutGripper);
     }
 
