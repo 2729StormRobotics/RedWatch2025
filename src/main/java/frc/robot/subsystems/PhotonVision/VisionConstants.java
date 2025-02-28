@@ -23,17 +23,17 @@ public class VisionConstants extends SubsystemBase {
   /** Creates a new VisionConstants. */
   public VisionConstants() {}
 
-  public static final String cam1Name = "Front_Camera";
-  public static final String cam3Name = "Left_Camera";
-  public static final String cam2Name = "Right_Camera";
+  public static final String cam1Name = "Intake";
+  public static final String cam3Name = "Intake Up";
+  public static final String cam2Name = "Outtake";
 
   // Change values to the actual distance from the center of the robot, change rotation if needed.
   public static final Transform3d cam1RobotToCam = new Transform3d(
                         //
                         new Translation3d(
-                                        Units.inchesToMeters(-12.654956),
-                                        Units.inchesToMeters(-17),
-                                        Units.inchesToMeters(4.5)),
+                                        Units.inchesToMeters(13.000000),
+                                        Units.inchesToMeters(4.5),
+                                        Units.inchesToMeters(5.6000)),
                         //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
                                 Rotation2d.fromDegrees(145).getRadians(), 
@@ -41,9 +41,9 @@ public class VisionConstants extends SubsystemBase {
                         ));
   public static final Transform3d cam3RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(-12.654956),
-                                Units.inchesToMeters(-17),
-                                Units.inchesToMeters(4.5)
+                                Units.inchesToMeters(-13.000000),
+                                Units.inchesToMeters(4.5),
+                                Units.inchesToMeters(5.6)
                         ),
                         //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
@@ -52,9 +52,9 @@ public class VisionConstants extends SubsystemBase {
 
   public static final Transform3d cam2RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(9),
-                                Units.inchesToMeters(-4.5),
-                                Units.inchesToMeters(3)
+                                Units.inchesToMeters(-8),
+                                Units.inchesToMeters(4),
+                                Units.inchesToMeters(24.850)
                         ),
                         
                         new Rotation3d(0, 
