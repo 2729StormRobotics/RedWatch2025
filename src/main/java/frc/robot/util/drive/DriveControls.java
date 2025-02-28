@@ -161,8 +161,8 @@ public class DriveControls {
     switch (Constants.operator) {
       case KRITHIK:
 
-        INTAKE = m_weaponsController.rightBumper();
-        OUTTAKE = m_weaponsController.leftBumper();
+        INTAKE = m_weaponsController.rightTrigger(0.3);
+        OUTTAKE = m_weaponsController.leftTrigger(0.3);
         GRIPPERSTOP = m_weaponsController.b();
         ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 
