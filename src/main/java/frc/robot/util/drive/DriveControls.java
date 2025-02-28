@@ -166,6 +166,9 @@ public class DriveControls {
         GRIPPERSTOP = m_weaponsController.b();
         ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 
+        EXTENDHANGER = m_weaponsController.rightBumper();
+        PULLHANGER = m_weaponsController.leftBumper();
+
         MELTDOWN = m_weaponsController.b();
         PIVOT_ROTATE = () -> (-m_weaponsController.getRightX() / 10);
         // all tbd
