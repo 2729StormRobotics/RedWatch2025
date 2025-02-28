@@ -18,10 +18,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
@@ -44,6 +47,8 @@ public class Elevator extends SubsystemBase {
   private MechanismLigament2d elevatorMechanism = getElevatorMechanism();
 
   private SysIdRoutine SysId;
+
+  private BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -115,10 +120,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSetpoint(double setpoint) {
+    ledController.setPattern(BlinkinPattern.BLUE);
     io.goToSetpoint(setpoint);
   }
 
   public boolean atSetpoint() {
+    ledController.setPattern(BlinkinPattern.HOT_PINK);
     return io.atSetpoint();
   }
 

@@ -3,6 +3,8 @@ package frc.robot.subsystems.gripper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
@@ -19,9 +21,12 @@ public class GripperIOSparkMax implements GripperIO {
 
     private SparkLimitSwitch m_objectDetector;
 
+    private BlinkinLEDController ledController;
+
     public GripperIOSparkMax() {
         m_gripperMotor = new SparkMax(GripperConstants.gripperMotorPort, MotorType.kBrushless);
         m_objectDetector = m_gripperMotor.getForwardLimitSwitch();
+        ledController = BlinkinLEDController.getInstance();
 
         // Configure Motor
         motorConfig = new SparkMaxConfig();
@@ -42,6 +47,7 @@ public class GripperIOSparkMax implements GripperIO {
      */
     @Override
     public boolean isCoralPresent() {
+        ledController.setPattern(BlinkinPattern.GREEN);
         return m_gripperMotor.getForwardLimitSwitch().isPressed();
     }
 
