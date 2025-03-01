@@ -35,7 +35,7 @@ public class ApriltagAlign extends Command implements VisionIO {
     m_drivetrain = drivetrain;
     m_translator = joystick;
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn, Constants.VisionConstants.kDTurn);
-    camera1 = new PhotonCamera(VisionConstants.cam1Name);
+    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
     addRequirements(m_drivetrain);
   }
 

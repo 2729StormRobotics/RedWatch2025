@@ -7,16 +7,16 @@ package frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.AMBIGUITY_THRESHOLD;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.MAX_DISTANCE;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1Name;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2Name;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3Name;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3RobotToCam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.getSimVersion;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.intakeUp_Cam;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.intake_Cam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kMultiTagStdDevs;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kSingleTagStdDevs;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.outtake_Cam;
 
 import java.util.Optional;
 
@@ -56,9 +56,9 @@ public class VisionIOPhotonSim implements VisionIO {
   private Pose2d lastEstimate = new Pose2d();
 
   public VisionIOPhotonSim() {
-    cam1 = new PhotonCamera(cam1Name);
-    cam2 = new PhotonCamera(cam2Name);
-    cam3 = new PhotonCamera(cam3Name);
+    cam1 = new PhotonCamera(intake_Cam);
+    cam2 = new PhotonCamera(outtake_Cam);
+    cam3 = new PhotonCamera(intakeUp_Cam);
 
     cam1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getSimVersion(cam1RobotToCam));
     cam1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);

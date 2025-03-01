@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.PhotonVision.VisionIO.VisionIOInputs;
 
 import static frc.robot.subsystems.PhotonVision.VisionConstants.AMBIGUITY_THRESHOLD;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.intake_Cam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.outtake_Cam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3Name;
+import static frc.robot.subsystems.PhotonVision.VisionConstants.intakeUp_Cam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3RobotToCam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
 
@@ -59,17 +59,17 @@ public class VisionIOPhoton implements VisionIO {
     PortForwarder.add(5800, "photonvision.local", 5800);
 
     // Camera 1
-    camera1 = new PhotonCamera(cam1Name);
+    camera1 = new PhotonCamera(intake_Cam);
     camera1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam1RobotToCam);
     camera1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // Camera 2
-    camera2 = new PhotonCamera(cam2Name);
+    camera2 = new PhotonCamera(outtake_Cam);
     camera2Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam2RobotToCam);
     camera2Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // Camera 3
-    camera3 = new PhotonCamera(cam3Name);
+    camera3 = new PhotonCamera(intakeUp_Cam);
     camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam3RobotToCam);
     camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 

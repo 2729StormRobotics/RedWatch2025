@@ -23,9 +23,9 @@ public class VisionConstants extends SubsystemBase {
   /** Creates a new VisionConstants. */
   public VisionConstants() {}
 
-  public static final String cam1Name = "Intake";
-  public static final String cam3Name = "Intake Up";
-  public static final String cam2Name = "Outtake";
+  public static final String intake_Cam = "Intake";
+  public static final String outtake_Cam = "Outtake";
+  public static final String intakeUp_Cam = "Intake Up";
 
   // Change values to the actual distance from the center of the robot, change rotation if needed.
   public static final Transform3d cam1RobotToCam = new Transform3d(
