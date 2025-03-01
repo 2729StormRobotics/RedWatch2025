@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.PhotonVision.VisionConstants;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOPhoton.*;
@@ -25,104 +27,83 @@ public class ApriltagAlign extends Command implements VisionIO {
   private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
-
-  public final PhotonCamera camera1 = new PhotonCamera(VisionConstants.cam1Name);
-
+  private final PhotonCamera camera1;
+  private double m_turnError;
   private double m_turnPower;
 
-  /**
-   * Creates a new AprilTagAlign.
-   *
-   * @param joystick    The joystick for translational control.
-   * @param drivetrain  The drivetrain subsystem.
-   */
   public ApriltagAlign(Joystick joystick, Drive drivetrain) {
     m_drivetrain = drivetrain;
     m_translator = joystick;
-    // IF TURNING IS TOO SLOW INCREASE KP **TEST**
-    // IF OVERSHOOTS or OSCILLATES change KD (INCREASE if wiggling back and forth) (DECREASE if stops rotating too early or jittery)
-    // IF ROBOT IS OFF BY A FEW DEGREES CONSISTENTLY or CORRECTS TO SLOW increase kI (DECREASE if overshooting and oscillating)
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn, Constants.VisionConstants.kDTurn);
-
-    // Reset PID controller and set tolerance (if tolerance too sensitive increase, if not precise decrease) **TEST**
-    m_controller.reset();
-    m_controller.setTolerance(Constants.VisionConstants.aprilTagAlignTolerance);
-
-    // Declare subsystem dependencies
+    camera1 = new PhotonCamera(VisionConstants.cam1Name);
     addRequirements(m_drivetrain);
   }
 
   @Override
   public void initialize() {
-    m_turnPower = 0.0;
+    m_controller.reset();
+    m_turnError = 0;
+    m_turnPower = 0;
     SmartDashboard.putString("AprilTagAlign", "Initialized");
   }
 
   @Override
   public void execute() {
-    // get latest apriltag detection results
-    var result = getLatestResult(camera1);
+    // Calculate drivetrain commands from Joystick values
+    double forward = -m_translator.getY() * DriveConstants.kMaxSpeedMetersPerSecond;
+    double strafe = -m_translator.getX() * DriveConstants.kMaxSpeedMetersPerSecond;
+    // double turn = -m_translator.getTwist() * DriveConstants.kMaxAngularSpeedRadiansPerSecond;s
 
-    // If theres an april tag calculate the best target's yaw angle
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-      double targetYaw = target.getYaw();
+    // Read in relevant data from the Camera
+    boolean targetVisible = false;
+    double targetYaw = 0.0;
 
-      // Calculate turn power using PID controller
-      m_turnPower = m_controller.calculate(targetYaw);
-
-      // Apply small stabilization gain
-      // increase KSTurn if robot drifting decrease if robot is jittery **TEST**
-      m_turnPower += Math.copySign(Constants.VisionConstants.kSTurn, targetYaw);
-
-      // Constrain turn power
-      m_turnPower = MathUtil.clamp(m_turnPower, -1.0, 1.0);
-
-      // Stop turning if error is within tolerance
-      if (Math.abs(targetYaw) < Constants.VisionConstants.aprilTagAlignTolerance) {
-        m_turnPower = 0.0;
-      }
-
-      // Send debug information to SmartDashboard
-      SmartDashboard.putNumber("Target Yaw", targetYaw);
-      SmartDashboard.putNumber("Turn Power", m_turnPower);
-
-      // Drive the robot with translational and rotational inputs **TEST** Increase deadband if small joystick moves cause unintended movement
-      CommandScheduler.getInstance()
-          .schedule(
-              frc.robot.commands.DriveCommands.joystickDrive(
-                  m_drivetrain,
-                  () -> MathUtil.applyDeadband(
-                      -m_translator.getY() * Constants.OperatorConstants.translationMultiplier,
-                      Constants.OperatorConstants.kDriveDeadband),
-                  () -> MathUtil.applyDeadband(
-                      -m_translator.getX() * Constants.OperatorConstants.translationMultiplier,
-                      Constants.OperatorConstants.kDriveDeadband),
-                  () -> m_turnPower));
-
-    } else {
-      // Else if no target detected: Do nothing and clear SmartDashboard indicators
-      m_turnPower = 0.0;
-      SmartDashboard.putString("AprilTagAlign", "No Targets - Idle");
+    PhotonPipelineResult results = camera1.getLatestResult();
+    if (results.hasTargets()) {
+      // At least one AprilTag was seen by the camera
+      PhotonTrackedTarget target = results.getBestTarget();
+      targetYaw = target.getYaw();
+      targetVisible = true;
     }
+
+    // Override the driver's turn command with an automatic one that turns toward the tag.
+    double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
+
+    // Command drivetrain motors based on target speeds
+    CommandScheduler.getInstance().schedule(
+        frc.robot.commands.DriveCommands.joystickDrive(
+            m_drivetrain,
+            () -> forward,
+            () -> strafe,
+            () -> turn
+        )
+    );
+
+    // Put debug information to the dashboard
+    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
+    SmartDashboard.putNumber("Target Yaw", targetYaw);
+    SmartDashboard.putNumber("Turn Power", turn);
+    SmartDashboard.putNumber("Forward Power", forward);
+    SmartDashboard.putNumber("Strafe Power", strafe);
   }
 
   @Override
   public void end(boolean interrupted) {
-    CommandScheduler.getInstance()
-        .schedule(
-            // STOP THE ROBOT completely when ended
-            frc.robot.commands.DriveCommands.joystickDrive(
-                m_drivetrain,
-                () -> 0.0,  // X translation (stopped)
-                () -> 0.0,  // Y translation (stopped)
-                () -> 0.0  // Rotation (stopped)
-            ));
+    // Restore manual control by scheduling the joystick drive command
+    CommandScheduler.getInstance().schedule(
+        frc.robot.commands.DriveCommands.joystickDrive(
+            m_drivetrain,
+            () -> -m_translator.getY() * OperatorConstants.translationMultiplier,
+            () -> -m_translator.getX() * OperatorConstants.translationMultiplier,
+            () -> m_translator.getTwist() * OperatorConstants.rotationMultiplier
+        )
+    );
     SmartDashboard.putString("AprilTagAlign", interrupted ? "Interrupted" : "Completed");
   }
 
   @Override
   public boolean isFinished() {
+    // End command when turn error is within tolerance
     return m_controller.atSetpoint();
   }
 }
