@@ -70,7 +70,7 @@ public class HangerIOSparkMax implements HangerIO {
 
   @Override
   public void release() {
-    hangerSparkMax.set(-HangerConstants.motorSpeedOpenHanger);
+    hangerSparkMax.set(-1);
     isClosed = false;
   }
 
@@ -95,29 +95,32 @@ public class HangerIOSparkMax implements HangerIO {
         }),
         new InstantCommand(() ->
         {
-         ledController.off();   
+         ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);     
         }));
   }
-  @Override
-  public SequentialCommandGroup extend() {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> {System.out.println("Extend");}),
-        new InstantCommand(() ->{
-            ledController.setPattern(BlinkinPattern.VIOLET);
-        }),
-        new InstantCommand(() -> {
-          this.release();
-        }),
-        new WaitCommand(5),
-        new InstantCommand(() -> {
-          this.stop();
-        }),
-        new InstantCommand(() ->{
-            ledController.off();
-        })
-        );
-  }
-
+  // @Override
+  // public SequentialCommandGroup extend() {
+  //   return new SequentialCommandGroup(
+  //       new InstantCommand(() -> {System.out.println("Extend");}),
+  //       new InstantCommand(() ->{
+  //           ledController.setPattern(BlinkinPattern.VIOLET);
+  //       }),
+  //       new InstantCommand(() -> {
+  //         this.release();
+  //       }),
+  //       new WaitCommand(5),
+  //       new InstantCommand(() -> {
+  //         this.stop();
+  //       }),
+  //       new InstantCommand(() ->{
+  //           ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
+  //       })
+  //       );
+  // }
+  // @Override
+  // public InstantCommand extend() {
+  //   return 
+  // }
   public void periodic(){
     SmartDashboard.putBoolean("metaldetector", getIsInCage());
   }

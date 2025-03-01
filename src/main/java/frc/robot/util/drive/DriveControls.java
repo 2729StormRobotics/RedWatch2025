@@ -22,6 +22,7 @@ public class DriveControls {
   public static Trigger ARMSTOP;
   public static Trigger CALIBRATEARM;
 
+  public static Trigger REVERSE;
   public static Trigger INTAKE;
   public static Trigger OUTTAKE;
   public static Trigger GRIPPERSTOP;
@@ -31,6 +32,7 @@ public class DriveControls {
   private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
   // Main Button Controls
+  public static Trigger STOW;
   public static Trigger L1;
   public static Trigger L2;
   public static Trigger L3;
@@ -161,18 +163,20 @@ public class DriveControls {
     switch (Constants.operator) {
       case KRITHIK:
 
+        REVERSE = m_weaponsController.leftBumper();
         INTAKE = m_weaponsController.rightTrigger(0.3);
         OUTTAKE = m_weaponsController.leftTrigger(0.3);
         GRIPPERSTOP = m_weaponsController.b();
         ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
 
-        EXTENDHANGER = m_weaponsController.rightBumper();
-        PULLHANGER = m_weaponsController.leftBumper();
+        EXTENDHANGER = m_weaponsController.back();
+        PULLHANGER = m_weaponsController.start();
 
         MELTDOWN = m_weaponsController.b();
         PIVOT_ROTATE = () -> (-m_weaponsController.getRightX() / 10);
         // all tbd
         // Pivot things
+        STOW = m_weaponsController.rightBumper();
         L1 = m_weaponsController.povUp();
         L2 = m_weaponsController.povRight();
         L3 = m_weaponsController.povDown();

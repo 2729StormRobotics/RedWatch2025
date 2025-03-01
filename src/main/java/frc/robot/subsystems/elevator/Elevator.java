@@ -25,7 +25,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-
 public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
@@ -36,9 +35,11 @@ public class Elevator extends SubsystemBase {
 
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutVoltage m_appliedVoltage = Volts.mutable(0);
-  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  // Mutable holder for unit-safe linear distance values, persisted to avoid
+  // reallocation.
   private final MutDistance m_position = Meters.mutable(0);
-  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid
+  // reallocation.
   private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
 
   private final ElevatorIO io;
@@ -60,23 +61,22 @@ public class Elevator extends SubsystemBase {
     logD = new LoggedNetworkNumber("/SmartDashboard/Elevator/D", io.getD());
     logFF = new LoggedNetworkNumber("/SmartDashboard/Elevator/FF", io.getFF());
 
-    SysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.per(Second).of(ElevatorConstants.RAMP_RATE),
-                Volts.of(ElevatorConstants.STEP_VOLTAGE),
-                null),
-            new SysIdRoutine.Mechanism(
-                v -> io.setVelocity(v.in(Volts) / 12.0),
-                (sysidLog) -> {
-                  sysidLog
-                      .motor("Elevator")
-                      .voltage(m_appliedVoltage.mut_replace(inputs.appliedVoltage, Volts))
-                      .linearPosition(m_position.mut_replace(inputs.positionMeters, Meters))
-                      .linearVelocity(
-                          m_velocity.mut_replace(inputs.velocityMetersPerSec, MetersPerSecond));
-                },
-                this));
+    SysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.per(Second).of(ElevatorConstants.RAMP_RATE),
+            Volts.of(ElevatorConstants.STEP_VOLTAGE),
+            null),
+        new SysIdRoutine.Mechanism(
+            v -> io.setVelocity(v.in(Volts) / 12.0),
+            (sysidLog) -> {
+              sysidLog
+                  .motor("Elevator")
+                  .voltage(m_appliedVoltage.mut_replace(inputs.appliedVoltage, Volts))
+                  .linearPosition(m_position.mut_replace(inputs.positionMeters, Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(inputs.velocityMetersPerSec, MetersPerSecond));
+            },
+            this));
   }
 
   @Override
@@ -87,13 +87,17 @@ public class Elevator extends SubsystemBase {
     elevatorMechanism.setLength(io.getPosition());
 
     // Update the PID constants if they have changed
-    if (logP.get() != io.getP()) io.setP(logP.get());
+    if (logP.get() != io.getP())
+      io.setP(logP.get());
 
-    if (logI.get() != io.getI()) io.setI(logI.get());
+    if (logI.get() != io.getI())
+      io.setI(logI.get());
 
-    if (logD.get() != io.getD()) io.setD(logD.get());
+    if (logD.get() != io.getD())
+      io.setD(logD.get());
 
-    if (logFF.get() != io.getFF()) io.setFF(logFF.get());
+    if (logFF.get() != io.getFF())
+      io.setFF(logFF.get());
 
     // Log Inputs
     Logger.processInputs("Elevator", inputs);
@@ -125,7 +129,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    ledController.setPattern(BlinkinPattern.HOT_PINK);
     return io.atSetpoint();
   }
 
@@ -142,6 +145,7 @@ public class Elevator extends SubsystemBase {
         () -> false,
         this);
   }
+
   /** Runs PID Command and keeps running it after it reaches setpoint */
   public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
     return PIDCommandForever(setpointSupplier.getAsDouble());
@@ -152,10 +156,14 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (stop) -> setVelocity(0),
+        (stop) -> {
+          setVelocity(0);
+          ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
+        },
         () -> atSetpoint(),
         this);
   }
+
   /** Runs PID and stops when at setpoint */
   public Command PIDCommand(DoubleSupplier setpointSupplier) {
     return PIDCommand(setpointSupplier.getAsDouble());
@@ -170,6 +178,7 @@ public class Elevator extends SubsystemBase {
         () -> false,
         this);
   }
+
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(

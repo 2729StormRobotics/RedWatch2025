@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -163,8 +164,12 @@ public class RobotContainer {
         break;
     }
 
-    NamedCommands.registerCommand("L2Setpoint", elevator.PIDCommand(ElevatorConstants.L2));
-    NamedCommands.registerCommand("IntakeSetpoint", elevator.PIDCommand(ElevatorConstants.INTAKE));
+    NamedCommands.registerCommand("L2Setpoint",
+    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), arm.PIDCommand(ArmConstants.kL4)));
+    NamedCommands.registerCommand("IntakeSetpoint", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
+    new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
+    NamedCommands.registerCommand("Intake", new ParallelDeadlineGroup(new WaitCommand(1), m_gripper.Intake()).andThen( new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(new WaitCommand(0.7), m_gripper.outtake()).andThen(new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -217,30 +222,6 @@ public class RobotContainer {
     // Set up Named Commands
     
 
-    // Set up Elevator SysId routines
-    // autoChooser.addOption(
-    //     "Elevator SysId (Quasistatic Forward)",
-    //     elevator.quasistaticForward());
-    // autoChooser.addOption(
-    //     "Elevator SysId (Quasistatic Reverse)",
-    //     elevator.quasistaticBack());
-    // autoChooser.addOption(
-    //     "Elevator SysId (Dynamic Forward)", elevator.dynamicForward());
-    // autoChooser.addOption(
-    //     "Elevator SysId (Dynamic Reverse)", elevator.dynamicBack());
-    
-    // // Set up ArmSysId routines
-    // autoChooser.addOption(
-    //     "Arm SysId (Quasistatic Forward)",
-    //     arm.quasistaticForward());
-    // autoChooser.addOption(
-    //     "Arm SysId (Quasistatic Reverse)",
-    //     arm.quasistaticBack());
-    // autoChooser.addOption(
-    //     "Arm SysId (Dynamic Forward)", arm.dynamicForward());
-    // autoChooser.addOption(
-    //     "Arm SysId (Dynamic Reverse)", arm.dynamicBack());
-    // Configure the button bindings
     configureButtonBindings();
 
     // Set up auto routines
@@ -281,7 +262,7 @@ public class RobotContainer {
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
-    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {elevator.setVelocity(0);}, elevator),arm.stop(), m_gripper.stop()));
+    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {elevator.setVelocity(0);}, elevator),arm.stop(), m_gripper.stop(), new InstantCommand( () ->{hanger.stop();})));
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     
@@ -289,9 +270,12 @@ public class RobotContainer {
     INTAKE.onTrue(m_gripper.Intake());
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
+    REVERSE.onTrue(m_gripper.reverse());
 
-    PULLHANGER.onTrue(hanger.retract());
-    EXTENDHANGER.onTrue(hanger.extend());
+    PULLHANGER.whileTrue(new InstantCommand(() -> {hanger.pull();}));
+    PULLHANGER.onFalse(new InstantCommand(() -> {hanger.stop();}));
+    EXTENDHANGER.whileTrue(new InstantCommand(() -> {hanger.release();}));
+    EXTENDHANGER.onFalse(new InstantCommand(() -> {hanger.stop();}));
 
     // Set Positions
     // DriveControls.L1.onTrue(arm.PIDCommand(32));
@@ -300,32 +284,35 @@ public class RobotContainer {
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
 
     //Real Set Positions
-    // DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
-    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
+    DriveControls.STOW.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
-    // DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
-    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL2))));
+    DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
 
-    // DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
-    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL3))));
+    DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
 
-    // DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL4))));
+    DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
 
-    // DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
-    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
+    DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
+
+    DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
 
     // Elevator only
     
-    DriveControls.L1.onTrue(elevator.PIDCommand(ElevatorConstants.L1));
+    // DriveControls.L1.onTrue(elevator.PIDCommand(ElevatorConstants.L1));
 
-    DriveControls.L2.onTrue(elevator.PIDCommand(ElevatorConstants.L2));
+    // DriveControls.L2.onTrue(elevator.PIDCommand(ElevatorConstants.L2));
 
-    DriveControls.L3.onTrue(elevator.PIDCommand(ElevatorConstants.L3));
+    // DriveControls.L3.onTrue(elevator.PIDCommand(ElevatorConstants.L3));
 
-    DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
+    // DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
         
-    DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
+    // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
 
 
   }

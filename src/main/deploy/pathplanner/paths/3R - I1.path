@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.0420000000000003,
-        "y": 3.8787499999999993
+        "y": 3.676
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.835510704123689,
-        "y": 4.369014150681354
+        "y": 4.1662641506813545
       },
       "isLocked": false,
       "linkedName": "3R"
@@ -48,7 +48,7 @@
   "folder": "I1 Inbound",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 90.0
+    "rotation": 88.854
   },
   "useDefaultConstraints": true
 }

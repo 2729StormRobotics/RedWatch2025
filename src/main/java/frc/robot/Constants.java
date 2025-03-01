@@ -129,7 +129,7 @@ public final class Constants {
     public static final int ABSOLUTE_ENCODER_ID = 8;
 
     // LED
-    public static final int BLINKIN_LED_CONTROLLER_PORT = 7;
+    public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
 
     // Hanger Motors
     public static final int HANGER_MOTOR_LEFT = 16;

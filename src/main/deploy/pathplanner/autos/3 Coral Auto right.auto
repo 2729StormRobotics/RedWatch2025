@@ -24,6 +24,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -40,6 +46,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         },
         {
@@ -62,6 +74,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -81,6 +99,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -97,6 +121,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
           }
         },
         {

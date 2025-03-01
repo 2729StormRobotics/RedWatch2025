@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 3.0420000000000003,
-        "y": 3.8787499999999993
+        "y": 3.676
       },
       "prevControl": {
         "x": 2.8193728538047464,
-        "y": 4.353377255220774
+        "y": 4.150627255220775
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 88.854
   },
   "reversed": false,
   "folder": "I1 Outbound",

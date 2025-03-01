@@ -22,11 +22,12 @@ public class ArmConstants {
 
     public static final double kArmMotorStop = 0;
 
+    public static final double kSTOW = 90;
     public static final double kL1 = 55;
-    public static final double kL2 = 51.2;
-    public static final double kL3 = 50.9;
-    public static final double kL4 = 57.0;
-    public static final double kIntake = 78.8;
+    public static final double kL2 = 59;
+    public static final double kL3 = 54.05;
+    public static final double kL4 = 60.02;
+    public static final double kIntake = 113;
     public static final double kOneMore = 0; // ?????
 
     public static double kPArm = 0.01;

@@ -21,19 +21,17 @@ public class GripperIOSparkMax implements GripperIO {
 
     private SparkLimitSwitch m_objectDetector;
 
-    private BlinkinLEDController ledController;
 
     public GripperIOSparkMax() {
         m_gripperMotor = new SparkMax(GripperConstants.gripperMotorPort, MotorType.kBrushless);
         m_objectDetector = m_gripperMotor.getForwardLimitSwitch();
-        ledController = BlinkinLEDController.getInstance();
 
         // Configure Motor
         motorConfig = new SparkMaxConfig();
         motorConfig.closedLoop.pid(GripperConstants.kPGripper, GripperConstants.kIGripper, GripperConstants.kDGripper);
         motorConfig.limitSwitch.forwardLimitSwitchEnabled(false);
         motorConfig.limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen);
-        motorConfig.idleMode(IdleMode.kCoast);
+        motorConfig.idleMode(IdleMode.kBrake);
         motorConfig.smartCurrentLimit(40);
 
         m_gripperMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -47,7 +45,6 @@ public class GripperIOSparkMax implements GripperIO {
      */
     @Override
     public boolean isCoralPresent() {
-        ledController.setPattern(BlinkinPattern.GREEN);
         return m_gripperMotor.getForwardLimitSwitch().isPressed();
     }
 
@@ -67,14 +64,29 @@ public class GripperIOSparkMax implements GripperIO {
         m_gripperMotor.set(GripperConstants.motorSpeedInGripper);
     }
 
+ /**
+     * Sets motor speed to inwards
+     */
+    @Override
+    public void reverse() {
+        m_gripperMotor.set(0.6);
+    }
+
     /**
      * Sets motor speed to outwards
      */
     @Override
     public void setMotorOut() {
-        ledController.off();
         m_gripperMotor.set(GripperConstants.motorSpeedOutGripper);
     }
 
+    @Override
+    public void updateInputs(GripperIOInputs inputs) {
+        
+        inputs.gripperAppliedVolts = (m_gripperMotor.getBusVoltage() * m_gripperMotor.getAppliedOutput());
+        inputs.gripperPositionDegrees = 0;
+        inputs.gripperVelocityRadPerSec = m_gripperMotor.getEncoder().getVelocity();
+    }
+    
     
 }

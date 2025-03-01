@@ -18,6 +18,10 @@ public interface GripperIO {
     public default void setMotorOut() {
     }
 
+    
+    public default void reverse() {
+    }
+
     public default Command Intake() {
         return null;
     }

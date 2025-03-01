@@ -4,7 +4,7 @@ public class HangerConstants {
 
     public static final double MAX_VOLTAGE = 0; // Idk
 
-    public static final int kWinchMotorCanId = 12; // Idk
+    public static final int kWinchMotorCanId = 14; // Idk
 
     public static final double motorWinchTime = 20;
 
@@ -12,4 +12,4 @@ public class HangerConstants {
 
     public static final double hangerReduction = 0.04;// NEEDS TO BE UPDATED WITH GEAR RATIO
 
-}
+}//s55rgood
