@@ -3,6 +3,11 @@ package frc.robot.subsystems.ApriltagAlign;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +20,9 @@ import frc.robot.subsystems.PhotonVision.VisionConstants;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOPhoton.*;
 import frc.robot.subsystems.PhotonVision.VisionIO.*;
+
+import java.util.function.DoubleSupplier;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -30,10 +38,16 @@ public class ApriltagAlign extends Command implements VisionIO {
   private final PhotonCamera camera1;
   private double m_turnError;
   private double m_turnPower;
+  private DoubleSupplier xSupplier;
+  private DoubleSupplier ySupplier;
 
-  public ApriltagAlign(Joystick joystick, Drive drivetrain) {
+  public ApriltagAlign(Joystick joystick, Drive drivetrain,
+  DoubleSupplier x_Supplier,
+  DoubleSupplier y_Supplier) {
     m_drivetrain = drivetrain;
     m_translator = joystick;
+    xSupplier = x_Supplier;
+    ySupplier = y_Supplier;
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn, Constants.VisionConstants.kDTurn);
     camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
     addRequirements(m_drivetrain);
@@ -50,8 +64,6 @@ public class ApriltagAlign extends Command implements VisionIO {
   @Override
   public void execute() {
     // Calculate drivetrain commands from Joystick values
-    double forward = -m_translator.getY() * DriveConstants.kMaxSpeedMetersPerSecond;
-    double strafe = -m_translator.getX() * DriveConstants.kMaxSpeedMetersPerSecond;
     // double turn = -m_translator.getTwist() * DriveConstants.kMaxAngularSpeedRadiansPerSecond;s
 
     // Read in relevant data from the Camera
@@ -68,36 +80,42 @@ public class ApriltagAlign extends Command implements VisionIO {
 
     // Override the driver's turn command with an automatic one that turns toward the tag.
     double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
-
+  // Put debug information to the dashboard
+  SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
+  SmartDashboard.putNumber("Target Yaw", targetYaw);
+  SmartDashboard.putNumber("Turn Power", turn);
     // Command drivetrain motors based on target speeds
-    CommandScheduler.getInstance().schedule(
-        frc.robot.commands.DriveCommands.joystickDrive(
-            m_drivetrain,
-            () -> forward,
-            () -> strafe,
-            () -> turn
-        )
-    );
+    double linearMagnitude =
+              MathUtil.applyDeadband(
+                  Math.hypot(
+                      xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+                  0.02);
+          Rotation2d linearDirection =
+              new Rotation2d(
+                  xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          double omega = MathUtil.applyDeadband(turn*0.5, 0.02);
 
-    // Put debug information to the dashboard
-    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
-    SmartDashboard.putNumber("Target Yaw", targetYaw);
-    SmartDashboard.putNumber("Turn Power", turn);
-    SmartDashboard.putNumber("Forward Power", forward);
-    SmartDashboard.putNumber("Strafe Power", strafe);
+          // Square values
+          linearMagnitude = linearMagnitude * linearMagnitude;
+          // Calcaulate new linear velocity
+          Translation2d linearVelocity =
+              new Pose2d(new Translation2d(), linearDirection)
+                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                  .getTranslation();
+
+          // Convert to robot relative speeds & send command
+          m_drivetrain.runVelocity(
+              ChassisSpeeds.fromRobotRelativeSpeeds(
+                  linearVelocity.getX() * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                  omega * m_drivetrain.getMaxAngularSpeedRadPerSec(),
+                  new Rotation2d()));
+
+    
   }
 
   @Override
   public void end(boolean interrupted) {
-    // Restore manual control by scheduling the joystick drive command
-    CommandScheduler.getInstance().schedule(
-        frc.robot.commands.DriveCommands.joystickDrive(
-            m_drivetrain,
-            () -> -m_translator.getY() * OperatorConstants.translationMultiplier,
-            () -> -m_translator.getX() * OperatorConstants.translationMultiplier,
-            () -> m_translator.getTwist() * OperatorConstants.rotationMultiplier
-        )
-    );
     SmartDashboard.putString("AprilTagAlign", interrupted ? "Interrupted" : "Completed");
   }
 

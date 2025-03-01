@@ -62,11 +62,6 @@ public class RobotContainer {
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
-  // Controller
-  private final CommandJoystick m_translator = new CommandJoystick(1);
-  private final CommandJoystick m_rotator = new CommandJoystick(2);
-  private final CommandXboxController m_weaponsController = new CommandXboxController(0);
-
   //   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
@@ -194,7 +189,7 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-        DRIVE_PHOTONVISION_ALIGN.whileTrue(new ApriltagAlign(m_rotator.getHID(), drive));
+        DRIVE_PHOTONVISION_ALIGN.whileTrue(new ApriltagAlign(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
 
     RESET_GYRO.onTrue(
         new InstantCommand(
