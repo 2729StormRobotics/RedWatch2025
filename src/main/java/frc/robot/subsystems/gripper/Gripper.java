@@ -57,7 +57,7 @@ public class Gripper extends SubsystemBase {
                 },
                 () -> io.setMotorIn(),
                 (stop) -> {io.stop();ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);},
-                () -> false,
+                () -> io.isCoralPresent(),
                 this);
 
     }
@@ -68,7 +68,7 @@ public class Gripper extends SubsystemBase {
                 },
                 () -> io.setMotorOut(),
                 (stop) -> {io.stop();ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);},
-                () -> false,
+                () -> !io.isCoralPresent(),
                 this);
 
     }
