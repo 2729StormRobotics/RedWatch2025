@@ -87,9 +87,10 @@ public class ApriltagAlign extends Command implements VisionIO {
       targetVisible = true;
     }
 
-    // OFFSET PRESETS FOR DIFF OBJECTS
-    double finTargetOffset = 0;
-    double angleOffset = Units.radiansToDegrees(Math.atan(finTargetOffset / targetRange)); // use trig to calculate angle
+    // OFFSET PRESETS FOR DIFF OBJECTS (THIS IS RIGHT)
+    double finTargetOffset = Units.inchesToMeters(6.47);
+    double cameraToArmOffset = Units.inchesToMeters(6); // add when going right, subtract when going left
+    double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset + cameraToArmOffset) / targetRange)); // use trig to calculate angle
     targetYaw -= angleOffset; // subtract offset to go right add to go left
 
     // Override the driver's turn command with an automatic one that turns toward the tag.
