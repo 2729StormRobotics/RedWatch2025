@@ -42,7 +42,7 @@ public class ElevatorConstants {
     public static final double L1 = 2.4;
     public static final double L2 = 6.83;
     public static final double L3 = 17.32;
-    public static final double L4 = 29.05;
+    public static final double L4 = 30;
     public static final double INTAKE = 0.9;
 
 
@@ -76,7 +76,7 @@ public class ElevatorConstants {
     /** Tolerance used when checking if the elevator is at the setpoint */
     public static double SETPOINT_TOLERANCE_METERS = 0.2;
 
-    public static final double[] kElevatorRealPID = { 3, 0, 0, 0 };
+    public static final double[] kElevatorRealPID = { 0.2, 0, 0, 0 };
 
     public static final double ELEVATOR_MASS_KG = 5;
 
