@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.PhotonVision.VisionIO.*;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -69,17 +71,30 @@ public class ApriltagAlign extends Command implements VisionIO {
     // Read in relevant data from the Camera
     boolean targetVisible = false;
     double targetYaw = 0.0;
+    double targetRange = 0.0;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
       // At least one AprilTag was seen by the camera
       PhotonTrackedTarget target = results.getBestTarget();
       targetYaw = target.getYaw();
+      targetRange =
+                                PhotonUtils.calculateDistanceToTargetMeters(
+                                        0.5, // Camera Height
+                                        1.435, // Target Height
+                                        Units.degreesToRadians(-30.0), //Camera Pitch
+                                        Units.degreesToRadians(target.getPitch()));
       targetVisible = true;
     }
 
+    // OFFSET PRESETS FOR DIFF OBJECTS
+    double finTargetOffset = 0;
+    double angleOffset = Units.radiansToDegrees(Math.atan(finTargetOffset / targetRange)); // use trig to calculate angle
+    targetYaw -= angleOffset; // subtract offset to go right add to go left
+
     // Override the driver's turn command with an automatic one that turns toward the tag.
     double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
+    double forward = -1.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond; 
   // Put debug information to the dashboard
   SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
   SmartDashboard.putNumber("Target Yaw", targetYaw);
