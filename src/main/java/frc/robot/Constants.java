@@ -169,7 +169,7 @@ public final class Constants {
 
   public static class VisionConstants {
     // Camera configuration
-    public static final double kAprilTagPipeline = 1;
+    // public static final double kAprilTagPipeline = 1;
     public static final double kLightOffValue = 0;
 
     // PID values for driving with vision
@@ -184,18 +184,18 @@ public final class Constants {
     public static final double kSTurn = .025;
 
     // Heights for detecting distance away from apriltag
-    public static final double limelightHeight = Units.inchesToMeters(11.5);
-    public static final double limelightAngle = 30.5; // degrees
-    public static final double apriltagWidth = Units.inchesToMeters(6.5);
-    public static final double speakerTagHeight =
-        Units.inchesToMeters(54) + Units.inchesToMeters(apriltagWidth / 2);
-    public static final double ampTagHeight =
-        Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
-    public static final double stageTagHeight =
-        Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
-    public static final double aprilTagAlignTolerance = 0.5;
+    // public static final double limelightHeight = Units.inchesToMeters(11.5);
+    // public static final double limelightAngle = 30.5; // degrees
+    // public static final double apriltagWidth = Units.inchesToMeters(6.5);
+    // public static final double speakerTagHeight =
+    //     Units.inchesToMeters(54) + Units.inchesToMeters(apriltagWidth / 2);
+    // public static final double ampTagHeight =
+    //     Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
+    // public static final double stageTagHeight =
+    //     Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
+    // public static final double aprilTagAlignTolerance = 0.5;
 
-    public static final double kNoteTolerance = 2.0;
-    public static final double kPNoteTurn = 0.008;
+    // public static final double kNoteTolerance = 2.0;
+    // public static final double kPNoteTurn = 0.008;
   }
 }
