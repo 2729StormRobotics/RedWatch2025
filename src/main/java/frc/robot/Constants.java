@@ -178,8 +178,8 @@ public final class Constants {
     public static final double kSDrive = 0;
     public static final double kPY = 0;
     public static final double kTolerance = 0;
-    public static final double kPTurn = 0.005; 
-    public static final double kPStrafe = 0.005; 
+    public static final double kPTurn = 0.003; 
+    public static final double kPStrafe = 0.003; 
     public static final double kITurn = 0;
     public static final double kDTurn = 0.003; // 0.001
     public static final double kSTurn = .025;
