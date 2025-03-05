@@ -33,7 +33,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  * Command to align the robot with the nearest AprilTag using PhotonVision while still allowing translational driving.
  */
 
-public class ApriltagAlign extends Command implements VisionIO {
+public class ApriltagAlignRight extends Command implements VisionIO {
   private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
@@ -43,7 +43,7 @@ public class ApriltagAlign extends Command implements VisionIO {
   private DoubleSupplier xSupplier;
   private DoubleSupplier ySupplier;
 
-  public ApriltagAlign(Joystick joystick, Drive drivetrain,
+  public ApriltagAlignRight(Joystick joystick, Drive drivetrain,
   DoubleSupplier x_Supplier,
   DoubleSupplier y_Supplier) {
     m_drivetrain = drivetrain;
@@ -66,7 +66,6 @@ public class ApriltagAlign extends Command implements VisionIO {
   @Override
   public void execute() {
     // Calculate drivetrain commands from Joystick values
-    // double turn = -m_translator.getTwist() * DriveConstants.kMaxAngularSpeedRadiansPerSecond;s
 
     // Read in relevant data from the Camera
     boolean targetVisible = false;
@@ -123,7 +122,7 @@ public class ApriltagAlign extends Command implements VisionIO {
           m_drivetrain.runVelocity(
               ChassisSpeeds.fromRobotRelativeSpeeds(
                   linearVelocity.getX() * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() + forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
                   omega * m_drivetrain.getMaxAngularSpeedRadPerSec(),
                   new Rotation2d()));
 
