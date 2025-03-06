@@ -42,7 +42,7 @@ public class ElevatorConstants {
     public static final double L1 = 0.9;
     public static final double L2 = 6.83;
     public static final double L3 = 17.32;
-    public static final double L4 = 30;
+    public static final double L4 = 29.5;
     public static final double INTAKE = 0.9;
 
 

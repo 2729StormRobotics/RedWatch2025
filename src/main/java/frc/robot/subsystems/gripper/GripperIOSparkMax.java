@@ -19,12 +19,12 @@ public class GripperIOSparkMax implements GripperIO {
     private SparkMax m_gripperMotor;
     private SparkMaxConfig motorConfig;
 
-    private SparkLimitSwitch m_objectDetector;
+    //private SparkLimitSwitch m_objectDetector;
 
 
     public GripperIOSparkMax() {
         m_gripperMotor = new SparkMax(GripperConstants.gripperMotorPort, MotorType.kBrushless);
-        m_objectDetector = m_gripperMotor.getForwardLimitSwitch();
+        //m_objectDetector = m_gripperMotor.getForwardLimitSwitch();
 
         // Configure Motor
         motorConfig = new SparkMaxConfig();
