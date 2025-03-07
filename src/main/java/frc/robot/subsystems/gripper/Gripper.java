@@ -25,7 +25,7 @@ public class Gripper extends SubsystemBase {
     @Override
     public void periodic() {
         if (io.isCoralPresent()) {
-            ledController.setPattern(BlinkinPattern.RAINBOW_FOREST_PALETTE);
+            ledController.setPattern(BlinkinPattern.GREEN);
         }
         io.updateInputs(inputs);
         Logger.recordOutput("Gripper Position", inputs.gripperPositionDegrees);
@@ -51,45 +51,12 @@ public class Gripper extends SubsystemBase {
                 this);
     }
 
-    public Command AutoIntake() {
-        return new FunctionalCommand(
-                () -> {
-                    ledController.setPattern(BlinkinPattern.GREEN);
-                },
-                () -> io.setMotorIn(),
-                (stop) -> {
-                    io.stop();
-                    ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
-                },
-                () -> false,
-                this);
-
-    }
-
-    public Command AutoOuttake() {
-        return new FunctionalCommand(
-                () -> {
-                    ledController.setPattern(BlinkinPattern.RED);
-                },
-                () -> io.setMotorOut(),
-                (stop) -> {
-                    io.stop();
-                    ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
-                },
-                () -> false,
-                this);
-    }
-
     public Command Intake() {
         return new FunctionalCommand(
-                () -> {
-                    ledController.setPattern(BlinkinPattern.GREEN);
+                () -> {ledController.setPattern(BlinkinPattern.GREEN);
                 },
                 () -> io.setMotorIn(),
-                (stop) -> {
-                    io.stop();
-                    ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
-                },
+                (stop) -> {io.stop();ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);},
                 () -> io.isCoralPresent(),
                 this);
 
@@ -97,14 +64,10 @@ public class Gripper extends SubsystemBase {
 
     public Command outtake() {
         return new FunctionalCommand(
-                () -> {
-                    ledController.setPattern(BlinkinPattern.RED);
+                () -> {ledController.setPattern(BlinkinPattern.RED);
                 },
                 () -> io.setMotorOut(),
-                (stop) -> {
-                    io.stop();
-                    ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
-                },
+                (stop) -> {io.stop();ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);},
                 () -> !io.isCoralPresent(),
                 this);
 
@@ -112,14 +75,10 @@ public class Gripper extends SubsystemBase {
 
     public Command reverse() {
         return new FunctionalCommand(
-                () -> {
-                    ledController.setPattern(BlinkinPattern.RED);
+                () -> {ledController.setPattern(BlinkinPattern.RED);
                 },
                 () -> io.reverse(),
-                (stop) -> {
-                    io.stop();
-                    ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);
-                },
+                (stop) -> {io.stop();ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);},
                 () -> false,
                 this);
 
