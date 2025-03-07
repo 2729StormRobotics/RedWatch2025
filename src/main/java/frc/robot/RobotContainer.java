@@ -168,8 +168,8 @@ public class RobotContainer {
     new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), arm.PIDCommand(ArmConstants.kL4)));
     NamedCommands.registerCommand("IntakeSetpoint", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
-    NamedCommands.registerCommand("Intake", new ParallelDeadlineGroup(new WaitCommand(1), m_gripper.Intake()).andThen( new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(new WaitCommand(0.7), m_gripper.outtake()).andThen(new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
+    NamedCommands.registerCommand("Intake", new ParallelDeadlineGroup(new WaitCommand(1), m_gripper.AutoIntake()).andThen( new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(new WaitCommand(0.7), m_gripper.AutoOuttake()).andThen(new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);

@@ -71,6 +71,7 @@ public class HangerIOSparkMax implements HangerIO {
   @Override
   public void release() {
     hangerSparkMax.set(-1);
+    ledController.setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
     isClosed = false;
   }
 
@@ -95,7 +96,7 @@ public class HangerIOSparkMax implements HangerIO {
         }),
         new InstantCommand(() ->
         {
-         ledController.setPattern(BlinkinPattern.FIRE_MEDIUM);     
+         ledController.setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);     
         }));
   }
   // @Override
