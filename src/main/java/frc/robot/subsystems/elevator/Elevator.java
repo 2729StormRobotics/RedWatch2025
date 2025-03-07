@@ -124,7 +124,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSetpoint(double setpoint) {
-    ledController.setPattern(BlinkinPattern.BLUE);
+    ledController.setPattern(BlinkinPattern.RAINBOW_OCEAN_PALETTE);
     io.goToSetpoint(setpoint);
   }
 
