@@ -83,7 +83,7 @@ import frc.robot.subsystems.hanger.*;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  public final Drive drive;
   private final Elevator elevator;
   private final Arm arm;
   private final Gripper m_gripper;
@@ -165,11 +165,11 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("L2Setpoint",
-    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(3), arm.PIDCommand(ArmConstants.kL4).withTimeout(1.5)));
+    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5), arm.PIDCommand(ArmConstants.kL4).withTimeout(1.5)));
     NamedCommands.registerCommand("IntakeSetpoint", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
-    NamedCommands.registerCommand("Intake", new ParallelDeadlineGroup(new WaitCommand(1), m_gripper.AutoIntake()).andThen( new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())));
-    NamedCommands.registerCommand("Outtake", m_gripper.AutoOuttake().withTimeout(1).andThen(new ParallelDeadlineGroup(new WaitCommand(0.01), m_gripper.stop())).withTimeout(2));
+    NamedCommands.registerCommand("Intake", m_gripper.Intake().andThen(m_gripper.AutoIntake().withTimeout(0.1)));
+    NamedCommands.registerCommand("Outtake", m_gripper.outtake());
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -250,14 +250,14 @@ public class RobotContainer {
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    RESET_GYRO.onTrue(
+    DRIVE_SLOW.whileTrue(DriveCommands.slowMode());
+        RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {
               drive.resetYaw();
             },
             drive));
 
-    DRIVE_ROBOT_RELATIVE.onTrue(DriveCommands.joystickDriveRobotRelative(drive, DRIVE_STRAFE, DRIVE_FORWARD, DRIVE_ROTATE));
     SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
@@ -267,7 +267,7 @@ public class RobotContainer {
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     
     // Gripper Commands
-    INTAKE.onTrue(m_gripper.Intake());
+    INTAKE.onTrue(m_gripper.Intake().andThen(m_gripper.AutoIntake().withTimeout(0.25)));
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
@@ -288,10 +288,10 @@ public class RobotContainer {
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
     DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
+        new SequentialCommandGroup(new WaitCommand(0.25), arm.PIDCommand(ArmConstants.kL1))));
 
     DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
+        new SequentialCommandGroup(new WaitCommand(0.25), arm.PIDCommand(ArmConstants.kL2))));
 
     DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));

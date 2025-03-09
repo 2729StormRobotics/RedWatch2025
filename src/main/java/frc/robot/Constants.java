@@ -17,7 +17,7 @@ import java.awt.geom.Point2D;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
+  public static final boolean isBlue = false;
   public static final Mode mode = Mode.REAL;
   public static final Drivers driver = Drivers.KRITHIK;
   public static final Operators operator = Operators.KRITHIK;

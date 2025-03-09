@@ -98,8 +98,8 @@ public class DriveControls {
     switch (Constants.driver) {
       case KRITHIK:
         // Driver controls
-        DRIVE_FORWARD = () -> ((-m_translator.getY() * 2) / 4);
-        DRIVE_STRAFE = () -> ((-m_translator.getX() * 2) / 4);
+        DRIVE_FORWARD = () -> ((-m_translator.getY() * 3) / 4);
+        DRIVE_STRAFE = () -> ((-m_translator.getX() * 3) / 4);
         DRIVE_ROTATE = () -> ((-m_rotator.getTwist() * 0.5));
         RESET_GYRO = m_translator.button(12);
 
@@ -110,7 +110,6 @@ public class DriveControls {
         DRIVE_HOLD_STOP = m_translator.button(3); // TBA
 
         // Driver Modes
-        DRIVE_ROBOT_RELATIVE = m_translator.button(2); // TBA
         DRIVE_REEF_AIM = m_translator.button(1);
 
         // ALL BELOW TBD

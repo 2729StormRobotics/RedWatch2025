@@ -38,12 +38,12 @@ public class ElevatorConstants {
     // height constants'
     public static final double MIN_HEIGHT = 0.0;
     public static final double MAX_HEIGHT = 10.0;
-    public static final double STOW = 0.9;
-    public static final double L1 = 0.9;
-    public static final double L2 = 6.83;
-    public static final double L3 = 17.32;
-    public static final double L4 = 28.5;
-    public static final double INTAKE = 0.9;
+    public static final double STOW = 1;
+    public static final double L1 = 1;
+    public static final double L2 = 7.33;
+    public static final double L3 = 16.52;
+    public static final double L4 = 30;
+    public static final double INTAKE = 1;
 
 
 

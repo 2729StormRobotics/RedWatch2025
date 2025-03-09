@@ -137,6 +137,10 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    // True if Blue
+    // if (true) {
+    //   robotContainer.drive.resetYaw();
+    // }
   }
 
   /** This function is called periodically during operator control. */
