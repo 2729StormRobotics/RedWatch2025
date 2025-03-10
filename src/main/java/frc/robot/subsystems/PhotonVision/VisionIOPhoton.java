@@ -51,7 +51,8 @@ public class VisionIOPhoton implements VisionIO {
 
   private Pose2d lastEstimate = new Pose2d(); 
 
-   LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false); // **COMMENTED OUT FUNCTION CUZ ITS WEIRD**
+   @SuppressWarnings("deprecation")
+  LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false); // **COMMENTED OUT FUNCTION CUZ ITS WEIRD**
 
 
   // Initialzes camera with a name and creates a PhotonPoseEstimator to process vision data

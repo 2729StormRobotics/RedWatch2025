@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ApriltagAlign;
+package frc.robot.commands.ApriltagAlign;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
@@ -33,17 +33,15 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  * Command to align the robot with the nearest AprilTag using PhotonVision while still allowing translational driving.
  */
 
-public class ApriltagAlignLeft extends Command implements VisionIO {
+public class ApriltagAlignRight extends Command  {
   private final Drive m_drivetrain;
   private final Joystick m_translator;
   private final PIDController m_controller;
   private final PhotonCamera camera1;
-  private double m_turnError;
-  private double m_turnPower;
   private DoubleSupplier xSupplier;
   private DoubleSupplier ySupplier;
 
-  public ApriltagAlignLeft(Joystick joystick, Drive drivetrain,
+  public ApriltagAlignRight(Joystick joystick, Drive drivetrain,
   DoubleSupplier x_Supplier,
   DoubleSupplier y_Supplier) {
     m_drivetrain = drivetrain;
@@ -58,13 +56,12 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
   @Override
   public void initialize() {
     m_controller.reset();
-    m_turnError = 0;
-    m_turnPower = 0;
     SmartDashboard.putString("AprilTagAlign", "Initialized");
   }
 
   @Override
   public void execute() {
+    // Calculate drivetrain commands from Joystick values
 
     // Read in relevant data from the Camera
     boolean targetVisible = false;
@@ -85,11 +82,11 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
       targetVisible = true;
     }
 
-    // OFFSET PRESETS FOR DIFF OBJECTS (THIS IS LEFT)
+    // OFFSET PRESETS FOR DIFF OBJECTS (THIS IS RIGHT)
     double finTargetOffset = Units.inchesToMeters(6.47);
     double cameraToArmOffset = Units.inchesToMeters(6); // add when going right, subtract when going left
-    double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset - cameraToArmOffset) / targetRange)); // use trig to calculate angle
-    targetYaw += angleOffset; // subtract offset to go right add to go left
+    double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset + cameraToArmOffset) / targetRange)); // use trig to calculate angle
+    targetYaw -= angleOffset; // subtract offset to go right add to go left
 
     // Override the driver's turn command with an automatic one that turns toward the tag.
     double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxAngularSpeedRadiansPerSecond;

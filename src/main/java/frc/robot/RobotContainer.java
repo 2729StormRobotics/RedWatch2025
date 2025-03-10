@@ -89,18 +89,12 @@ public class RobotContainer {
   private final Gripper m_gripper;
   private final HangerIO hanger;
 
-  private boolean brakeMode = true;
-
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // LEDs
-  private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
-
   // Field
   private final Field2d field;
 
@@ -224,10 +218,6 @@ public class RobotContainer {
 
     configureButtonBindings();
 
-    // Set up auto routines
-    // System.out.println("[Init] Setting up Logged Auto Chooser");
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
-    // AutoBuilder.buildAutoChooser());
   }
 
   // zero gyro
@@ -278,10 +268,6 @@ public class RobotContainer {
     EXTENDHANGER.onFalse(new InstantCommand(() -> {hanger.stop();}));
 
     // Set Positions
-    // DriveControls.L1.onTrue(arm.PIDCommand(32));
-    // DriveControls.L2.onTrue(arm.PIDCommand(90));
-    // DriveControls.L3.onTrue(arm.PIDCommand(120));
-    // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
 
     //Real Set Positions
     DriveControls.STOW.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW),
@@ -301,20 +287,6 @@ public class RobotContainer {
 
     DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
-
-    // Elevator only
-    
-    // DriveControls.L1.onTrue(elevator.PIDCommand(ElevatorConstants.L1));
-
-    // DriveControls.L2.onTrue(elevator.PIDCommand(ElevatorConstants.L2));
-
-    // DriveControls.L3.onTrue(elevator.PIDCommand(ElevatorConstants.L3));
-
-    // DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
-        
-    // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
-
-
   }
 
   /**
