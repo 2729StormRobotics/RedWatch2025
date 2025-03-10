@@ -37,9 +37,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.util.drive.AllianceFlipUtil;
@@ -50,10 +52,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY /
+  // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX /
+  // 2.0, kTrackWidthY /
   // 2.0);
-  private static final double DRIVE_BASE_RADIUS =
-      Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
+  private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
   private static final double MAX_ANGULAR_SPEED = kMaxSpeedMetersPerSecond / DRIVE_BASE_RADIUS;
 
   private RobotConfig config;
@@ -68,17 +70,13 @@ public class Drive extends SubsystemBase {
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition()
+          new SwerveModulePosition(),
+          new SwerveModulePosition(),
+          new SwerveModulePosition(),
+          new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
-  // Odometry class for tracking robot pose
-  private SwerveDriveOdometry odometry =
-      new SwerveDriveOdometry(kinematics, rawGyroRotation, lastModulePositions);
+  private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
+      lastModulePositions, new Pose2d());
 
   private SysIdRoutine sysId;
   private SysIdRoutine turnRoutine;
@@ -98,8 +96,6 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
     SparkMaxOdometryThread.getInstance().start();
 
-
-
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -114,21 +110,20 @@ public class Drive extends SubsystemBase {
     AutoBuilder.configure(
         this::getPose, // Robot pose supplier
         this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        () ->
-            kinematics.toChassisSpeeds(
-                getModuleStates()), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) ->
-            runVelocity(
-                speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds.
+        () -> kinematics.toChassisSpeeds(
+            getModuleStates()), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        (speeds, feedforwards) -> runVelocity(
+            speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds.
         // Also optionally outputs individual module feedforwards
         new PPHolonomicDriveController( // PPHolonomicController is the built in path following
             // controller for holonomic drive trains
             translationPID, // Translation PID constants
             rotationPID // Rotation PID constants
-            ),
+        ),
         config, // The robot configuration
         () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -139,7 +134,7 @@ public class Drive extends SubsystemBase {
           return false;
         },
         this // Reference to this subsystem to set requirements
-        );
+    );
 
     Pathfinding.setPathfinder(new LocalADStarAK());
     Pathfinding.ensureInitialized();
@@ -155,29 +150,27 @@ public class Drive extends SubsystemBase {
         });
 
     // Configure SysId
-    sysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(),
-            new SysIdRoutine.Mechanism(
-                volts -> {
-                  for (Module module : modules) {
-                    module.runCharacterization(volts.in(Volts), 0);
-                  }
-                },
-                null,
-                this));
+    sysId = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            volts -> {
+              for (Module module : modules) {
+                module.runCharacterization(volts.in(Volts), 0);
+              }
+            },
+            null,
+            this));
 
-    turnRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(),
-            new SysIdRoutine.Mechanism(
-                volts -> {
-                  for (Module module : modules) {
-                    module.runCharacterization(0, volts.in(Volts));
-                  }
-                },
-                null,
-                this));
+    turnRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            volts -> {
+              for (Module module : modules) {
+                module.runCharacterization(0, volts.in(Volts));
+              }
+            },
+            null,
+            this));
   }
 
   public void periodic() {
@@ -221,9 +214,9 @@ public class Drive extends SubsystemBase {
     }
 
     poseEstimator.update(rawGyroRotation, modulePositions);
-    odometry.update(rawGyroRotation, modulePositions);
+    // odometry.update(rawGyroRotation, modulePositions);
 
-    Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
+    Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -234,8 +227,7 @@ public class Drive extends SubsystemBase {
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    simRotation =
-        simRotation.rotateBy(Rotation2d.fromRadians(discreteSpeeds.omegaRadiansPerSecond * 0.02));
+    simRotation = simRotation.rotateBy(Rotation2d.fromRadians(discreteSpeeds.omegaRadiansPerSecond * 0.02));
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, kMaxSpeedMetersPerSecond);
 
@@ -259,11 +251,21 @@ public class Drive extends SubsystemBase {
   public void resetYaw() {
     gyroIO.zeroAll();
     setPose(AllianceFlipUtil.apply(new Pose2d()));
+
+    // if (DriverStation.getAlliance().isPresent()
+    //     && DriverStation.getAlliance().get() == Alliance.Blue) {
+    //   setPose((new Pose2d(new Translation2d(0.0,0.0), new Rotation2d(180))));
+
+    // } else {
+    //   setPose((new Pose2d()));
+    // }
   }
 
   /**
-   * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
-   * return to their normal orientations the next time a nonzero velocity is requested.
+   * Stops the drive and turns the modules to an X arrangement to resist movement.
+   * The modules will
+   * return to their normal orientations the next time a nonzero velocity is
+   * requested.
    */
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
@@ -290,7 +292,10 @@ public class Drive extends SubsystemBase {
     return driveVelocityAverage / 4.0;
   }
 
-  /** Returns the module states (turn angles and driveZ velocities) for all of the modules. */
+  /**
+   * Returns the module states (turn angles and driveZ velocities) for all of the
+   * modules.
+   */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
@@ -314,10 +319,13 @@ public class Drive extends SubsystemBase {
    * @return A ChassisSpeeds object of the current field-relative velocity
    */
   public ChassisSpeeds getFieldVelocity() {
-    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
-    // but not the reverse.  However, because this transform is a simple rotation, negating the
+    // ChassisSpeeds has a method to convert from field-relative to robot-relative
+    // speeds,
+    // but not the reverse. However, because this transform is a simple rotation,
+    // negating the
     // angle
-    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    // given as the robot angle reverses the direction of rotation, and the
+    // conversion is reversed.
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         kinematics.toChassisSpeeds(getModuleStates()), getRotation());
   }
@@ -329,9 +337,11 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current odometry rotation. */
-  /* public Rotation2d getRotation() {
-    return getPose().getRotation();
-  } */
+  /*
+   * public Rotation2d getRotation() {
+   * return getPose().getRotation();
+   * }
+   */
   public Rotation2d getRotation() {
     return Rotation2d.fromDegrees(gyroIO.getYawAngle());
     // return getPose().getRotation();
@@ -340,14 +350,14 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-    odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    // odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /**
    * Adds a vision measurement to the pose estimator.
    *
    * @param visionPose The pose of the robot as measured by the vision camera.
-   * @param timestamp The timestamp of the vision measurement in seconds.
+   * @param timestamp  The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
     poseEstimator.addVisionMeasurement(visionPose, timestamp);
@@ -384,10 +394,10 @@ public class Drive extends SubsystemBase {
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(kTrackWidthX / 2.0, kTrackWidthY / 2.0),
-      new Translation2d(kTrackWidthX / 2.0, -kTrackWidthY / 2.0),
-      new Translation2d(-kTrackWidthX / 2.0, kTrackWidthY / 2.0),
-      new Translation2d(-kTrackWidthX / 2.0, -kTrackWidthY / 2.0)
+        new Translation2d(kTrackWidthX / 2.0, kTrackWidthY / 2.0),
+        new Translation2d(kTrackWidthX / 2.0, -kTrackWidthY / 2.0),
+        new Translation2d(-kTrackWidthX / 2.0, kTrackWidthY / 2.0),
+        new Translation2d(-kTrackWidthX / 2.0, -kTrackWidthY / 2.0)
     };
   }
 
@@ -416,38 +426,37 @@ public class Drive extends SubsystemBase {
     List<Waypoint> bezierPoints = PathPlannerPath.waypointsFromPoses(getPose(), endPose);
 
     // Create the path using the bezier points created above
-    PathPlannerPath path =
-        new PathPlannerPath(
-            bezierPoints,
-            kPathConstraints, // The constraints for this path. If using a differential drivetrain,
-            // the angular constraints have no effect.
-            new IdealStartingState(0.0, getPose().getRotation()),
-            new GoalEndState(
-                0.0,
-                Rotation2d.fromDegrees(
-                    -90)) // Goal end state. You can set a holonomic rotation here. If using a
-            // differential drivetrain, the rotation will have no effect.
-            );
+    PathPlannerPath path = new PathPlannerPath(
+        bezierPoints,
+        kPathConstraints, // The constraints for this path. If using a differential drivetrain,
+        // the angular constraints have no effect.
+        new IdealStartingState(0.0, getPose().getRotation()),
+        new GoalEndState(
+            0.0,
+            Rotation2d.fromDegrees(
+                -90)) // Goal end state. You can set a holonomic rotation here. If using a
+    // differential drivetrain, the rotation will have no effect.
+    );
     return AutoBuilder.followPath(path);
   }
+
   public Command goToReefPose(int reefPose) {
 
     Pose2d endPose = FieldConstants.Reef.centerFaces[reefPose];
     List<Waypoint> bezierPoints = PathPlannerPath.waypointsFromPoses(getPose(), endPose);
 
     // Create the path using the bezier points created above
-    PathPlannerPath path =
-        new PathPlannerPath(
-            bezierPoints,
-            kPathConstraints, // The constraints for this path. If using a differential drivetrain,
-            // the angular constraints have no effect.
-            new IdealStartingState(0.0, getPose().getRotation()),
-            new GoalEndState(
-                0.0,
-                Rotation2d.fromDegrees(
-                    -90)) // Goal end state. You can set a holonomic rotation here. If using a
-            // differential drivetrain, the rotation will have no effect.
-            );
+    PathPlannerPath path = new PathPlannerPath(
+        bezierPoints,
+        kPathConstraints, // The constraints for this path. If using a differential drivetrain,
+        // the angular constraints have no effect.
+        new IdealStartingState(0.0, getPose().getRotation()),
+        new GoalEndState(
+            0.0,
+            Rotation2d.fromDegrees(
+                -90)) // Goal end state. You can set a holonomic rotation here. If using a
+    // differential drivetrain, the rotation will have no effect.
+    );
     return AutoBuilder.followPath(path);
   }
 }

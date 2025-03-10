@@ -17,8 +17,8 @@ import java.awt.geom.Point2D;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
-  public static final Mode mode = Mode.SIM;
+  public static final boolean isBlue = false;
+  public static final Mode mode = Mode.REAL;
   public static final Drivers driver = Drivers.KRITHIK;
   public static final Operators operator = Operators.KRITHIK;
 
@@ -169,7 +169,7 @@ public final class Constants {
 
   public static class VisionConstants {
     // Camera configuration
-    public static final double kAprilTagPipeline = 1;
+    // public static final double kAprilTagPipeline = 1;
     public static final double kLightOffValue = 0;
 
     // PID values for driving with vision
@@ -196,7 +196,7 @@ public final class Constants {
         Units.inchesToMeters(53.875) + Units.inchesToMeters(apriltagWidth / 2);
     public static final double aprilTagAlignTolerance = 0.5; // change for april tag align maybe
 
-    public static final double kNoteTolerance = 2.0;
-    public static final double kPNoteTurn = 0.008;
+    // public static final double kNoteTolerance = 2.0;
+    // public static final double kPNoteTurn = 0.008;
   }
 }
