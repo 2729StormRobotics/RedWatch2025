@@ -112,7 +112,6 @@ public class DriveControls {
         DRIVE_HOLD_STOP = m_translator.button(3); // TBA
 
         // Driver Modes
-        DRIVE_ROBOT_RELATIVE = m_translator.button(2); // TBA
         DRIVE_REEF_AIM = m_translator.button(1);
         DRIVE_PHOTONVISION_ALIGN_RIGHT = m_translator.button(3); // uses vision right align
         DRIVE_PHOTONVISION_ALIGN_LEFT = m_translator.button(5); // uses vision left align

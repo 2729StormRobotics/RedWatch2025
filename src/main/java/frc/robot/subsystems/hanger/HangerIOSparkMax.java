@@ -24,7 +24,7 @@ public class HangerIOSparkMax implements HangerIO {
   private SparkMaxConfig hangerConfig;
   public static boolean isClosed = false;
   public static Timer timer = new Timer();
-  public SparkLimitSwitch metalDetector;
+  public DigitalInput metalDetector;
   private BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   public HangerIOSparkMax() {
@@ -38,7 +38,7 @@ public class HangerIOSparkMax implements HangerIO {
 
     // burn motor
     hangerSparkMax.configure(hangerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    metalDetector = hangerSparkMax.getForwardLimitSwitch();
+    metalDetector = new DigitalInput(2);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class HangerIOSparkMax implements HangerIO {
 
   @Override
   public boolean getIsInCage(){
-    return metalDetector.isPressed();
+    return metalDetector.get();
   }
 
   @Override

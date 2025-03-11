@@ -33,6 +33,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class DriveCommands {
@@ -83,9 +84,11 @@ public class DriveCommands {
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec(),
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+                  drive.getRotation().plus(new Rotation2d(Math.PI))));
+
+                //   isFlipped
+                //       ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                //       : drive.getRotation()));
         },
         drive);
   }
@@ -134,7 +137,7 @@ public class DriveCommands {
 
   private static boolean getIsFlipped() {
     return DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == Alliance.Red;
+        && true;
   }
   public static Command joystickAnglePoint(
       Drive drive,
@@ -189,6 +192,18 @@ public class DriveCommands {
     } else {
       slowMode = 1;
     }
+  }
+
+  public static Command slowMode() {
+        return new FunctionalCommand(
+            () -> slowMode = kSlowModeConstant,
+            () -> slowMode = kSlowModeConstant,
+            (stop) -> {
+                slowMode = 1;
+            },
+            () -> false
+            );
+      
   }
 
   public static boolean getPivotSideAngle() {

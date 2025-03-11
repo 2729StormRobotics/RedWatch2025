@@ -165,6 +165,7 @@ public class GyroIOReal implements GyroIO {
   }
 
   /** Sets the current rotation of the robot to a given value. */
+  @Override
   public void setRobotAngle(double angle) {
     setYawAngle(angle);
   }
