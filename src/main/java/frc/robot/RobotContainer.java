@@ -18,6 +18,9 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
+import frc.robot.subsystems.AprilTagAlign.AprilTagAlignLeft;
+// import frc.robot.subsystems.AprilTagAlign.AprilTagAlignRight;
+
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -250,6 +253,8 @@ public class RobotContainer {
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+        // DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
+        DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
     RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {
