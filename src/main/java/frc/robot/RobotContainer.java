@@ -24,6 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -190,9 +193,9 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-        DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
-        DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new ApriltagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
-
+    DRIVE_PHOTONVISION_ALIGN_RIGHT.onTrue(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
+    DRIVE_PHOTONVISION_ALIGN_LEFT.onTrue(new SequentialCommandGroup(new ApriltagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE), new ParallelDeadlineGroup(new WaitCommand(2), DriveCommands.joystickDriveRobotRelative(drive, ()->0.2, ()->0, ()->0)))).onFalse(drive.getDefaultCommand());
+    
     RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {

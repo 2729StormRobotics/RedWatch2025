@@ -70,12 +70,17 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
     boolean targetVisible = false;
     double targetYaw = 0.0;
     double targetRange = 0.0;
+    double tagSkew = 0.0;
+
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
       // At least one AprilTag was seen by the camera
       PhotonTrackedTarget target = results.getBestTarget();
       targetYaw = target.getYaw();
+      tagSkew = target.getSkew();
+      // List<TargetCorner> corners = target.getCorners();
+      // double targetPoseYaw = target.getBestCameraToTarget().getRotation().getDegrees();
       targetRange =
                                 PhotonUtils.calculateDistanceToTargetMeters(
                                         0.5, // Camera Height
@@ -86,18 +91,22 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
     }
 
     // OFFSET PRESETS FOR DIFF OBJECTS (THIS IS LEFT)
-    double finTargetOffset = Units.inchesToMeters(6.47);
-    double cameraToArmOffset = Units.inchesToMeters(6); // add when going right, subtract when going left
-    double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset - cameraToArmOffset) / targetRange)); // use trig to calculate angle
-    targetYaw += angleOffset; // subtract offset to go right add to go left
+    // double finTargetOffset = Units.inchesToMeters(6.47);
+    // double cameraToArmOffset = Units.inchesToMeters(6); // add when going right, subtract when going left
+    // double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset - cameraToArmOffset) / targetRange)); // use trig to calculate angle
+    // targetYaw += angleOffset; // subtract offset to go right add to go left
 
     // Override the driver's turn command with an automatic one that turns toward the tag.
     double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxAngularSpeedRadiansPerSecond;
     double forward = -1.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond; 
+
+    SmartDashboard.putNumber("align angle", targetYaw);
   // Put debug information to the dashboard
   SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
   SmartDashboard.putNumber("Target Yaw", targetYaw);
   SmartDashboard.putNumber("Turn Power", turn);
+  // SmartDashboard.putNumber("Tag Skew", tagSkew);
+  // SmartDashboard.putNumber("Corners", corners[1]);
     // Command drivetrain motors based on target speeds
     double linearMagnitude =
               MathUtil.applyDeadband(
@@ -121,9 +130,10 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
           m_drivetrain.runVelocity(
               ChassisSpeeds.fromRobotRelativeSpeeds(
                   linearVelocity.getX() * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() + forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() + -forward * (m_drivetrain.getMaxLinearSpeedMetersPerSec()+10),
                   omega * m_drivetrain.getMaxAngularSpeedRadPerSec(),
                   new Rotation2d()));
+          
 
     
   }
