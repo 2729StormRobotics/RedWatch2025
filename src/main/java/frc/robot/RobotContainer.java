@@ -193,8 +193,9 @@ public class RobotContainer {
     DriveControls.configureControls();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    
     DRIVE_PHOTONVISION_ALIGN_RIGHT.onTrue(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
-    DRIVE_PHOTONVISION_ALIGN_LEFT.onTrue(new SequentialCommandGroup(new ApriltagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE), new ParallelDeadlineGroup(new WaitCommand(2), DriveCommands.joystickDriveRobotRelative(drive, ()->0.2, ()->0, ()->0)))).onFalse(drive.getDefaultCommand());
+    DRIVE_PHOTONVISION_ALIGN_LEFT.onTrue(new SequentialCommandGroup( new ApriltagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE), new ParallelDeadlineGroup(new WaitCommand(2), DriveCommands.joystickDriveRobotRelative(drive, ()->0.2, ()->0, ()->0)))).onFalse(drive.getDefaultCommand());
     
     RESET_GYRO.onTrue(
         new InstantCommand(
