@@ -84,8 +84,7 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
     boolean targetVisible = false;
     double targetYaw = 0.0;
     double targetRange = 0.0;
-    double yawThreshold = 1.0;
-    double strafeSpeed = 0.0;
+    double yawThreshold = 0.3;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
@@ -155,7 +154,7 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
 
     // Override the driver's turn command with an automatic one that turns toward
     // the tag.
-    double turn = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
+    double lateralSpeed = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
     double forward = -1.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
     // Put debug information to the dashboard
     SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
@@ -187,22 +186,25 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
     // Convert to robot relative speeds & send command
     m_drivetrain.runVelocity(
         ChassisSpeeds.fromRobotRelativeSpeeds(
-            linearVelocity.getX() + turn * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+            linearVelocity.getX() + lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
             linearVelocity.getY() + forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
             m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed,
             new Rotation2d()));
 
-    if (targetYaw > 0) {
-      m_drivetrain.runVelocity(
-          ChassisSpeeds.fromRobotRelativeSpeeds(
-              m_drivetrain.getMaxLinearSpeedMetersPerSec() / 10,
-              0,
-              0,
-              new Rotation2d()));
+    // if (targetYaw > 0) {
+    //   m_drivetrain.runVelocity(
+    //       ChassisSpeeds.fromRobotRelativeSpeeds(
+    //           m_drivetrain.getMaxLinearSpeedMetersPerSec() / 10,
+    //           0,
+    //           0,
+    //           new Rotation2d()));
+
+    if (Math.abs(targetYaw) < yawThreshold) {
+      lateralSpeed = 0;
+    }
 
     }
 
-  }
 
   @Override
   public void end(boolean interrupted) {
@@ -213,5 +215,5 @@ public class ApriltagAlignLeft extends Command implements VisionIO {
   public boolean isFinished() {
     // End command when turn error is within tolerance
     return m_controller.atSetpoint() && pidController.atSetpoint();
-  }
-}
+  }}
+
