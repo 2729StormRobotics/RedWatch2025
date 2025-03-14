@@ -19,6 +19,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
+import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
 import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -268,6 +269,12 @@ public class RobotContainer {
                 new ParallelDeadlineGroup(new WaitCommand(2),
                     DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
         .onFalse(drive.getDefaultCommand());
+        DRIVE_PHOTONVISION_ALIGN_MIDDLE
+            .onTrue(
+                new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+                    new ParallelDeadlineGroup(new WaitCommand(2),
+                        DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
+            .onFalse(drive.getDefaultCommand());
 
     RESET_GYRO.onTrue(
         new InstantCommand(

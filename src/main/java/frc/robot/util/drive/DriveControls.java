@@ -60,8 +60,9 @@ public class DriveControls {
   public static Trigger DRIVE_REEF_AIM;
   public static Trigger DRIVE_PHOTONVISION_ALIGN_RIGHT;
   public static Trigger DRIVE_PHOTONVISION_ALIGN_LEFT;
+  public static Trigger DRIVE_PHOTONVISION_ALIGN_MIDDLE;
 
-  // Drive Angle Locks
+  // Drive Angle LocksDRIVE_PHOTONVISION_ALIGN_MIDDLE
   public static Trigger LOCK_BACK;
   public static Trigger LOCK_PICKUP;
   public static Trigger LOCK_PASS;
@@ -115,6 +116,7 @@ public class DriveControls {
         DRIVE_REEF_AIM = m_translator.button(1);
         DRIVE_PHOTONVISION_ALIGN_RIGHT = m_translator.button(3); // uses vision right align
         DRIVE_PHOTONVISION_ALIGN_LEFT = m_translator.button(5); // uses vision left align
+        DRIVE_PHOTONVISION_ALIGN_MIDDLE = m_translator.button(4);// middle vision align
 
         // ALL BELOW TBD
         // Driver Angle Locks
