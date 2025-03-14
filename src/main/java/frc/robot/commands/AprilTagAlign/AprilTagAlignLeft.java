@@ -58,7 +58,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn,
         Constants.VisionConstants.kDTurn);
     camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
-
+  
     this.rotation = drivetrain.getRotation();
     targetAngle = 0;
     // Initialize PID controller (tune these values as needed)

@@ -83,20 +83,12 @@ public class HangerIOSparkMax implements HangerIO {
   public SequentialCommandGroup retract() {
     return new SequentialCommandGroup(
       new InstantCommand(() -> {System.out.println("retract");}),
-      new InstantCommand(() ->
-      {
-       ledController.setPattern(BlinkinPattern.BREATH_RED);   
-      }),
         new InstantCommand(() -> {
           this.pull();
         }),
         new WaitCommand(5),
         new InstantCommand(() -> {
           this.stop();
-        }),
-        new InstantCommand(() ->
-        {
-         ledController.setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);     
         }));
   }
   // @Override
