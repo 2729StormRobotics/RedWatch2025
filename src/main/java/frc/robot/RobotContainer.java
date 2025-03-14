@@ -18,9 +18,8 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
-import frc.robot.subsystems.AprilTagAlign.AprilTagAlignLeft;
-// import frc.robot.subsystems.AprilTagAlign.AprilTagAlignRight;
-
+import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
+import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -44,7 +43,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.PhotonVision.VisionIO;
+import frc.robot.subsystems.PhotonVision.VisionIOPhoton;
+import frc.robot.subsystems.PhotonVision.VisionIOPhotonSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.arm.ArmIO;
@@ -73,8 +74,6 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
 import frc.robot.subsystems.hanger.*;
 
-
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -97,7 +96,6 @@ public class RobotContainer {
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // LEDs
-  private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -121,7 +119,8 @@ public class RobotContainer {
             new ModuleIOSparkMax(0),
             new ModuleIOSparkMax(1),
             new ModuleIOSparkMax(2),
-            new ModuleIOSparkMax(3));
+            new ModuleIOSparkMax(3),
+            new VisionIOPhoton());
         arm = new Arm(new ArmIOSparkMax());
         m_gripper = new Gripper(new GripperIOSparkMax());
         hanger = new HangerIOSparkMax();
@@ -136,7 +135,8 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim(),
-            new ModuleIOSim());
+            new ModuleIOSim(),
+            new VisionIOPhotonSim());
         arm = new Arm(new ArmIOSim());
         m_gripper = new Gripper(new GripperIOSim());
         hanger = new HangerIOSim();
@@ -158,7 +158,8 @@ public class RobotContainer {
             new ModuleIO() {
             },
             new ModuleIO() {
-            });
+            },
+            new VisionIO() {});
         arm = new Arm(new ArmIO() {
         });
         m_gripper = new Gripper(new GripperIOSim());
@@ -168,9 +169,11 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("L2Setpoint",
-    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(3), arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
-    NamedCommands.registerCommand("IntakeSetpoint", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
-    new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
+        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(3),
+            arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
+    NamedCommands.registerCommand("IntakeSetpoint",
+        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
+            new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
     NamedCommands.registerCommand("Outtake", m_gripper.outtake());
 
@@ -223,7 +226,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Set up Named Commands
-    
 
     configureButtonBindings();
 
@@ -253,8 +255,20 @@ public class RobotContainer {
     SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-        // DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
-        DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE));
+
+    DRIVE_PHOTONVISION_ALIGN_RIGHT
+        .onTrue(
+          new SequentialCommandGroup(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+              new ParallelDeadlineGroup(new WaitCommand(2),
+                  DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
+      .onFalse(drive.getDefaultCommand());
+    DRIVE_PHOTONVISION_ALIGN_LEFT
+        .onTrue(
+            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+                new ParallelDeadlineGroup(new WaitCommand(2),
+                    DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
+        .onFalse(drive.getDefaultCommand());
+
     RESET_GYRO.onTrue(
         new InstantCommand(
             () -> {
@@ -262,25 +276,38 @@ public class RobotContainer {
             },
             drive));
 
-    // DRIVE_ROBOT_RELATIVE.onTrue(DriveCommands.joystickDriveRobotRelative(drive, DRIVE_STRAFE, DRIVE_FORWARD, DRIVE_ROTATE));
+    // DRIVE_ROBOT_RELATIVE.onTrue(DriveCommands.joystickDriveRobotRelative(drive,
+    // DRIVE_STRAFE, DRIVE_FORWARD, DRIVE_ROTATE));
     SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
-    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {elevator.setVelocity(0);}, elevator),arm.stop(), m_gripper.stop(), new InstantCommand( () ->{hanger.stop();})));
+    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {
+      elevator.setVelocity(0);
+    }, elevator), arm.stop(), m_gripper.stop(), new InstantCommand(() -> {
+      hanger.stop();
+    })));
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-    
+
     // Gripper Commands
     INTAKE.onTrue(m_gripper.Intake());
     OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
 
-    PULLHANGER.whileTrue(new InstantCommand(() -> {hanger.pull();}));
-    PULLHANGER.onFalse(new InstantCommand(() -> {hanger.stop();}));
-    EXTENDHANGER.whileTrue(new InstantCommand(() -> {hanger.release();}));
-    EXTENDHANGER.onFalse(new InstantCommand(() -> {hanger.stop();}));
+    PULLHANGER.whileTrue(new InstantCommand(() -> {
+      hanger.pull();
+    }));
+    PULLHANGER.onFalse(new InstantCommand(() -> {
+      hanger.stop();
+    }));
+    EXTENDHANGER.whileTrue(new InstantCommand(() -> {
+      hanger.release();
+    }));
+    EXTENDHANGER.onFalse(new InstantCommand(() -> {
+      hanger.stop();
+    }));
 
     // Set Positions
     // DriveControls.L1.onTrue(arm.PIDCommand(32));
@@ -288,7 +315,7 @@ public class RobotContainer {
     // DriveControls.L3.onTrue(arm.PIDCommand(120));
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
 
-    //Real Set Positions
+    // Real Set Positions
     DriveControls.STOW.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW),
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
@@ -308,7 +335,7 @@ public class RobotContainer {
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
 
     // Elevator only
-    
+
     // DriveControls.L1.onTrue(elevator.PIDCommand(ElevatorConstants.L1));
 
     // DriveControls.L2.onTrue(elevator.PIDCommand(ElevatorConstants.L2));
@@ -316,9 +343,8 @@ public class RobotContainer {
     // DriveControls.L3.onTrue(elevator.PIDCommand(ElevatorConstants.L3));
 
     // DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
-        
-    // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
 
+    // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
 
   }
 
