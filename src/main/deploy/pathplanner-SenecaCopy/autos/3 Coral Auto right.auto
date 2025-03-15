@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S5 - 5L"
+                  "pathName": "S5 - 5R"
                 }
               },
               {
@@ -21,12 +21,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
           }
         },
         {
@@ -42,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "5L - I2"
+                  "pathName": "5R - I2"
                 }
               },
               {
@@ -67,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "I2 - 4L"
+                  "pathName": "I2 - 3R"
                 }
               },
               {
@@ -77,12 +71,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
           }
         },
         {
@@ -98,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4L - I2"
+                  "pathName": "3R - I2"
                 }
               },
               {
@@ -133,12 +121,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
           }
         },
         {

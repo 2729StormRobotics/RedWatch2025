@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4822635135135136,
-        "y": 0.6108530405405407
+        "x": 5.285827518203884,
+        "y": 5.110867339199029
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4599139388392923,
-        "y": 1.6989366506456287
+        "x": 4.730026282806068,
+        "y": 5.402357998800888
       },
       "isLocked": false,
-      "linkedName": "i2"
+      "linkedName": "1L"
     },
     {
       "anchor": {
-        "x": 3.63675,
-        "y": 2.94275
+        "x": 1.6575,
+        "y": 7.408249999999999
       },
       "prevControl": {
-        "x": 2.8215997574209815,
-        "y": 2.0106972653881994
+        "x": 2.814249997455601,
+        "y": 6.808892758843453
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4L"
+      "linkedName": "I1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.41,
+      "rotationDegrees": -29.999999999999996
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 147.353
+    "velocity": 0.0,
+    "rotation": 36.0
   },
   "reversed": false,
-  "folder": "I2 Outbound",
+  "folder": "I1 Inbound",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 145.0
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }
