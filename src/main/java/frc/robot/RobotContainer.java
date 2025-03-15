@@ -257,24 +257,23 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
+    DRIVE_SLOW.onTrue(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
     DRIVE_PHOTONVISION_ALIGN_RIGHT
-        .onTrue(
-          new SequentialCommandGroup(new ApriltagAlignRight(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-              new ParallelDeadlineGroup(new WaitCommand(2),
-                  DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
-      .onFalse(drive.getDefaultCommand());
+      .onTrue(
+          new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE), DriveCommands.joystickDriveRobotRelative(drive, ()->-0.4, ()->0.02, ()->0).withTimeout(.45)).withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .onTrue(
-            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                new ParallelDeadlineGroup(new WaitCommand(2),
-                    DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
-        .onFalse(drive.getDefaultCommand());
-        DRIVE_PHOTONVISION_ALIGN_MIDDLE
-            .onTrue(
-                new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                    new ParallelDeadlineGroup(new WaitCommand(2),
-                        DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
-            .onFalse(drive.getDefaultCommand());
+            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE)).withTimeout(20));
+            DRIVE_PHOTONVISION_ALIGN_MIDDLE
+                .onTrue(
+                    new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE)).withTimeout(20));
+        // .onFalse(drive.getDefaultCommand());
+        // DRIVE_PHOTONVISION_ALIGN_MIDDLE
+        //     .onTrue(
+        //         new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+        //             new ParallelDeadlineGroup(new WaitCommand(2),
+        //                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
+        //     .onFalse(drive.getDefaultCommand());
 
     RESET_GYRO.onTrue(
         new InstantCommand(

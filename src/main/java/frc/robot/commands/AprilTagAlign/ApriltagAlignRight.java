@@ -43,7 +43,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
   private double m_turnPower;
   private DoubleSupplier xSupplier;
   private DoubleSupplier ySupplier;
-
+  private boolean seeingTargets = false;
   private Rotation2d rotation;
   private PIDController pidController;
   private double targetAngle;
@@ -58,7 +58,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn,
         Constants.VisionConstants.kDTurn);
     camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
-
+  
     this.rotation = drivetrain.getRotation();
     targetAngle = 0;
     // Initialize PID controller (tune these values as needed)
@@ -84,8 +84,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
     boolean targetVisible = false;
     double targetYaw = 0.0;
     double targetRange = 0.0;
-    double yawThreshold = 1.0;
-    double strafeSpeed = 0.0;
+    double yawThreshold = 1;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
@@ -97,69 +96,85 @@ public class ApriltagAlignRight extends Command implements VisionIO {
           1.435, // Target Height
           Units.degreesToRadians(-30.0), // Camera Pitch
           Units.degreesToRadians(target.getPitch()));
+          
+    SmartDashboard.putNumber("id number", target.getFiducialId());
       // FIND ANGLE FROM ID
       switch(target.getFiducialId()) {
         // BLUE SIDE TARGETS 18 is closet to DS
         case 22:
           targetAngle = -30;
+          seeingTargets = true;
           break;
         case 21:
           targetAngle = -90;
+          seeingTargets = true;
           break;
         case 20:
           targetAngle = -150;
+          seeingTargets = true;
           break;
         case 19:
           targetAngle = 150;
+          seeingTargets = true;
           break;
         case 18:
           targetAngle = 90;
+          seeingTargets = true;
           break;
         case 17:
           targetAngle = 90;
+          seeingTargets = true;
           break;
         // RED SIDE TARGERTS 9 -- 22
         case 9:
           targetAngle = -30;
+          seeingTargets = true;
           break;
         case 10:
           targetAngle = -90;
+          seeingTargets = true;
           break;
         case 11:
           targetAngle = -150;
+          seeingTargets = true;
           break;
         case 6:
           targetAngle = 150;
+          seeingTargets = true;
           break;
         case 7:
           targetAngle = 90;
+          seeingTargets = true;
           break;
         case 8:
           targetAngle = 90;
+          seeingTargets = true;
           break;
         default:
+          seeingTargets = false;
           // code block
           targetAngle = 0;
       }
-      pidController.setSetpoint(targetAngle);
+      pidController.setSetpoint(-targetAngle);
       targetVisible = true;
     }
 
     // OFFSET PRESETS FOR DIFF OBJECTS (THIS IS LEFT)
-    double finTargetOffset = Units.inchesToMeters(6.47);
+    double finTargetOffset = Units.inchesToMeters(6);
     double cameraToArmOffset = Units.inchesToMeters(6); // add when going right,
     // subtract when going left
     double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset +
     cameraToArmOffset) / targetRange)); // use trig to calculate angle
+    
     targetYaw -= angleOffset; // subtract offset to go right add to go left
-
     // Override the driver's turn command with an automatic one that turns toward
     // the tag.
-    double lateralSpeed = -1.0 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
-    double forward = -1.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
+    double lateralSpeed = -0.25 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
+    double forward = 3.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
     // Put debug information to the dashboard
     SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
     SmartDashboard.putNumber("Target Yaw", targetYaw);
+    SmartDashboard.putNumber("Target range", targetRange);
     // Command drivetrain motors based on target speeds
     double linearMagnitude = MathUtil.applyDeadband(
         Math.hypot(
@@ -174,39 +189,35 @@ public class ApriltagAlignRight extends Command implements VisionIO {
 
     // Calculate the rotation speed using the PID controller
     double rotationSpeed = pidController.calculate(currentAngle);
-
+SmartDashboard.putNumber("currangle", currentAngle);
+SmartDashboard.putNumber("desiangle", targetAngle);
     // Limit the speed to prevent over-rotation
-    rotationSpeed = Math.max(-1.0, Math.min(1.0, rotationSpeed));
-    // Square values
-    linearMagnitude = linearMagnitude * linearMagnitude;
-    // Calcaulate new linear velocity
-    Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
-
+    rotationSpeed = Math.max(-0.3, Math.min(0.3, rotationSpeed));
+    SmartDashboard.putNumber("rotationspeed", rotationSpeed);
     // Convert to robot relative speeds & send command
+    SmartDashboard.putBoolean("seeingtargets?", results.hasTargets());
     m_drivetrain.runVelocity(
         ChassisSpeeds.fromRobotRelativeSpeeds(
-            linearVelocity.getX() + lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
-            linearVelocity.getY() + forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+            lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+            forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
             m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed,
+            // m_drivetrain.getMaxAngularSpeedRadPerSec()*0,
             new Rotation2d()));
 
-    if (targetYaw > 0) {
-      m_drivetrain.runVelocity(
-          ChassisSpeeds.fromRobotRelativeSpeeds(
-              m_drivetrain.getMaxLinearSpeedMetersPerSec() / 10,
-              0,
-              0,
-              new Rotation2d()));
-
-    }
+    // if (targetYaw > 0) {
+    //   m_drivetrain.runVelocity(
+    //       ChassisSpeeds.fromRobotRelativeSpeeds(
+    //           m_drivetrain.getMaxLinearSpeedMetersPerSec() / 10,
+    //           0,
+    //           0,
+    //           new Rotation2d()));
 
     if (Math.abs(targetYaw) < yawThreshold) {
       lateralSpeed = 0;
     }
+    seeingTargets = !(targetRange>-1.8);
+    }
 
-  }
 
   @Override
   public void end(boolean interrupted) {
@@ -215,7 +226,9 @@ public class ApriltagAlignRight extends Command implements VisionIO {
 
   @Override
   public boolean isFinished() {
+    SmartDashboard.putBoolean("end bool", (m_controller.atSetpoint()) || !seeingTargets);
+
     // End command when turn error is within tolerance
-    return m_controller.atSetpoint() && pidController.atSetpoint();
-  }
-}
+    return (m_controller.atSetpoint()) || !seeingTargets;
+  }}
+

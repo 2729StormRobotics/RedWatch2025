@@ -114,7 +114,8 @@ public class DriveControls {
 
         // Driver Modes
         DRIVE_REEF_AIM = m_translator.button(1);
-        DRIVE_PHOTONVISION_ALIGN_RIGHT = m_translator.button(3); // uses vision right align
+        DRIVE_PHOTONVISION_ALIGN_RIGHT = m_translator.button(6
+        ); // uses vision right align
         DRIVE_PHOTONVISION_ALIGN_LEFT = m_translator.button(5); // uses vision left align
         DRIVE_PHOTONVISION_ALIGN_MIDDLE = m_translator.button(4);// middle vision align
 
