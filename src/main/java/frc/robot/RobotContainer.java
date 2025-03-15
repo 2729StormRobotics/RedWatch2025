@@ -264,7 +264,7 @@ public class RobotContainer {
     DRIVE_PHOTONVISION_ALIGN_RIGHT
         .onTrue(
             new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.02, () -> 0).withTimeout(.45))
+                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.02, () -> 0).withTimeout(.43))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .onTrue(
