@@ -122,7 +122,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
           seeingTargets = true;
           break;
         case 17:
-          targetAngle = 90;
+          targetAngle = 30;
           seeingTargets = true;
           break;
         // RED SIDE TARGERTS 9 -- 22
@@ -147,7 +147,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
           seeingTargets = true;
           break;
         case 8:
-          targetAngle = 90;
+          targetAngle = 30;
           seeingTargets = true;
           break;
         default:
@@ -165,6 +165,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
     // subtract when going left
     double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset -
     cameraToArmOffset) / targetRange)); // use trig to calculate angle
+    angleOffset = 0;
     targetYaw += angleOffset; // subtract offset to go right add to go left
 
     // Override the driver's turn command with an automatic one that turns toward

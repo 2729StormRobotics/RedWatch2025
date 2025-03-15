@@ -165,7 +165,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
     // subtract when going left
     double angleOffset = Units.radiansToDegrees(Math.atan((finTargetOffset +
     cameraToArmOffset) / targetRange)); // use trig to calculate angle
-    
+    angleOffset = 0;
     targetYaw -= angleOffset; // subtract offset to go right add to go left
     // Override the driver's turn command with an automatic one that turns toward
     // the tag.
