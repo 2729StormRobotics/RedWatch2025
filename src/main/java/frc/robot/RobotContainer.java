@@ -160,7 +160,8 @@ public class RobotContainer {
             },
             new ModuleIO() {
             },
-            new VisionIO() {});
+            new VisionIO() {
+            });
         arm = new Arm(new ArmIO() {
         });
         m_gripper = new Gripper(new GripperIOSim());
@@ -177,6 +178,8 @@ public class RobotContainer {
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
     NamedCommands.registerCommand("Outtake", m_gripper.outtake());
+    NamedCommands.registerCommand("AlignReefLeft", new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
+    .withTimeout(5));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -259,21 +262,27 @@ public class RobotContainer {
 
     DRIVE_SLOW.onTrue(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
     DRIVE_PHOTONVISION_ALIGN_RIGHT
-      .onTrue(
-          new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE), DriveCommands.joystickDriveRobotRelative(drive, ()->-0.4, ()->0.02, ()->0).withTimeout(.45)).withTimeout(20));
+        .onTrue(
+            new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.02, () -> 0).withTimeout(.45))
+                .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .onTrue(
-            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE)).withTimeout(20));
-            DRIVE_PHOTONVISION_ALIGN_MIDDLE
-                .onTrue(
-                    new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE)).withTimeout(20));
-        // .onFalse(drive.getDefaultCommand());
-        // DRIVE_PHOTONVISION_ALIGN_MIDDLE
-        //     .onTrue(
-        //         new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-        //             new ParallelDeadlineGroup(new WaitCommand(2),
-        //                 DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () -> 0))))
-        //     .onFalse(drive.getDefaultCommand());
+            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
+                .withTimeout(20));
+    DRIVE_PHOTONVISION_ALIGN_MIDDLE
+        .onTrue(
+            new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
+                .withTimeout(20));
+    // .onFalse(drive.getDefaultCommand());
+    // DRIVE_PHOTONVISION_ALIGN_MIDDLE
+    // .onTrue(
+    // new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive,
+    // DRIVE_FORWARD, DRIVE_STRAFE),
+    // new ParallelDeadlineGroup(new WaitCommand(2),
+    // DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () ->
+    // 0))))
+    // .onFalse(drive.getDefaultCommand());
 
     RESET_GYRO.onTrue(
         new InstantCommand(

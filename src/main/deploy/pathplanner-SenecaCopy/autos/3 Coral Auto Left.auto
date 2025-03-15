@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S5 - 5L"
+                  "pathName": "S3 - 1L"
                 }
               },
               {
@@ -24,25 +24,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "5L - I2"
+                  "pathName": "1L - I1"
                 }
               },
               {
@@ -55,19 +43,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "I2 - 4L"
+                  "pathName": "I1 - 3L"
                 }
               },
               {
@@ -80,25 +62,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4L - I2"
+                  "pathName": "3L - I1"
                 }
               },
               {
@@ -111,19 +81,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "I2 - 3L"
+                  "pathName": "I1 - 3R"
                 }
               },
               {
@@ -136,25 +100,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AlignReefLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "3L - I2"
+                  "pathName": "3R - I1"
                 }
               },
               {
