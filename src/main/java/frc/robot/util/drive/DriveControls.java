@@ -37,6 +37,8 @@ public class DriveControls {
   public static Trigger L2;
   public static Trigger L3;
   public static Trigger L4;
+  public static Trigger AlgaeL2;
+  public static Trigger AlgaeL3;
   public static Trigger INTAKE_POS;
 
   // Drive controls
@@ -187,6 +189,8 @@ public class DriveControls {
         L2 = m_weaponsController.povRight();
         L3 = m_weaponsController.povDown();
         L4 = m_weaponsController.povLeft();
+        AlgaeL2 = m_weaponsController.x();
+        AlgaeL3 = m_weaponsController.y();
         INTAKE_POS = m_weaponsController.a();
         // Misc Subsytem Controls
         ARMSTOP = m_weaponsController.x();
