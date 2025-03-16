@@ -5,8 +5,16 @@ import static frc.robot.Constants.ElectricalLayout.BLINKIN_LED_CONTROLLER_PORT;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import frc.robot.subsystems.PhotonVision.VisionConstants;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** Control REV Robotics Blinkin LED controller */
 public class BlinkinLEDController {
@@ -134,12 +142,12 @@ public class BlinkinLEDController {
     }
   };
 
+  private final PhotonCamera camera1;
   // Robot state booleans
   public static boolean isEnabled = false;
   public static boolean isEndgame = false;
-  public static boolean noteInIntake = false;
-  public static boolean shooting = false;
-  public static boolean pivotArmDown = false;
+  public static boolean driving = false;
+  public static boolean auto = false;
 
   private static BlinkinLEDController m_controller = null;
   private static Spark m_blinkin;
@@ -151,7 +159,12 @@ public class BlinkinLEDController {
     BlinkinPattern.BREATH_RED,
     BlinkinPattern.LIGHT_CHASE_RED,
     BlinkinPattern.SHOT_RED,
-    BlinkinPattern.STROBE_RED
+    BlinkinPattern.STROBE_RED, 
+    BlinkinPattern.RAINBOW_LAVA_PALETTE,
+    BlinkinPattern.SINELON_LAVA_PALETTE,
+    BlinkinPattern.TWINKLES_LAVA_PALETTE,
+    BlinkinPattern.COLOR_WAVES_LAVA_PALETTE,
+    BlinkinPattern.BEATS_PER_MINUTE_LAVA_PALETTE
   };
 
   private static final BlinkinPattern[] BLUE_ALLIANCE_PATTERNS = {
@@ -159,11 +172,17 @@ public class BlinkinLEDController {
     BlinkinPattern.BREATH_BLUE,
     BlinkinPattern.LIGHT_CHASE_BLUE,
     BlinkinPattern.SHOT_BLUE,
-    BlinkinPattern.STROBE_BLUE
+    BlinkinPattern.STROBE_BLUE,
+    BlinkinPattern.RAINBOW_OCEAN_PALETTE,
+    BlinkinPattern.SINELON_OCEAN_PALETTE,
+    BlinkinPattern.TWINKLES_OCEAN_PALETTE,
+    BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE,
+    BlinkinPattern.BEATS_PER_MINUTE_OCEAN_PALETTE
   };
 
   private BlinkinLEDController() {
     m_blinkin = new Spark(BLINKIN_LED_CONTROLLER_PORT);
+    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
 
     m_allianceColors.put(Alliance.Red, RED_ALLIANCE_PATTERNS);
     m_allianceColors.put(Alliance.Blue, BLUE_ALLIANCE_PATTERNS);
@@ -223,6 +242,31 @@ public class BlinkinLEDController {
     setPattern(m_allianceColors.get(getAlliance())[4]);
   }
 
+  /** Set LEDs to alliance color breath pattern */
+  public void setAllianceColorRainbow() {
+    setPattern(m_allianceColors.get(getAlliance())[5]);
+  }
+
+  /** Set LEDs to alliance color chase pattern */
+  public void setAllianceColorSinelon() {
+    setPattern(m_allianceColors.get(getAlliance())[6]);
+  }
+
+  /** Set LEDs to alliance color shot pattern */
+  public void setAllianceColorTwinkles() {
+    setPattern(m_allianceColors.get(getAlliance())[7]);
+  }
+
+  /** Set LEDs to alliance color strobe pattern */
+  public void setAllianceColorWaves() {
+    setPattern(m_allianceColors.get(getAlliance())[8]);
+  }
+
+  /** Set LEDs to alliance color strobe pattern */
+  public void setAllianceColorBPM() {
+    setPattern(m_allianceColors.get(getAlliance())[9]);
+  }
+
   /* Set LEDs to Orange  */
   public void orangeHeartbeat() {
     setPattern(BlinkinPattern.CP1_HEARTBEAT_MEDIUM);
@@ -234,7 +278,7 @@ public class BlinkinLEDController {
 
   /** Set LEDs to team color */
   public void setTeamColor() {
-    setPattern(BlinkinPattern.DARK_RED);
+    setPattern(BlinkinPattern.DARK_GREEN);
   }
 
   /**
@@ -254,13 +298,22 @@ public class BlinkinLEDController {
   // Runs periodically and updates LEDs based on state
   public void periodic() {
     if (isEndgame) {
-      setAllianceColorShot();
-    } else if (shooting) {
-      setPattern(BlinkinPattern.VIOLET);
-    } else if (noteInIntake) {
+      setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
+    } else if (driving) {
+      PhotonPipelineResult results = camera1.getLatestResult();
+
+      if (results.hasTargets()) {
+        PhotonTrackedTarget target = results.getBestTarget();
+        List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
+        if (validIds.contains(target.getFiducialId())) {
+          setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
+        }
+      }
+      else {
+        setAllianceColorSolid();
+      }
+    } else if (auto) {
       setPattern(BlinkinPattern.ORANGE);
-    } else if (pivotArmDown) {
-      setPattern(BlinkinPattern.GREEN);
     } else if (isEnabled) {
       setAllianceColorSolid();
     } else {

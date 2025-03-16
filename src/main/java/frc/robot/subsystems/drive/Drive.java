@@ -75,7 +75,6 @@ public class Drive extends SubsystemBase {
 
   private RobotConfig config;
 
-  private final PhotonCamera camera1;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -117,7 +116,6 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
     SparkMaxOdometryThread.getInstance().start();
 
-    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
     ledController = BlinkinLEDController.getInstance();
     this.visionIO = visionIO;
 
@@ -259,18 +257,7 @@ public class Drive extends SubsystemBase {
 
     poseEstimator.update(rawGyroRotation, modulePositions);
     // odometry.update(rawGyroRotation, modulePositions);
-    PhotonPipelineResult results = camera1.getLatestResult();
-
-    if (results.hasTargets()) {
-      PhotonTrackedTarget target = results.getBestTarget();
-      List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
-      if (validIds.contains(target.getFiducialId())) {
-        ledController.setAllianceColorChase();
-      }
-    }
-    else {
-      ledController.setAllianceColorSolid();
-    }
+    
     Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }
 
