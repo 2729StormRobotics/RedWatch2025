@@ -197,13 +197,14 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
-    odometryLock.lock(); // Prevents odometry updates while reading data
+    odometryLock.lock(); // Prevents odometry updates while reading data *BADU, vision + odometry testing area*
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
       module.updateInputs();
     }
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    // *BADU, idk if this calling the correct updateinputs function* TO TEST ONLY ODOMETRY COMMENT OUT THIS WHOLE IF STATEMENT
     if (true) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
@@ -213,11 +214,11 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < visionInputs.estimate.length; i++) {
           if (stdDeviations.size() <= i) {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(),
-                VisionConstants.kSingleTagStdDevs);
+                VisionConstants.kSingleTagStdDevs); // actually adds the stuff
             // System.out.println("Ignoring");
           } else {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(),
-                stdDeviations.get(i));
+                stdDeviations.get(i)); // actually adds the stuff
             // System.out.println(stdDeviations.get(i));
           }
 
@@ -247,7 +248,7 @@ public class Drive extends SubsystemBase {
 
     Logger.recordOutput("FieldVelocity", getFieldVelocity());
 
-    // Update gyro angle
+    // Update gyro angles *BADU*
     if (gyroInputs.connected) {
       // Use the real gyro angle
       rawGyroRotation = gyroInputs.yawPosition;
