@@ -7,7 +7,7 @@ public class GripperConstants {
 
     public static final int beambreakPort = 2; // Have to update after testing
 
-    public static final double motorSpeedInGripper = -0.10; // Have to update after testing
+    public static final double motorSpeedInGripper = -0.15; // Have to update after testing
 
     public static final double motorSpeedOutGripper = -1;
 

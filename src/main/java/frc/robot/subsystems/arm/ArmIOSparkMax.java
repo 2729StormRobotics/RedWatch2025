@@ -116,7 +116,7 @@ public class ArmIOSparkMax implements ArmIO {
 
     @Override
     public double getArmAngleDegrees() {
-        return armAbsoluteEncoder.getPosition() + armEncoderOffset;
+        return armAbsoluteEncoder.getPosition();
         // this is not righth
     }
 

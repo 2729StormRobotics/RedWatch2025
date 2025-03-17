@@ -119,7 +119,7 @@ public class DriveControls {
         DRIVE_PHOTONVISION_ALIGN_RIGHT = m_translator.button(6
         ); // uses vision right align
         DRIVE_PHOTONVISION_ALIGN_LEFT = m_translator.button(5); // uses vision left align
-        DRIVE_PHOTONVISION_ALIGN_MIDDLE = m_translator.button(4);// middle vision align
+        DRIVE_PHOTONVISION_ALIGN_MIDDLE = m_translator.button(3);// middle vision align
 
         // ALL BELOW TBD
         // Driver Angle Locks
@@ -175,7 +175,7 @@ public class DriveControls {
         INTAKE = m_weaponsController.rightTrigger(0.3);
         OUTTAKE = m_weaponsController.leftTrigger(0.3);
         GRIPPERSTOP = m_weaponsController.b();
-        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY());
+        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/2);
 
         EXTENDHANGER = m_weaponsController.back();
         PULLHANGER = m_weaponsController.start();

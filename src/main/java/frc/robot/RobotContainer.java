@@ -171,15 +171,16 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("L2Setpoint",
-        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(3),
-            arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
+        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
+            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5)));
     NamedCommands.registerCommand("IntakeSetpoint",
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
     NamedCommands.registerCommand("Outtake", m_gripper.outtake());
-    NamedCommands.registerCommand("AlignReefLeft", new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
-    .withTimeout(5));
+    NamedCommands.registerCommand("AlignReefLeft", new ParallelCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0), new WaitCommand(0))
+    );
+    NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -264,15 +265,16 @@ public class RobotContainer {
     DRIVE_PHOTONVISION_ALIGN_RIGHT
         .onTrue(
             new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.02, () -> 0).withTimeout(.43))
+                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.45))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .onTrue(
-            new SequentialCommandGroup(new AprilTagAlignLeft(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
+            new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_MIDDLE
         .onTrue(
-            new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE))
+            new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
+            DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.05, () -> 0).withTimeout(.21))
                 .withTimeout(20));
     // .onFalse(drive.getDefaultCommand());
     // DRIVE_PHOTONVISION_ALIGN_MIDDLE

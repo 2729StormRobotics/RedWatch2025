@@ -85,6 +85,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
     double targetYaw = 0.0;
     double targetRange = 0.0;
     double yawThreshold = 1;
+    double forwardMultiplier = 4.0;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
@@ -170,7 +171,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
     // Override the driver's turn command with an automatic one that turns toward
     // the tag.
     double lateralSpeed = -0.25 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
-    double forward = 3.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
+    double forward = forwardMultiplier * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
     // Put debug information to the dashboard
     SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
     SmartDashboard.putNumber("Target Yaw", targetYaw);

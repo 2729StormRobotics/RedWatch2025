@@ -36,7 +36,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class AprilTagAlignLeft extends Command implements VisionIO {
   private final Drive m_drivetrain;
-  private final Joystick m_translator;
   private final PIDController m_controller;
   private final PhotonCamera camera1;
   private double m_turnError;
@@ -48,11 +47,10 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
   private PIDController pidController;
   private double targetAngle;
 
-  public AprilTagAlignLeft(Joystick joystick, Drive drivetrain,
+  public AprilTagAlignLeft( Drive drivetrain,
       DoubleSupplier x_Supplier,
       DoubleSupplier y_Supplier) {
     m_drivetrain = drivetrain;
-    m_translator = joystick;
     xSupplier = x_Supplier;
     ySupplier = y_Supplier;
     m_controller = new PIDController(Constants.VisionConstants.kPTurn, Constants.VisionConstants.kITurn,
@@ -85,6 +83,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
     double targetYaw = 0.0;
     double targetRange = 0.0;
     double yawThreshold = 1;
+    double forwardMultiplier = 4.0;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
@@ -171,7 +170,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
     // Override the driver's turn command with an automatic one that turns toward
     // the tag.
     double lateralSpeed = -0.25 * targetYaw * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
-    double forward = 3.0 * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
+    double forward = forwardMultiplier * targetRange * Constants.VisionConstants.kPStrafe * DriveConstants.kMaxSpeedMetersPerSecond;
     // Put debug information to the dashboard
     SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
     SmartDashboard.putNumber("Target Yaw", targetYaw);

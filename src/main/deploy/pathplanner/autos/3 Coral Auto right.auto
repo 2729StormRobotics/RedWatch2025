@@ -13,12 +13,6 @@
                 "data": {
                   "pathName": "S5 - 5L"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L2Setpoint"
-                }
               }
             ]
           }
@@ -27,6 +21,12 @@
           "type": "named",
           "data": {
             "name": "AlignReefLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2Setpoint"
           }
         },
         {

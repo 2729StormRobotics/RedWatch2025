@@ -265,7 +265,7 @@ public class Drive extends SubsystemBase {
       PhotonTrackedTarget target = results.getBestTarget();
       List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
       if (validIds.contains(target.getFiducialId())) {
-        ledController.setAllianceColorChase();
+        ledController.setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
       }
     }
     else {
