@@ -75,7 +75,6 @@ public class Drive extends SubsystemBase {
 
   private RobotConfig config;
 
-  private final PhotonCamera camera1;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -117,7 +116,6 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
     SparkMaxOdometryThread.getInstance().start();
 
-    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
     ledController = BlinkinLEDController.getInstance();
     this.visionIO = visionIO;
 
@@ -199,13 +197,14 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
-    odometryLock.lock(); // Prevents odometry updates while reading data
+    odometryLock.lock(); // Prevents odometry updates while reading data *BADU, vision + odometry testing area*
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
       module.updateInputs();
     }
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    // *BADU, idk if this calling the correct updateinputs function* TO TEST ONLY ODOMETRY COMMENT OUT THIS WHOLE IF STATEMENT
     if (true) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
@@ -215,11 +214,11 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < visionInputs.estimate.length; i++) {
           if (stdDeviations.size() <= i) {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(),
-                VisionConstants.kSingleTagStdDevs);
+                VisionConstants.kSingleTagStdDevs); // actually adds the stuff
             // System.out.println("Ignoring");
           } else {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(),
-                stdDeviations.get(i));
+                stdDeviations.get(i)); // actually adds the stuff
             // System.out.println(stdDeviations.get(i));
           }
 
@@ -249,7 +248,7 @@ public class Drive extends SubsystemBase {
 
     Logger.recordOutput("FieldVelocity", getFieldVelocity());
 
-    // Update gyro angle
+    // Update gyro angles *BADU*
     if (gyroInputs.connected) {
       // Use the real gyro angle
       rawGyroRotation = gyroInputs.yawPosition;
@@ -259,18 +258,7 @@ public class Drive extends SubsystemBase {
 
     poseEstimator.update(rawGyroRotation, modulePositions);
     // odometry.update(rawGyroRotation, modulePositions);
-    PhotonPipelineResult results = camera1.getLatestResult();
-
-    if (results.hasTargets()) {
-      PhotonTrackedTarget target = results.getBestTarget();
-      List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
-      if (validIds.contains(target.getFiducialId())) {
-        ledController.setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
-      }
-    }
-    else {
-      ledController.setAllianceColorSolid();
-    }
+    
     Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }
 

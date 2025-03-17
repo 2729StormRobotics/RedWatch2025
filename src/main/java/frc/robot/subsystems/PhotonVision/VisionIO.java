@@ -50,7 +50,6 @@ public interface VisionIO {
   }
 
   // getAllUnreadResults was a replacement for getLatestResult(), casted to fix
-  // error ******_______******
   public default PhotonPipelineResult getLatestResult(PhotonCamera camera) {
     return camera.getLatestResult();
   }
@@ -60,7 +59,7 @@ public interface VisionIO {
     return result.hasTargets();
   }
 
-  // FIX THE METHODS AND FIND WHERE THEY ARE (INITIALIZING)
+  // Gets the estimates into array
   public default Optional<Pose2d>[] getEstimates(PhotonPipelineResult[] results,
       PhotonPoseEstimator[] photonEstimator) {
     ArrayList<Optional<Pose2d>> estimates = new ArrayList<>();
@@ -86,7 +85,7 @@ public interface VisionIO {
     return null;
   }
 
-  // Cleans up the data for pose estimation
+  // Cleans up the estimates to a final estimates array
   public default Pose2d[] getEstimatesArray(PhotonPipelineResult[] results, PhotonPoseEstimator[] photonEstimator) {
     Optional<Pose2d>[] estimates = getEstimates(results, photonEstimator);
     Pose2d[] estimatesArray = new Pose2d[estimates.length];
@@ -186,7 +185,9 @@ public interface VisionIO {
    */
 
   // Estimates the standard deviations for the pose based on visible targets
-  // **CHANGE**
+  // *BADU, this increases trust in photonvision vs odometry when we can see multiple tags (changes from single to multitag std), and it decreases trust in photon
+  // to none when we are more than four meters away (changeable) and just overall decreases trust with a ratio depending how far we are*
+  // Also changes it when we can see only one tag or more than one tag (decrease trust with one tag vs more tags)
   public default Matrix<N3, N1> getEstimationStdDevs(VisionIOInputs inputs, Pose2d pose, int camera) {
     var estStdDevs = kSingleTagStdDevs;
     int numTags = 0;
@@ -214,7 +215,7 @@ public interface VisionIO {
     return estStdDevs;
   }
 
-  // Extracts targets (april tags) IDs from the results of the pipeline for the
+  // Extracts april tag IDs from the results of the pipeline for the
   // cameras
   public default int[][] getCameraTargets(PhotonPipelineResult[] results) {
     int[][] targets = new int[results.length][];

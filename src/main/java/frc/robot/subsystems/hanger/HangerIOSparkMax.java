@@ -64,12 +64,16 @@ public class HangerIOSparkMax implements HangerIO {
 
   @Override
   public void pull() {
+    BlinkinLEDController.isEndgame = true;
+
     hangerSparkMax.set(HangerConstants.motorSpeedOpenHanger);
     isClosed = true;
   }
 
   @Override
   public void release() {
+    BlinkinLEDController.isEndgame = true;
+
     hangerSparkMax.set(-1);
     ledController.setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
     isClosed = false;

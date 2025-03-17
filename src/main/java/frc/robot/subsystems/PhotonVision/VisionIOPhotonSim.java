@@ -75,7 +75,7 @@ public class VisionIOPhotonSim implements VisionIO {
     // Add all the AprilTags inside the tag layout as visible targets to this simulated field
     visionSim.addAprilTags(kTagLayout);
 
-    // Create simulated cam1 properties. These can be set to mimic actual cam1
+    // Create simulated cam1 properties. These can be set to mimic actual cam1 *BADU, find actual cam properties on photonvision*
     var cam1Prop = new SimCameraProperties();
     cam1Prop.setCalibration(960, 720, Rotation2d.fromDegrees(90));
     cam1Prop.setCalibError(0.35, 0.10);
@@ -83,7 +83,7 @@ public class VisionIOPhotonSim implements VisionIO {
     cam1Prop.setAvgLatencyMs(50);
     cam1Prop.setLatencyStdDevMs(15);
 
-    // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible targets.
+    // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible targets. *BADU, change them here*
     cam1Sim = new PhotonCameraSim(cam1, cam1Prop);
     cam2Sim = new PhotonCameraSim(cam2, cam1Prop);
     cam3Sim = new PhotonCameraSim(cam3, cam1Prop);
@@ -106,11 +106,11 @@ public class VisionIOPhotonSim implements VisionIO {
     cam3Estimator.setReferencePose(currentEstimate);
 
 
-    PhotonPipelineResult front_result = getLatestResult(cam1);
-    PhotonPipelineResult back_result = getLatestResult(cam2);
-    PhotonPipelineResult front_result2 = getLatestResult(cam3);
+    PhotonPipelineResult intake_result = getLatestResult(cam1);
+    PhotonPipelineResult outtake_result = getLatestResult(cam2);
+    PhotonPipelineResult intakeUp_result = getLatestResult(cam3);
     
-    PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
+    PhotonPipelineResult[] results = { intake_result, outtake_result, intakeUp_result };
     PhotonPoseEstimator[] photonEstimators = { cam1Estimator, cam2Estimator, cam3Estimator };
 
     inputs.estimate = new Pose2d[] { new Pose2d() };
@@ -152,9 +152,9 @@ public class VisionIOPhotonSim implements VisionIO {
   // Checks if the results are valid (Ambiguity threshold and has targets)
   @Override
   public boolean goodResult(PhotonPipelineResult result) {
-    return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
-            && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
-                    .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
+    return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD;
+            // && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
+            //         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
   }
   
 }
