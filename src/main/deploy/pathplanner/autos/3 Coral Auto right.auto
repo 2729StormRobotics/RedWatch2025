@@ -46,9 +46,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "IntakeSetpoint"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.02
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeSetpoint"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -69,12 +82,6 @@
                 "data": {
                   "pathName": "I2 - 4L"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L2Setpoint"
-                }
               }
             ]
           }
@@ -83,6 +90,12 @@
           "type": "named",
           "data": {
             "name": "AlignReefLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2Setpoint"
           }
         },
         {
@@ -125,12 +138,6 @@
                 "data": {
                   "pathName": "I2 - 3L"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L2Setpoint"
-                }
               }
             ]
           }
@@ -144,7 +151,19 @@
         {
           "type": "named",
           "data": {
+            "name": "L2Setpoint"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stow"
           }
         },
         {

@@ -48,8 +48,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 import frc.robot.subsystems.PhotonVision.VisionConstants;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOInputsAutoLogged;
@@ -83,7 +81,6 @@ public class Drive extends SubsystemBase {
 
   private final VisionIO visionIO;
   private final VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
-  private BlinkinLEDController ledController;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
@@ -116,7 +113,6 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
     SparkMaxOdometryThread.getInstance().start();
 
-    ledController = BlinkinLEDController.getInstance();
     this.visionIO = visionIO;
 
     try {
@@ -205,7 +201,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     // *BADU, idk if this calling the correct updateinputs function* TO TEST ONLY ODOMETRY COMMENT OUT THIS WHOLE IF STATEMENT
-    if (true) {
+    if (false) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
@@ -268,7 +264,7 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
-    // Calculate module setpoints
+    // Calculate module setpoint7
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     simRotation = simRotation.rotateBy(Rotation2d.fromRadians(discreteSpeeds.omegaRadiansPerSecond * 0.02));
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);

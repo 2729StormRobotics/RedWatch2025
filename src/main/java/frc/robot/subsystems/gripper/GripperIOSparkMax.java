@@ -3,9 +3,6 @@ package frc.robot.subsystems.gripper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
-
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;

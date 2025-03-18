@@ -317,7 +317,7 @@ public class BlinkinLEDController {
     } else if (isEnabled) {
       setAllianceColorSolid();
     } else {
-      setPattern(BlinkinPattern.CP1_2_SPARKLE_1_ON_2);
+      setPattern(BlinkinPattern.BEATS_PER_MINUTE_LAVA_PALETTE);
     }
   }
 }

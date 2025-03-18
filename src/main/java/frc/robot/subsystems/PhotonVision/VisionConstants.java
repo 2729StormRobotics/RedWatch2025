@@ -27,39 +27,36 @@ public class VisionConstants extends SubsystemBase {
   public static final String outtake_Cam = "Outtake";
   public static final String intakeUp_Cam = "Intake Up";
 
-  // Change values to the actual distance from the center of the robot, change rotation if needed. *BADU, change all pitch angle values for each cam. And revaluate previous translations*
+  // *offsets are fixed*
   public static final Transform3d cam1RobotToCam = new Transform3d(
-                        //
                         new Translation3d(
                                         Units.inchesToMeters(13.000000),
                                         Units.inchesToMeters(4.5),
                                         Units.inchesToMeters(5.6000)),
-                        //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(145).getRadians(), 
+                                Rotation2d.fromDegrees(35).getRadians(), 
                                 Rotation2d.fromDegrees(0).getRadians()
                         ));
   public static final Transform3d cam2RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(-13.000000),
+                                Units.inchesToMeters(-8),
                                 Units.inchesToMeters(4.5),
-                                Units.inchesToMeters(5.6)
+                                Units.inchesToMeters(11.85)
                         ),
-                        //ROLL NEEDS TO CHANGE
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(130 ).getRadians(), 
-                                Rotation2d.fromDegrees(0).getRadians()));// maybe need to change
+                                Rotation2d.fromDegrees(0).getRadians(), 
+                                Rotation2d.fromDegrees(0).getRadians()));
 
   public static final Transform3d cam3RobotToCam = new Transform3d(
                         new Translation3d(
-                                Units.inchesToMeters(-8),
-                                Units.inchesToMeters(4),
+                                Units.inchesToMeters(8),
+                                Units.inchesToMeters(3.5),
                                 Units.inchesToMeters(24.850)
                         ),
                         
                         new Rotation3d(0, 
                                 Rotation2d.fromDegrees(0).getRadians(), 
-                                Rotation2d.fromDegrees(0).getRadians())); // maybe need to change
+                                Rotation2d.fromDegrees(0).getRadians()));
 
 
   // The layout of the AprilTags on the field
@@ -71,7 +68,7 @@ public class VisionConstants extends SubsystemBase {
 
   // The standard deviations of our vision estimated poses, which affect
   // correction rate
-  // (Fake values. Experiment and determine estimation noise on an actual robot.)
+  // (Experiment and determine estimation noise on an actual robot.)
   // *BADU, automatically changes from these two standard deviation models when we can see more than one apriltag, or just one*
   public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 8);
   public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 1);

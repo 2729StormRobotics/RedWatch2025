@@ -138,7 +138,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    BlinkinLEDController.auto = true;
+    BlinkinLEDController.driving = true;
 
     // True if Blue
     // if (true) {

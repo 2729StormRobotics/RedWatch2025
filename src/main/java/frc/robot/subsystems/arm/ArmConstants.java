@@ -26,7 +26,7 @@ public class ArmConstants {
     public static final double kL1 = 67.3;
     public static final double kL2 = 58;
     public static final double kL3 = 56.05;
-    public static final double kL4 = 56.73;
+    public static final double kL4 = 57.63;
     public static final double kAlgae = 43.4;
     public static final double kIntake = 110;
     public static final double kOneMore = 0; // ?????

@@ -78,7 +78,7 @@ public class Gripper extends SubsystemBase {
                     io.stop();
                 },
                 () -> io.isCoralPresent(),
-                this);
+                this).andThen(reverse().withTimeout(0));
 
     }
 

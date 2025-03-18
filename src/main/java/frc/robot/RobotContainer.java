@@ -178,9 +178,12 @@ public class RobotContainer {
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
     NamedCommands.registerCommand("Outtake", m_gripper.outtake());
-    NamedCommands.registerCommand("AlignReefLeft", new ParallelCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0), new WaitCommand(0))
+    NamedCommands.registerCommand("AlignReefLeft", new ParallelCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0), new WaitCommand(0)).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.001))
     );
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
+    NamedCommands.registerCommand("Stow",
+        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW).withTimeout(1.5),
+            arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -263,16 +266,16 @@ public class RobotContainer {
 
     DRIVE_SLOW.onTrue(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
     DRIVE_PHOTONVISION_ALIGN_RIGHT
-        .onTrue(
+        .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.45))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
-        .onTrue(
+        .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_MIDDLE
-        .onTrue(
+        .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
             DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.05, () -> 0).withTimeout(.21))
                 .withTimeout(20));

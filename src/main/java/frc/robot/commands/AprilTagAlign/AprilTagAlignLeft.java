@@ -83,7 +83,7 @@ public class AprilTagAlignLeft extends Command implements VisionIO {
     double targetYaw = 0.0;
     double targetRange = 0.0;
     double yawThreshold = 1;
-    double forwardMultiplier = 4.0;
+    double forwardMultiplier = 7.0;
 
     PhotonPipelineResult results = camera1.getLatestResult();
     if (results.hasTargets()) {
@@ -217,7 +217,7 @@ SmartDashboard.putNumber("desiangle", targetAngle);
     if (Math.abs(targetYaw) < yawThreshold) {
       lateralSpeed = 0;
     }
-    seeingTargets = !(Math.abs(targetRange)<1.8);
+    seeingTargets = !(Math.abs(targetRange)<1.7);
     }
 
 
