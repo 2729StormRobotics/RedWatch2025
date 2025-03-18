@@ -118,6 +118,7 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
     BlinkinLEDController.auto = true;
+    BlinkinLEDController.isEnabled = true;
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
@@ -138,6 +139,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    BlinkinLEDController.isEnabled = true;
     BlinkinLEDController.driving = true;
 
     // True if Blue

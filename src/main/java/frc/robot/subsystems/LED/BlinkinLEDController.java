@@ -142,7 +142,6 @@ public class BlinkinLEDController {
     }
   };
 
-  private final PhotonCamera camera1;
   // Robot state booleans
   public static boolean isEnabled = false;
   public static boolean isEndgame = false;
@@ -182,7 +181,6 @@ public class BlinkinLEDController {
 
   private BlinkinLEDController() {
     m_blinkin = new Spark(BLINKIN_LED_CONTROLLER_PORT);
-    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
 
     m_allianceColors.put(Alliance.Red, RED_ALLIANCE_PATTERNS);
     m_allianceColors.put(Alliance.Blue, BLUE_ALLIANCE_PATTERNS);
@@ -300,18 +298,7 @@ public class BlinkinLEDController {
     if (isEndgame) {
       setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
     } else if (driving) {
-      PhotonPipelineResult results = camera1.getLatestResult();
-
-      if (results.hasTargets()) {
-        PhotonTrackedTarget target = results.getBestTarget();
-        List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
-        if (validIds.contains(target.getFiducialId())) {
-          setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
-        }
-      }
-      else {
-        setAllianceColorSolid();
-      }
+      
     } else if (auto) {
       setPattern(BlinkinPattern.ORANGE);
     } else if (isEnabled) {

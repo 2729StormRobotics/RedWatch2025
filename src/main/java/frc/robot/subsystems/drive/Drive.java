@@ -28,6 +28,8 @@ import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 import frc.robot.subsystems.PhotonVision.VisionConstants;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOInputsAutoLogged;
@@ -72,7 +75,8 @@ public class Drive extends SubsystemBase {
   private static final double MAX_ANGULAR_SPEED = kMaxSpeedMetersPerSecond / DRIVE_BASE_RADIUS;
 
   private RobotConfig config;
-
+  private BlinkinLEDController ledController;
+  private final PhotonCamera camera1; 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -114,7 +118,8 @@ public class Drive extends SubsystemBase {
     SparkMaxOdometryThread.getInstance().start();
 
     this.visionIO = visionIO;
-
+    ledController = BlinkinLEDController.getInstance();
+    camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -254,7 +259,18 @@ public class Drive extends SubsystemBase {
 
     poseEstimator.update(rawGyroRotation, modulePositions);
     // odometry.update(rawGyroRotation, modulePositions);
-    
+    PhotonPipelineResult results = camera1.getLatestResult();
+
+      if (results.hasTargets()) {
+        PhotonTrackedTarget target = results.getBestTarget();
+        List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
+        if (validIds.contains(target.getFiducialId())) {
+          ledController.setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
+        }
+      }
+      else {
+        ledController.setAllianceColorSolid();
+      }
     Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }
 
