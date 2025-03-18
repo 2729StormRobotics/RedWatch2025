@@ -177,7 +177,7 @@ public class RobotContainer {
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
-    NamedCommands.registerCommand("Outtake", m_gripper.outtake());
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kSTOW))));
     NamedCommands.registerCommand("AlignReefLeft", new ParallelCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0), new WaitCommand(0)).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.001))
     );
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
@@ -311,8 +311,8 @@ public class RobotContainer {
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
 
     // Gripper Commands
+    OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ));
     INTAKE.onTrue(m_gripper.Intake());
-    OUTTAKE.onTrue(m_gripper.outtake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
 
