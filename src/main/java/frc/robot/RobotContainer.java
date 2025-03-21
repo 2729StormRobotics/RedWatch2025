@@ -315,7 +315,7 @@ public class RobotContainer {
     INTAKE.onTrue(m_gripper.Intake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
-
+    
     PULLHANGER.whileTrue(new InstantCommand(() -> {
       hanger.pull();
     }));

@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkMax;
 import frc.robot.subsystems.hanger.HangerConstants;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
 public class HangerIOSparkMax implements HangerIO {
 
