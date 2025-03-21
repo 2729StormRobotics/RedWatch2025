@@ -35,9 +35,13 @@ public class HangerIOSparkMax implements HangerIO {
 
     hangerConfig = new SparkMaxConfig();
     hangerConfig.idleMode(IdleMode.kBrake);
+    hangerConfig.limitSwitch.forwardLimitSwitchEnabled(true).forwardLimitSwitchType(Type.kNormallyOpen);
+
+
 
     // burn motor
     hangerSparkMax.configure(hangerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
     metalDetector = new DigitalInput(2);
   }
 
