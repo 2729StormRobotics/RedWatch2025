@@ -37,6 +37,7 @@ public class HangerIOSparkMax implements HangerIO {
     hangerConfig = new SparkMaxConfig();
     hangerConfig.idleMode(IdleMode.kBrake);
     hangerConfig.limitSwitch.forwardLimitSwitchEnabled(true).forwardLimitSwitchType(Type.kNormallyOpen);
+    hangerConfig.limitSwitch.reverseLimitSwitchEnabled(true).reverseLimitSwitchType(Type.kNormallyOpen);
 
 
 

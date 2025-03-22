@@ -93,7 +93,6 @@ public class RobotContainer {
   private final HangerIO hanger;
 
   private boolean brakeMode = true;
-
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // LEDs
@@ -268,7 +267,7 @@ public class RobotContainer {
     DRIVE_PHOTONVISION_ALIGN_RIGHT
         .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.45))
+                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.475))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .whileTrue(
@@ -309,9 +308,13 @@ public class RobotContainer {
     })));
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-
     // Gripper Commands
-    OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ));
+    if (elevator.isLevelL4) {
+      OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ));
+
+    } else {
+      OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
+    }
     INTAKE.onTrue(m_gripper.Intake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
@@ -336,20 +339,20 @@ public class RobotContainer {
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
 
     // Real Set Positions
-    DriveControls.STOW.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW),
+    DriveControls.STOW.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.STOW),
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
-    DriveControls.L1.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L1),
+    DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L1),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
 
-    DriveControls.L2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2),
+    DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L2),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
-
-    DriveControls.L3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3),
+    
+    DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(()->elevator.isLevelL4 = false), elevator.PIDCommand(ElevatorConstants.L3),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
 
-    DriveControls.L4.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4))));
+    DriveControls.L4.onTrue(new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));
     
       DriveControls.AlgaeL2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));

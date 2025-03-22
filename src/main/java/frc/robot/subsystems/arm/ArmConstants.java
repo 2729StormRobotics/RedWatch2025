@@ -23,7 +23,7 @@ public class ArmConstants {
     public static final double kArmMotorStop = 0;
 
     public static final double kSTOW = 90;
-    public static final double kL1 = 67.3;
+    public static final double kL1 = 139.04;
     public static final double kL2 = 58;
     public static final double kL3 = 56.05;
     public static final double kL4 = 57.63;

@@ -26,6 +26,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+  public boolean isLevelL4;
+
   private LoggedNetworkNumber logP;
   private LoggedNetworkNumber logI;
   private LoggedNetworkNumber logD;
@@ -80,6 +82,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
+    SmartDashboard.putBoolean("isl4",isLevelL4);
 
     elevatorMechanism.setLength(io.getPosition());
 
@@ -174,6 +177,23 @@ public class Elevator extends SubsystemBase {
         this);
   }
 
+  public Command setL4() {
+    return new FunctionalCommand(
+        () -> isLevelL4 = true,
+        () -> isLevelL4 = true,
+        (stop) -> isLevelL4 = true,
+        () -> true,
+        this);
+  }
+
+  public Command setOther() {
+    return new FunctionalCommand(
+        () -> isLevelL4 = false,
+        () -> isLevelL4 = false,
+        (stop) -> isLevelL4 = false,
+        () -> true,
+        this);
+  }
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(

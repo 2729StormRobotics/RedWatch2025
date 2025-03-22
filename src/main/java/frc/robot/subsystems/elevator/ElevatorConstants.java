@@ -39,7 +39,7 @@ public class ElevatorConstants {
     public static final double MIN_HEIGHT = 0.0;
     public static final double MAX_HEIGHT = 10.0;
     public static final double STOW = 1;
-    public static final double L1 = 1;
+    public static final double L1 = 1.22;
     public static final double L2 = 7.33;
     public static final double L3 = 16.52;
     public static final double L4 = 30;
