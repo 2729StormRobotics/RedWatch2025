@@ -229,6 +229,9 @@ public class AprilTagAlignMiddle extends Command implements VisionIO {
             m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed,
             // m_drivetrain.getMaxAngularSpeedRadPerSec()*0,
             new Rotation2d()));
+            //CAG: does it matter what the rotation is here if you're tasking speeds?
+            //If the answer is no, why is it an input?
+            //CAG: It does matter - because the rotation is used to convert to field-centric driving.
 
     // if (targetYaw > 0) {
     // m_drivetrain.runVelocity(

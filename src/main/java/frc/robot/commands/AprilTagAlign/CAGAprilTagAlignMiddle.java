@@ -52,6 +52,25 @@ public class CAGAprilTagAlignMiddle extends Command implements VisionIO {
     pid_y.setTolerance(0);
     pid_y.setSetpoint(targetY_m);
 
+    //CAG: Some notes about taking guesses at Kp, Ki, Kd:
+    // proportional controller output = Kp * (target - setpoint)
+    // So let's take yaw as an example - if we assume that the widest angle you can see the target at is 45 degrees
+    // And that you're basically always trying to get to 0 degrees
+    // Then max controller output = Kp * (45 - 0)
+    // So if your controller output is a rotational speed, then you can pick what you think a reasonable speed is
+    // If you think 100 degrees/sec is a good notional max speed when you're 45 degrees off:
+    // Kp = 100 degrees/sec divided by 45 = 2.22 etc - you can bake in all of the constants you were using explicitly.
+    // If you struggle to actually get to your target, Kp should go up until you get close enough/fast enough.
+    // When Kp is too big, you'll overshoot and start oscillating.
+    //Quick response and a little oscillation is generally an okay goal.
+    // The sign of Kp determines the direction you turn in.
+
+    //kI is generally important for holding precise setpoints over time.
+    // Shouldn't be super important for things you're trying to do super quickly.
+
+    //kD is used to dampen the oscllations you see either as a result of overshooting or disturbances.
+    //Sign is super important for kD to make sure it dampens rather than exacerbates.
+
 
     addRequirements(m_drivetrain);
   }
@@ -109,6 +128,10 @@ public class CAGAprilTagAlignMiddle extends Command implements VisionIO {
 
     //CAG: I'm not sure this is necessary, but you can definitely do it.
     //Could also just tune PID output, but it can be safe to clamp the output.
+
+//CAG: Probably worth tuning each controller independently first by hard-coding the tasked speeds to 0 for the other two.
+//The x_controller should be able to get you to the targetX on its own. Same for Y and rotation.
+//If they each do just their job and don't meaningfully impact the others, you should be okay to combine them.
 
     rotationSpeed = Math.max(-0.3, Math.min(0.3, rotationSpeed));
     m_drivetrain.runVelocity(
