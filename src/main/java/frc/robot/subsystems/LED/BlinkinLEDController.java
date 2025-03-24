@@ -5,16 +5,8 @@ import static frc.robot.Constants.ElectricalLayout.BLINKIN_LED_CONTROLLER_PORT;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import frc.robot.subsystems.PhotonVision.VisionConstants;
-
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** Control REV Robotics Blinkin LED controller */
 public class BlinkinLEDController {

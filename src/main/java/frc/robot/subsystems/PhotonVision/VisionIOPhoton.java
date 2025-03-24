@@ -7,9 +7,6 @@
 
 package frc.robot.subsystems.PhotonVision;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.PhotonVision.VisionIO.VisionIOInputs;
-
 import static frc.robot.subsystems.PhotonVision.VisionConstants.AMBIGUITY_THRESHOLD;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.intake_Cam;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1RobotToCam;
@@ -28,14 +25,9 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class VisionIOPhoton implements VisionIO {
