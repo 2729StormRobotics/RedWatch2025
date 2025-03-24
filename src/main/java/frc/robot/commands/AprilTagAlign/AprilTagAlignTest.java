@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.PhotonVision.VisionIO;
@@ -48,9 +47,12 @@ public class AprilTagAlignTest extends Command implements VisionIO {
   private static final double FORWARD_MULTIPLIER = 4.0;
   private static final double BRANCH_OFFSET_METERS = Units.inchesToMeters(6);
   private static final double ARM_OFFSET_METERS = Units.inchesToMeters(6);
+  @SuppressWarnings("unused")
   private static final double FIN_DISTANCE_REEF = 1.7;
+  @SuppressWarnings("unused")
   private static final double SLOW_DOWN_DISTANCE = Units.inchesToMeters(6); // Distance to start slowing down
   private static final double MIN_FORWARD_SPEED = 0.1; // Minimum forward speed
+  @SuppressWarnings("unused")
   private static final double MAX_FORWARD_SPEED = 0.5 * DriveConstants.kMaxSpeedMetersPerSecond;
   private static final double MAX_ROTATION_SPEED = 0.3;
   private static final double LATERAL_P = 0.05; // Tune these
@@ -208,6 +210,7 @@ public class AprilTagAlignTest extends Command implements VisionIO {
 
     // Movement commands
     lateralPID.setSetpoint(0);
+    @SuppressWarnings("unused")
     double lateralSpeed = MathUtil.clamp(lateralPID.calculate(branchYaw, 0) + calculateLateralFeedforward(branchYaw),
         -DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxSpeedMetersPerSecond);
     forward = calculateForwardSpeed(targetRange) + calculateForwardFeedforward(targetRange);
