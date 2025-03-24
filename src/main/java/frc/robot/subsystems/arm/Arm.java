@@ -31,8 +31,8 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 /*
  * NEED TO MAKE LIGAMENTS and Mechanisms
- * as well as 
- * 
+ * as well as
+ *
  */
 public class Arm extends SubsystemBase {
   private final ArmIO io;
@@ -78,7 +78,7 @@ public class Arm extends SubsystemBase {
 
     checkAndResetABSEncoder();
 
-    
+
 
     // Update the PID constants if they have changed
     if (logP.get() != io.getP())
@@ -111,6 +111,9 @@ public class Arm extends SubsystemBase {
                 this));
   }
 
+  /**
+   * Checks and resets the absolute encoder based on the hall effect sensor.
+   */
   public void checkAndResetABSEncoder() {
     boolean isPressed = io.getHallEffect();
     if ((isPressed) && (getSide())){
@@ -120,45 +123,83 @@ public class Arm extends SubsystemBase {
       io.changeOffset((0-io.getArmAngleDegrees()));
     }
   }
+  /**
+   * Sets the target position of the arm.
+   * @param position The position to set the arm to.
+   */
   public void setPosition(double position) {
     io.setArmPosition(position);
   }
 
+  /**
+   * Sets the voltage applied to the arm motor.
+   * @param voltage The voltage to apply.
+   */
   public void setVoltage(double voltage) {
     io.setVoltage(voltage);
   }
 
+  /**
+   * Gets the side of the arm.
+   * @return true if the arm is on the right side, false if on the left.
+   */
   //true is right side, false is left
   private boolean getSide(){
     return io.getArmAngleDegrees() >= 90;
   }
 
+  /**
+    * Sets the speed of the arm.
+    * @param speed The speed to set the arm to.
+    */
   public void setSpeed(double speed){
     io.setSpeed(speed);
   }
 
+  /**
+   * Gets the current position of the arm.
+   * @return The current position of the arm.
+   */
   public double getPosition() {
     return inputs.armPositionDegrees;
   }
 
+  /**
+   * Gets the current velocity of the arm.
+   * @return The current velocity of the arm.
+   */
   public double getVelocity() {
     return io.getArmVelocity();
   }
 
+  /**
+   * Checks if the arm is at the setpoint.
+   * @return true if the arm is at the setpoint, false otherwise.
+   */
   public boolean atSetpoint() {
     return Math.abs(io.getArmAngleDegrees() - setpoint) < ArmConstants.PID_TOLERANCE;
   }
 
+  /**
+   * Runs the PID control loop to move the arm to the setpoint.
+   */
   public void runPID() {
     io.setArmPosition(setpoint);
   }
 
+  /**
+   * Sets the setpoint for the PID control loop.
+   * @param setpoint The setpoint to set.
+   */
   public void setPID(double setpoint) {
     this.setpoint = setpoint;
     Logger.recordOutput("Arm/Setpoint", setpoint);
   }
 
-
+  /**
+   * Adds to the current setpoint, clamping the result within the arm's limits.
+   * @param setpointAdd The value to add to the setpoint.
+   */
   public void addPID(double setpointAdd) {
     this.setpoint += setpointAdd;
     this.setpoint = MathUtil.clamp(
@@ -169,11 +210,21 @@ public class Arm extends SubsystemBase {
     Logger.recordOutput("Arm/Setpoint", setpoint);
   }
 
+  /**
+   * Creates a command to move the arm to a specific position using PID control.
+   * @param setpoint The target position for the arm.
+   * @return A Command that moves the arm to the setpoint.
+   */
   public Command PIDCommand(double setpoint) {
     return new FunctionalCommand(
         () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), this::atSetpoint, this);
   }
 
+  /**
+   * Creates a command to continuously move the arm to a setpoint provided by a supplier.
+   * @param setpointSupplier A supplier that provides the target position for the arm.
+   * @return A Command that continuously updates the arm's target position.
+   */
   public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
     return new FunctionalCommand(
         () -> setPID(setpointSupplier.getAsDouble()),
@@ -186,23 +237,36 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  /**
+    * Command to calibrate the arm.
+    * @return returns a command to calibrate the arm
+    */
   public Command CalibrateArm(){
     return new FunctionalCommand(
-      () -> {}, 
+      () -> {},
       () -> {setSpeed(0.1);},
       (stop) -> {
         io.changeOffset(-io.getArmAngleDegrees());
         io.stopArm();
-      }, 
+      },
        () -> !getSide(),
        this);
   }
 
+  /**
+   * Creates a command to continuously move the arm to a fixed setpoint.
+   * @param setpoint The target position for the arm.
+   * @return A Command that continuously moves the arm to the setpoint.
+   */
   public Command PIDCommandForever(double setpoint) {
     return new FunctionalCommand(
         () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), () -> false, this);
   }
 
+  /**
+   * Creates a command to hold the current arm position using PID control.
+   * @return A Command that holds the arm's current position.
+   */
   public Command PIDHoldCommand() {
     return new FunctionalCommand(
         () -> setPID(io.getArmAngleDegrees()),
@@ -213,6 +277,11 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  /**
+   * Creates a command to move the arm to a setpoint provided by a supplier, finishing when the setpoint is reached.
+   * @param setpointSupplier A supplier that provides the target position.
+   * @return A Command that moves the arm to the provided setpoint.
+   */
   public Command PIDCommand(DoubleSupplier setpointSupplier) {
     return new FunctionalCommand(
         () -> setPID(setpointSupplier.getAsDouble()),
@@ -226,7 +295,11 @@ public class Arm extends SubsystemBase {
         this);
   }
 
-  // Allows manual control of the pivot arm for PID tuning
+  /**
+   * Creates a command for manual control of the arm for PID tuning.
+   * @param speedSupplier A supplier that provides the arm speed.
+   * @return A Command that allows manual control of the arm speed.
+   */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(
         () -> setSpeed(speedSupplier.getAsDouble()),
@@ -236,11 +309,20 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  /**
+   * Creates a command to stop the arm motor.
+   * @return A Command that stops the arm.
+   */
   public Command stop() {
     return new FunctionalCommand(
         () -> { }, () -> io.setVoltage(0), (stop) -> io.stopArm(), () -> false, this);
   }
 
+  /**
+   * Creates a command to bring the arm down to a position below 5 degrees.
+   *
+   * @return A command to bring the arm down
+   */
   public Command bringDownCommand() {
     return new FunctionalCommand(
         () -> {
@@ -257,6 +339,11 @@ public class Arm extends SubsystemBase {
         },
         this);
   }
+  /**
+   * Creates a command to run quasistatic system identification in the forward direction.
+
+   * @return A Command that runs quasistatic system identification forward.
+   */
   public Command quasistaticForward() {
     return SysId.quasistatic(Direction.kForward)
         .until(() -> io.getArmAngleDegrees() > ArmConstants.ARM_MAX_ANGLE)
@@ -265,6 +352,10 @@ public class Arm extends SubsystemBase {
                 () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-forward")));
   }
 
+  /**
+   * Creates a command to run quasistatic system identification in the reverse direction.
+   * @return A Command that runs quasistatic system identification in reverse.
+   */
   public Command quasistaticBack() {
     return SysId.quasistatic(Direction.kReverse)
         .until(() -> io.getArmAngleDegrees() < ArmConstants.ARM_MIN_ANGLE)
@@ -273,6 +364,10 @@ public class Arm extends SubsystemBase {
                 () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-reverse")));
   }
 
+  /**
+   * Creates a command to run dynamic system identification in the forward direction.
+   * @return A Command that runs dynamic system identification forward.
+   */
   public Command dynamicForward() {
     return SysId.dynamic(Direction.kForward)
         .until(() -> io.getArmAngleDegrees() > ArmConstants.ARM_MAX_ANGLE)
@@ -281,6 +376,10 @@ public class Arm extends SubsystemBase {
                 () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "dynamic-forward")));
   }
 
+  /**
+   * Creates a command to run dynamic system identification in the reverse direction.
+   * @return A Command that runs dynamic system identification in reverse.
+   */
   public Command dynamicBack() {
     return SysId.dynamic(Direction.kReverse)
         .until(() -> io.getArmAngleDegrees() < ArmConstants.ARM_MIN_ANGLE)
