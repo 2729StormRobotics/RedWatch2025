@@ -82,7 +82,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
-    SmartDashboard.putBoolean("isl4",isLevelL4);
+    SmartDashboard.putBoolean("isl4",getL4());
 
     elevatorMechanism.setLength(io.getPosition());
 
@@ -131,6 +131,10 @@ public class Elevator extends SubsystemBase {
     return io.atSetpoint();
   }
 
+  public boolean getL4() {
+    SmartDashboard.putBoolean("iscommandl4",isLevelL4);
+    return isLevelL4;
+  }
   public void setVelocity(double velocity) {
     io.setVelocity(velocity);
   }

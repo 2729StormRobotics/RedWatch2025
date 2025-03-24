@@ -140,7 +140,7 @@ public class ApriltagAlignRight extends Command implements VisionIO {
           seeingTargets = true;
           break;
         case 6:
-          targetAngle = 150;
+          targetAngle = 150; //150
           seeingTargets = true;
           break;
         case 7:

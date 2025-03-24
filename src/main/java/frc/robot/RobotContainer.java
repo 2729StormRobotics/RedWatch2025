@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ValidatedOuttake;
 import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOPhoton;
 import frc.robot.subsystems.PhotonVision.VisionIOPhotonSim;
@@ -176,11 +178,11 @@ public class RobotContainer {
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new ParallelCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0), new WaitCommand(0)).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.001))
-    );
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.75), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("AlignReefLeft", new SequentialCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0),
+    DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.001))).withTimeout(5));
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
-    NamedCommands.registerCommand("Stow",
+    NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW).withTimeout(1.5),
             arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
@@ -267,16 +269,17 @@ public class RobotContainer {
     DRIVE_PHOTONVISION_ALIGN_RIGHT
         .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.475))
+                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.51))
                 .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .whileTrue(
-            new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE))
-                .withTimeout(20));
+          new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
+              DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
+              .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_MIDDLE
         .whileTrue(
             new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-            DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> 0.05, () -> 0).withTimeout(.21))
+            DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.04))
                 .withTimeout(20));
     // .onFalse(drive.getDefaultCommand());
     // DRIVE_PHOTONVISION_ALIGN_MIDDLE
@@ -309,12 +312,14 @@ public class RobotContainer {
     // Arm Commands
     arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     // Gripper Commands
-    if (elevator.isLevelL4) {
-      OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ));
+    // if (elevator.isLevelL4) {
+    //   OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ));
 
-    } else {
-      OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
-    }
+    // } else {
+    //   OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
+    // }
+    OUTTAKE.onTrue(m_gripper.outtake());
+    // OUTTAKE.onTrue(new ValidatedOuttake(elevator.getL4(), arm, m_gripper, elevator));
     INTAKE.onTrue(m_gripper.Intake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
     REVERSE.onTrue(m_gripper.reverse());
