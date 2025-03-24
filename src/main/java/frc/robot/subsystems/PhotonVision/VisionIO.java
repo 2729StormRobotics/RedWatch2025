@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.PhotonVision;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kMultiTagStdDevs;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kSingleTagStdDevs;
 import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -24,7 +22,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -77,6 +74,7 @@ public interface VisionIO {
       }
     }
 
+    @SuppressWarnings("unchecked")
     Optional<Pose2d>[] estimatesArray = estimates.toArray(new Optional[0]);
     return estimatesArray;
   }

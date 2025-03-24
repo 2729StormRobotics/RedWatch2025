@@ -2,9 +2,6 @@ package frc.robot.subsystems.arm;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
-
 /**
  * Interface for controlling the arm mechanism.
  * Defines the methods that must be implemented by any class that controls the arm.

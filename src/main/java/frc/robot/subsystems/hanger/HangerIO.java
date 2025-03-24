@@ -1,7 +1,5 @@
 package frc.robot.subsystems.hanger;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
@@ -76,7 +74,7 @@ public interface HangerIO {
      * @return The extend command group.
      */
     public default SequentialCommandGroup extend(){
-        return new SequentialCommandGroup(null);
+        return new SequentialCommandGroup();
     }
 
     /**
@@ -85,6 +83,6 @@ public interface HangerIO {
      * @return The retract command group.
      */
     public default SequentialCommandGroup retract(){
-        return new SequentialCommandGroup(null);
+        return new SequentialCommandGroup();
     }
 }

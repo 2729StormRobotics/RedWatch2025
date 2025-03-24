@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  * Simulation implementation of the HangerIO interface.
  */
 public class HangerIOSim implements HangerIO {
-  private static final double LOOP_PERIOD_SECS = 0.02;
 
   private static final DCMotor hangerMotorModel = DCMotor.getNeo550(HangerConstants.kWinchMotorCanId); // Change to
                                                                                                        // whatever CAN

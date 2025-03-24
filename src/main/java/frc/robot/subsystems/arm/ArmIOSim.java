@@ -1,22 +1,12 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.DigitalSource;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.arm.ArmIO.ArmIOInputs;
-import frc.robot.subsystems.arm.ArmConstants;
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class ArmIOSim implements ArmIO {
     private static final double LOOP_PERIOD_SECS = 0.02; //  Loop period for simulation updates.
