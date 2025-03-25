@@ -20,6 +20,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
+import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
 import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -271,16 +272,12 @@ public class RobotContainer {
             new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
                 DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.51))
                 .withTimeout(20));
-    DRIVE_PHOTONVISION_ALIGN_LEFT
-        .whileTrue(
-          new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
-              DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
-              .withTimeout(20));
-    DRIVE_PHOTONVISION_ALIGN_MIDDLE
-        .whileTrue(
-            new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive, DRIVE_FORWARD, DRIVE_STRAFE),
-            DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.04))
-                .withTimeout(20));
+    // DRIVE_PHOTONVISION_ALIGN_LEFT
+    //     .whileTrue(
+    //       new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
+    //           DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
+    //           .withTimeout(20));
+    DRIVE_PHOTONVISION_ALIGN_LEFT.onTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
     // .onFalse(drive.getDefaultCommand());
     // DRIVE_PHOTONVISION_ALIGN_MIDDLE
     // .onTrue(

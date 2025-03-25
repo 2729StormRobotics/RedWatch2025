@@ -36,6 +36,7 @@ public class AprilTagAlignTest extends Command {
     private final PhotonCamera camera1;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
+    private final DoubleSupplier omegaSupplier;
     private boolean seeingTargets = false;
     private Rotation2d rotation;
     private final PIDController pidController; // Yaw PID
@@ -95,13 +96,15 @@ public class AprilTagAlignTest extends Command {
      * @param drivetrain    The drive subsystem.
      * @param x_Supplier    Supplier for X-axis drive input.
      * @param y_Supplier    Supplier for Y-axis drive input.
+     * @param omega_Supplier    Supplier for rotantional drive input.
      * @param isRightBranch Boolean indicating whether it's the right branch (true)
      * or left branch (false).
      */
-    public AprilTagAlignTest(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier, boolean isRightBranch) {
+    public AprilTagAlignTest(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier, DoubleSupplier omega_Supplier, boolean isRightBranch) {
         m_drivetrain = drivetrain;
         xSupplier = x_Supplier;
         ySupplier = y_Supplier;
+        omegaSupplier = omega_Supplier;
         camera1 = new PhotonCamera(frc.robot.subsystems.PhotonVision.VisionConstants.outtake_Cam);
         this.rotation = drivetrain.getRotation();
         this.targetAngle = 0;
@@ -244,7 +247,7 @@ public class AprilTagAlignTest extends Command {
               DEADBAND);
           Rotation2d linearDirection = new Rotation2d(
               xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = 0;
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
   
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
