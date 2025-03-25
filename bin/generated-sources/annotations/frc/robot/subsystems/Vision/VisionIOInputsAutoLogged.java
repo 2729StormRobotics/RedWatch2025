@@ -1,4 +1,4 @@
-package frc.robot.subsystems.PhotonVision;
+package frc.robot.subsystems.Vision;
 
 import java.lang.Cloneable;
 import java.lang.Override;

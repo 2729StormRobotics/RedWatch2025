@@ -5,17 +5,16 @@
 //FIX CAM NAMES *******************************
 // ******
 
-package frc.robot.subsystems.PhotonVision;
+package frc.robot.subsystems.Vision;
 
-import static frc.robot.subsystems.PhotonVision.VisionConstants.AMBIGUITY_THRESHOLD;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.intake_Cam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam1RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.outtake_Cam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam2RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.intakeUp_Cam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.cam3RobotToCam;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
-
+import static frc.robot.subsystems.Vision.VisionConstants.AMBIGUITY_THRESHOLD;
+import static frc.robot.subsystems.Vision.VisionConstants.cam1RobotToCam;
+import static frc.robot.subsystems.Vision.VisionConstants.cam2RobotToCam;
+import static frc.robot.subsystems.Vision.VisionConstants.cam3RobotToCam;
+import static frc.robot.subsystems.Vision.VisionConstants.intakeUp_Cam;
+import static frc.robot.subsystems.Vision.VisionConstants.intake_Cam;
+import static frc.robot.subsystems.Vision.VisionConstants.kTagLayout;
+import static frc.robot.subsystems.Vision.VisionConstants.outtake_Cam;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;

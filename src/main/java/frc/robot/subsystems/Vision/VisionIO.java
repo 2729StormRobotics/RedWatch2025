@@ -2,11 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.PhotonVision;
+package frc.robot.subsystems.Vision;
 
-import static frc.robot.subsystems.PhotonVision.VisionConstants.kMultiTagStdDevs;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.kSingleTagStdDevs;
-import static frc.robot.subsystems.PhotonVision.VisionConstants.kTagLayout;
+import static frc.robot.subsystems.Vision.VisionConstants.kMultiTagStdDevs;
+import static frc.robot.subsystems.Vision.VisionConstants.kSingleTagStdDevs;
+import static frc.robot.subsystems.Vision.VisionConstants.kTagLayout;
 
 import java.util.ArrayList;
 import java.util.List;

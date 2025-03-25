@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.util.misc.Elastic;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -28,6 +29,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -95,6 +98,14 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+
+    // Select the autonomous tab in elastic
+    Elastic.selectTab("Autonomous");
+
+    // Pathplanner warmup command
+    // Doesn't actually do anything, just initializes everything early to improve performace
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   /** This function is called periodically during all modes. */
@@ -152,6 +163,9 @@ public class Robot extends LoggedRobot {
     }
     BlinkinLEDController.isEnabled = true;
     BlinkinLEDController.driving = true;
+
+    // Select the autonomous tab in elastic
+    Elastic.selectTab("Teleoperated");
 
     // True if Blue
     // if (true) {

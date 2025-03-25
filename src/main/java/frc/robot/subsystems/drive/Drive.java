@@ -51,9 +51,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
-import frc.robot.subsystems.PhotonVision.VisionConstants;
-import frc.robot.subsystems.PhotonVision.VisionIO;
 import frc.robot.subsystems.PhotonVision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.Vision.VisionConstants;
+import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.util.drive.AllianceFlipUtil;
 

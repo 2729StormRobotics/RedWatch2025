@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Vision.VisionConstants;
+import frc.robot.subsystems.Vision.VisionIO;
+import frc.robot.subsystems.Vision.VisionIO.*;
+import frc.robot.subsystems.Vision.VisionIOPhoton.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.PhotonVision.VisionConstants;
-import frc.robot.subsystems.PhotonVision.VisionIO;
-import frc.robot.subsystems.PhotonVision.VisionIOPhoton.*;
-import frc.robot.subsystems.PhotonVision.VisionIO.*;
 
 import java.util.function.DoubleSupplier;
 
