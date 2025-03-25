@@ -28,10 +28,10 @@ public class Gripper extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs); // Update the inputs from the GripperIO
-        Logger.recordOutput("Gripper Position", inputs.gripperPositionDegrees); // Log the gripper position
+        Logger.recordOutput("Gripper Position", io.getMotorPos()); // Log the gripper position
         Logger.recordOutput("Gripper Velocity", inputs.gripperVelocityRadPerSec); // Log the gripper velocity
         Logger.recordOutput("Gripper Current", inputs.gripperAppliedVolts); // Log the gripper current
-        SmartDashboard.putNumber("Gripper/Position", inputs.gripperPositionDegrees); // Display position on SmartDashboard
+        SmartDashboard.putNumber("Gripper/Position", io.getMotorPos()); // Display position on SmartDashboard
         SmartDashboard.putNumber("Gripper/Velocity", inputs.gripperVelocityRadPerSec); // Display velocity on SmartDashboard
         SmartDashboard.putNumber("Gripper/Current", inputs.gripperAppliedVolts); // Display current on SmartDashboard
         SmartDashboard.putBoolean("Gripper/IsCoralDetected", io.isCoralPresent()); // Display coral detection status
@@ -127,7 +127,7 @@ public class Gripper extends SubsystemBase {
                     io.stop(); // End: Stop the motor
                 },
                 () -> !io.isCoralPresent(), // Is finished: Finish when coral is not detected
-                this).andThen(holdPositionCommand()); // Pass the current subsystem instance
+                this); // Pass the current subsystem instance
     }
 
     /**
@@ -155,7 +155,7 @@ public class Gripper extends SubsystemBase {
     public Command holdPositionCommand() {
         return new FunctionalCommand(
                 () -> holdPosition = io.getMotorPos(), // Capture initial position from GripperIO
-                () -> io.setMotorSpeed(GripperConstants.kPGripper * (holdPosition - inputs.gripperPositionDegrees)), // Use P control to hold position
+                () -> io.setMotorSpeed(GripperConstants.kPGripper * (holdPosition - io.getMotorPos())), // Use P control to hold position
                 (interrupted) -> io.stop(), // End: Stop the motor
                 () -> false, // Is finished: Never finish, run until interrupted
                 this); // Pass the current subsystem instance

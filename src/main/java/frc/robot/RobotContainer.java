@@ -267,17 +267,19 @@ public class RobotContainer {
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
 
     DRIVE_SLOW.onTrue(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    DRIVE_PHOTONVISION_ALIGN_RIGHT
-        .whileTrue(
-            new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
-                DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.51))
-                .withTimeout(20));
+    // DRIVE_PHOTONVISION_ALIGN_RIGHT
+    //     .whileTrue(
+    //         new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
+    //             DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, () -> 0).withTimeout(.51))
+    //             .withTimeout(20));
     // DRIVE_PHOTONVISION_ALIGN_LEFT
     //     .whileTrue(
     //       new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
     //           DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
     //           .withTimeout(20));
-    DRIVE_PHOTONVISION_ALIGN_LEFT.onTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
+    DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
+    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, true));
+
     // .onFalse(drive.getDefaultCommand());
     // DRIVE_PHOTONVISION_ALIGN_MIDDLE
     // .onTrue(

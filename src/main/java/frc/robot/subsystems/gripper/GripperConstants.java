@@ -12,7 +12,7 @@ public class GripperConstants {
 
     public static final double motorSpeedOutGripper = -1; // Motor speed for outtaking
 
-    public static final double kPGripper = 0.003; // Proportional gain for gripper position control
+    public static final double kPGripper = 0.001; // Proportional gain for gripper position control
     public static final double kIGripper = 0; // Integral gain for gripper position control
     public static final double kDGripper = 0; // Derivative gain for gripper position control
 }

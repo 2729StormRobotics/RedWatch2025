@@ -1,11 +1,9 @@
-package frc.robot.subsystems.PhotonVision;
+package frc.robot.subsystems.Vision;
 
 import java.lang.Cloneable;
 import java.lang.Override;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
-
-import frc.robot.subsystems.Vision.VisionIO;
 
 public class VisionIOInputsAutoLogged extends VisionIO.VisionIOInputs implements LoggableInputs, Cloneable {
   @Override

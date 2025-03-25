@@ -51,7 +51,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
-import frc.robot.subsystems.PhotonVision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.Vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.Vision.VisionConstants;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.util.autonomous.LocalADStarAK;
@@ -265,11 +265,11 @@ public class Drive extends SubsystemBase {
         PhotonTrackedTarget target = results.getBestTarget();
         List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
         if (validIds.contains(target.getFiducialId())) {
-          ledController.setPattern(BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
+          ledController.setPattern(BlinkinPattern.DARK_GREEN);
         }
       }
       else {
-        ledController.setAllianceColorSolid();
+        ledController.setAllianceColorBPM();
       }
     Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }

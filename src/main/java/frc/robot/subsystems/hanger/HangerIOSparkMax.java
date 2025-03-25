@@ -29,7 +29,7 @@ public class HangerIOSparkMax implements HangerIO {
   public DigitalInput metalDetector; // Digital input for metal detector
   private BlinkinLEDController ledController = BlinkinLEDController.getInstance(); // LED controller instance
 
-  /**
+  /**j
    * Constructor for HangerIOSparkMax.
    */
   public HangerIOSparkMax() {
