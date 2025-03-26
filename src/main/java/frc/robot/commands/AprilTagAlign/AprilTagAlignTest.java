@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.LED.BlinkinLEDController;
+import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import org.photonvision.PhotonCamera;
@@ -32,6 +34,7 @@ import java.util.function.DoubleSupplier;
  * still allowing translational driving.
  */
 public class AprilTagAlignTest extends Command {
+    private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
     private final Drive m_drivetrain;
     private final PhotonCamera camera1;
     private final DoubleSupplier xSupplier;
@@ -45,7 +48,7 @@ public class AprilTagAlignTest extends Command {
     private double forward = 0;
     private final boolean isRightBranch; // Added parameter for branch selection
     private static final double YAW_THRESHOLD = 1;
-    private static final double FORWARD_MULTIPLIER = 4.0;
+    private static final double FORWARD_MULTIPLIER = 7;
     private static final double BRANCH_OFFSET_METERS = Units.inchesToMeters(6);
     private static final double ARM_OFFSET_METERS = Units.inchesToMeters(6.5);
     private static final double FIN_DISTANCE_REEF = 1.7;
@@ -88,6 +91,7 @@ public class AprilTagAlignTest extends Command {
     private Timer stateTimer = new Timer();
     private Timer lostTargetTimer = new Timer(); // Timer to track lost target time
     private Pose3d lastSeenTagPose = new Pose3d(); // Store the last seen tag pose
+    private Pose2d lastSeenRobotPose = new Pose2d();
 
     // Use a map for fiducial IDs to target angles
     private static final Map<Integer, Double> tagAngles = new HashMap<>();
@@ -100,7 +104,7 @@ public class AprilTagAlignTest extends Command {
      * @param y_Supplier     Supplier for Y-axis drive input.
      * @param omega_Supplier Supplier for rotantional drive input.
      * @param isRightBranch  Boolean indicating whether it's the right branch (true)
-     *                       or left branch (false).
+     * or left branch (false).
      */
     public AprilTagAlignTest(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier,
             DoubleSupplier omega_Supplier, boolean isRightBranch) {
@@ -141,6 +145,7 @@ public class AprilTagAlignTest extends Command {
 
     @Override
     public void initialize() {
+        BlinkinLEDController.driving = false;
         pidController.reset();
         lateralPID.reset();
         stateTimer.reset();
@@ -165,9 +170,9 @@ public class AprilTagAlignTest extends Command {
 
     private double calculateForwardSpeed(double targetRange) {
         double minSpeed = MIN_FORWARD_SPEED;
-        double maxSpeed = FORWARD_MULTIPLIER * DriveConstants.kMaxSpeedMetersPerSecond;
+        double maxSpeed = FORWARD_MULTIPLIER;
         double decayFactor = 2.0; // Adjust to tune speed decay
-        return -Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * targetRange));
+        return -(Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * (targetRange)))) / 15;
     }
 
     private void processTarget(PhotonTrackedTarget target) {
@@ -183,6 +188,7 @@ public class AprilTagAlignTest extends Command {
         Pose3d cameraPose = new Pose3d(); // changed
         Pose3d tagPoseInCamera = cameraPose.transformBy(cameraToTag);
         lastSeenTagPose = tagPoseInCamera; // Store the tag pose
+        lastSeenRobotPose = m_drivetrain.getPose();
 
         // Use the isRightBranch parameter here
         double netOffsetY = isRightBranch ? ARM_OFFSET_METERS + BRANCH_OFFSET_METERS
@@ -204,11 +210,11 @@ public class AprilTagAlignTest extends Command {
 
         // Dynamic PID Tuning
         if (targetRange > DYNAMIC_TUNING_DISTANCE_THRESHOLD) {
-            
+
             lateralPID.setP(LATERAL_KP_FAR);
             lateralPID.setD(LATERAL_KD_FAR);
         } else {
-            
+
             lateralPID.setP(LATERAL_KP_CLOSE);
             lateralPID.setD(LATERAL_KD_CLOSE);
         }
@@ -247,6 +253,7 @@ public class AprilTagAlignTest extends Command {
         switch (currentState) {
             case SEARCHING:
                 manualControl = true;
+                ledController.setPattern(BlinkinPattern.BREATH_BLUE);
                 // Basic search behavior, e.g., rotate slowly
                 // Apply deadband
                 double linearMagnitude = MathUtil.applyDeadband(
@@ -299,9 +306,17 @@ public class AprilTagAlignTest extends Command {
                         currentState = AlignmentState.SEARCHING; // lost target go back to searching
                         lostTargetTimer.reset();
                     } else {
-                        // Drive to the last seen pose.
-                        double lastSeenYaw = Math.toDegrees(Math.atan2(lastSeenTagPose.getY(), lastSeenTagPose.getX()));
-                        double lastSeenRange = lastSeenTagPose.getX();
+                        // Calculate the robot's movement since the tag was last seen.
+                        Transform2d robotMovement = new Transform2d(lastSeenRobotPose, m_drivetrain.getPose());
+
+                        // Transform the last seen tag pose by the robot's movement.
+                        // This effectively updates the tag's pose as if the robot had moved
+                        // while still seeing the tag.
+                        Pose3d updatedTagPose = lastSeenTagPose.transformBy(new Transform3d(
+                            new Translation3d(robotMovement.getTranslation()),
+                                new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
+                        double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
@@ -311,6 +326,7 @@ public class AprilTagAlignTest extends Command {
                 }
                 break;
             case ALIGNING:
+                ledController.setPattern(BlinkinPattern.BLUE_GREEN);
                 if (results.hasTargets() && results.getBestTarget() != null) {
                     PhotonTrackedTarget target = getOptimalTarget(results);
                     processTarget(target);
@@ -326,18 +342,27 @@ public class AprilTagAlignTest extends Command {
                         currentState = AlignmentState.SEARCHING; // lost target go back to searching
                         lostTargetTimer.reset();
                     } else {
-                        double lastSeenYaw = Math.toDegrees(Math.atan2(lastSeenTagPose.getY(), lastSeenTagPose.getX()));
-                        double lastSeenRange = lastSeenTagPose.getX();
+                        // Calculate the robot's movement since the tag was last seen.
+                        Transform2d robotMovement = new Transform2d(lastSeenRobotPose, m_drivetrain.getPose());
+
+                        // Transform the last seen tag pose by the robot's movement.
+                        // This effectively updates the tag's pose as if the robot had moved
+                        // while still seeing the tag.
+                        Pose3d updatedTagPose = lastSeenTagPose.transformBy(new Transform3d(
+                                new Translation3d(robotMovement.getTranslation()),
+                                new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
+                        double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
                                 -DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxSpeedMetersPerSecond);
                         forward = calculateForwardSpeed(lastSeenRange);
-                        forward = 0;
                     }
                 }
                 break;
             case FINAL_ADJUSTMENT:
+                ledController.setAllianceColorRainbow();
                 if (results.hasTargets() && results.getBestTarget() != null) {
                     PhotonTrackedTarget target = getOptimalTarget(results);
                     processTarget(target);
@@ -352,8 +377,17 @@ public class AprilTagAlignTest extends Command {
                         currentState = AlignmentState.SEARCHING; // lost target go back to searching
                         lostTargetTimer.reset();
                     } else {
-                        double lastSeenYaw = Math.toDegrees(Math.atan2(lastSeenTagPose.getY(), lastSeenTagPose.getX()));
-                        double lastSeenRange = lastSeenTagPose.getX();
+                        // Calculate the robot's movement since the tag was last seen.
+                        Transform2d robotMovement = new Transform2d(lastSeenRobotPose, m_drivetrain.getPose());
+
+                        // Transform the last seen tag pose by the robot's movement.
+                        // This effectively updates the tag's pose as if the robot had moved
+                        // while still seeing the tag.
+                        Pose3d updatedTagPose = lastSeenTagPose.transformBy(new Transform3d(
+                                new Translation3d(robotMovement.getTranslation()),
+                                new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
+                        double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
@@ -365,6 +399,7 @@ public class AprilTagAlignTest extends Command {
             case ALIGNED:
                 // robot is aligned, drive = 0
                 m_drivetrain.runVelocity(new ChassisSpeeds(0, 0, 0));
+                BlinkinLEDController.driving = true;
                 break;
             default:
                 currentState = AlignmentState.SEARCHING;
@@ -381,15 +416,14 @@ public class AprilTagAlignTest extends Command {
         SmartDashboard.putNumber("currangle", currentAngle);
         SmartDashboard.putNumber("desiangle", targetAngle);
         SmartDashboard.putNumber("rotationspeed", rotationSpeed);
-        double lateralSpeed = 5* branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
-
+        double lateralSpeed = 5 * branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
 
         // Drive the robot
         m_drivetrain.runVelocity(
                 ChassisSpeeds.fromRobotRelativeSpeeds(
-                        lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec()*1,
-                        0.03*forward * m_drivetrain.getMaxLinearSpeedMetersPerSec()*1,
-                        m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed*1,
+                        lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
+                        0.03 * forward * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
+                        m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed * 1,
                         new Rotation2d()));
     }
 
@@ -404,3 +438,4 @@ public class AprilTagAlignTest extends Command {
         return currentState == AlignmentState.ALIGNED;
     }
 }
+

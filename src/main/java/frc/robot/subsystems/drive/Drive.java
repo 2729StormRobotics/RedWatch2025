@@ -259,6 +259,7 @@ public class Drive extends SubsystemBase {
 
     poseEstimator.update(rawGyroRotation, modulePositions);
     // odometry.update(rawGyroRotation, modulePositions);
+    if (BlinkinLEDController.driving){
     PhotonPipelineResult results = camera1.getLatestResult();
 
       if (results.hasTargets()) {
@@ -271,6 +272,7 @@ public class Drive extends SubsystemBase {
       else {
         ledController.setAllianceColorBPM();
       }
+    }
     Logger.recordOutput("Odometry/Odometry", poseEstimator.getEstimatedPosition());
   }
 
