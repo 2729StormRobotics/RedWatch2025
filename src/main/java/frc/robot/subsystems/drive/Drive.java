@@ -76,6 +76,7 @@ public class Drive extends SubsystemBase {
   private RobotConfig config;
   private BlinkinLEDController ledController;
   private final PhotonCamera camera1; 
+  private final PhotonCamera camera2; 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -119,6 +120,7 @@ public class Drive extends SubsystemBase {
     this.visionIO = visionIO;
     ledController = BlinkinLEDController.getInstance();
     camera1 = new PhotonCamera(VisionConstants.outtake_Cam);
+    camera2 = new PhotonCamera(VisionConstants.intake_Cam);
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -260,12 +262,20 @@ public class Drive extends SubsystemBase {
     // odometry.update(rawGyroRotation, modulePositions);
     if (BlinkinLEDController.driving){
     PhotonPipelineResult results = camera1.getLatestResult();
+    PhotonPipelineResult results2 = camera2.getLatestResult();
 
       if (results.hasTargets()) {
         PhotonTrackedTarget target = results.getBestTarget();
         List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
         if (validIds.contains(target.getFiducialId())) {
           ledController.setPattern(BlinkinPattern.DARK_GREEN);
+        }
+      }
+      else if (results2.hasTargets()) {
+        PhotonTrackedTarget target = results2.getBestTarget();
+        List<Integer> validIds = Arrays.asList(6,7,8,9,10,11,17,18,19,20,21,22);
+        if (validIds.contains(target.getFiducialId())) {
+          ledController.setPattern(BlinkinPattern.HOT_PINK);
         }
       }
       else {

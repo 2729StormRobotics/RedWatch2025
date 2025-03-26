@@ -21,6 +21,7 @@ import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
+import frc.robot.commands.AprilTagAlign.AprilTagAlignTestRight;
 import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -180,8 +181,7 @@ public class RobotContainer {
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake());
     NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.75), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new SequentialCommandGroup(new AprilTagAlignLeft( drive, ()->0, ()->0),
-    DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.001))).withTimeout(5));
+    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false).withTimeout(5));
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
     NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW).withTimeout(1.5),
@@ -277,8 +277,8 @@ public class RobotContainer {
     //       new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
     //           DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
     //           .withTimeout(20));
+    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ParallelCommandGroup(arm.PIDCommand(ArmConstants.kSTOW), elevator.PIDCommand(ElevatorConstants.L2),new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false)));
     DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
-    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, true));
 
     // .onFalse(drive.getDefaultCommand());
     // DRIVE_PHOTONVISION_ALIGN_MIDDLE

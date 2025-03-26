@@ -33,7 +33,7 @@ import java.util.function.DoubleSupplier;
  * Command to align the robot with the nearest AprilTag using PhotonVision while
  * still allowing translational driving.
  */
-public class AprilTagAlignTest extends Command {
+public class AprilTagAlignTestRight extends Command {
     private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
     private final Drive m_drivetrain;
     private final PhotonCamera camera1;
@@ -50,7 +50,7 @@ public class AprilTagAlignTest extends Command {
     private static final double YAW_THRESHOLD = 1;
     private static final double FORWARD_MULTIPLIER = 7;
     private static final double BRANCH_OFFSET_METERS = Units.inchesToMeters(6);
-    private static final double ARM_OFFSET_METERS = Units.inchesToMeters(7);
+    private static final double ARM_OFFSET_METERS = Units.inchesToMeters(-3);
     private static final double FIN_DISTANCE_REEF = 1.7;
     private static final double SLOW_DOWN_DISTANCE = Units.inchesToMeters(6); // Distance to start slowing down
     private static final double MIN_FORWARD_SPEED = 0.0005; // Minimum forward speed
@@ -106,13 +106,13 @@ public class AprilTagAlignTest extends Command {
      * @param isRightBranch  Boolean indicating whether it's the right branch (true)
      * or left branch (false).
      */
-    public AprilTagAlignTest(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier,
+    public AprilTagAlignTestRight(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier,
             DoubleSupplier omega_Supplier, boolean isRightBranch) {
         m_drivetrain = drivetrain;
         xSupplier = x_Supplier;
         ySupplier = y_Supplier;
         omegaSupplier = omega_Supplier;
-        camera1 = new PhotonCamera(frc.robot.subsystems.Vision.VisionConstants.intake_Cam);
+        camera1 = new PhotonCamera(frc.robot.subsystems.Vision.VisionConstants.outtake_Cam);
         this.rotation = drivetrain.getRotation();
         this.targetAngle = 0;
         this.isRightBranch = isRightBranch; // Store the branch selection
@@ -173,7 +173,7 @@ public class AprilTagAlignTest extends Command {
         double minSpeed = MIN_FORWARD_SPEED;
         double maxSpeed = FORWARD_MULTIPLIER;
         double decayFactor = 4.5; // Adjust to tune speed decay
-        return -(Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * (targetRange+0.3)))) / 4000;
+        return -(Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * (targetRange-0.1)))) / 4000;
     }
 
     private void processTarget(PhotonTrackedTarget target) {
@@ -339,7 +339,7 @@ public class AprilTagAlignTest extends Command {
                     PhotonTrackedTarget target = getOptimalTarget(results);
                     processTarget(target);
                     if ((Math.abs(pidController.getPositionError()) < YAW_THRESHOLD
-                            && Math.abs(lateralPID.getPositionError()) < LATERAL_TOLERANCE) && (targetRange < .15)) {
+                            && Math.abs(lateralPID.getPositionError()) < LATERAL_TOLERANCE) && (targetRange < .8)) {
                         currentState = AlignmentState.FINAL_ADJUSTMENT;
                         stateTimer.reset();
                         stateTimer.start();

@@ -38,7 +38,7 @@ public class ArmIOSparkMax implements ArmIO {
 
         // Define Configs for Hanger Motor
         armConfigRight = new SparkMaxConfig(); // Create configuration object for right motor
-        armConfigRight.idleMode(IdleMode.kCoast); // Set to coast mode when no power is applied
+        armConfigRight.idleMode(IdleMode.kBrake); // Set to coast mode when no power is applied
         armConfigRight.limitSwitch.reverseLimitSwitchEnabled(false); // Disable reverse limit switch
 
         armConfigLeft = new SparkMaxConfig(); // Create configuration for left motor.
