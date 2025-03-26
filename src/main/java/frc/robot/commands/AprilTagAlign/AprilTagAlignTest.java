@@ -134,7 +134,7 @@ public class AprilTagAlignTest extends Command {
         // Initialize PID controller for angular alignment
         this.pidController = new PIDController(0.006, 0.0, 0.0);
         pidController.enableContinuousInput(-180, 180);
-        pidController.setTolerance(1); // Allowable error in degrees
+        pidController.setTolerance(0); // Allowable error in degrees
 
         // Initialize lateral PID controller
         this.lateralPID = new PIDController(LATERAL_P, LATERAL_I, LATERAL_D);
@@ -416,13 +416,13 @@ public class AprilTagAlignTest extends Command {
         SmartDashboard.putNumber("currangle", currentAngle);
         SmartDashboard.putNumber("desiangle", targetAngle);
         SmartDashboard.putNumber("rotationspeed", rotationSpeed);
-        double lateralSpeed = 5 * branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
+        double lateralSpeed = branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
 
         // Drive the robot
         m_drivetrain.runVelocity(
                 ChassisSpeeds.fromRobotRelativeSpeeds(
                         lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
-                        0.03 * forward * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
+                        forward * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
                         m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed * 1,
                         new Rotation2d()));
     }
