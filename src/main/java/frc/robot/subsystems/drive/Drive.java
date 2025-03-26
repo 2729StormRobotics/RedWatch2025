@@ -206,7 +206,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     // *BADU, idk if this calling the correct updateinputs function* TO TEST ONLY ODOMETRY COMMENT OUT THIS WHOLE IF STATEMENT
-    if (false) {
+    if (true) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
