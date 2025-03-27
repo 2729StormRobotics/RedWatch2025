@@ -13,37 +13,33 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volt;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.drive.ModuleConstants.*;
+
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 /**
- * Physics sim implementation of module IO.
- *
- * <p>Uses two flywheel sims for the drive and turn motors, with the absolute position initialized
- * to a random value. The flywheel sims are not physically accurate, but provide a decent
- * approximation for the behavior of the module.
+ * Physics sim implementation of module IO using MapleSim.
  */
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = 0.02;
 
-  private DCMotorSim driveSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.025, 4.71), DCMotor.getNEO(1));
-  private DCMotorSim turnSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(DCMotor.getNeo550(1), 0.004, 150.0 / 7.0),
-          DCMotor.getNeo550(1));
+  private final SwerveModuleSimulation moduleSimulation;
+  private final SimulatedMotorController.GenericMotorController driveMotor;
+  private final SimulatedMotorController.GenericMotorController turnMotor;
 
-  private final Rotation2d turnAbsoluteInitPosition =
-      new Rotation2d(); // new Rotation2d(Math.random() * 2.0 * Math.PI);
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 
@@ -51,25 +47,34 @@ public class ModuleIOSim implements ModuleIO {
   private final PIDController driveFeedback = new PIDController(0.1, 0.0, 0.0);
   private final PIDController turnFeedback = new PIDController(10.0, 0.0, 0.0);
 
+  public ModuleIOSim(SwerveModuleSimulation moduleSimulation) {
+    this.moduleSimulation = moduleSimulation;
+
+    this.driveMotor = moduleSimulation
+        .useGenericMotorControllerForDrive()
+        .withCurrentLimit(Amps.of(60));
+    this.turnMotor = moduleSimulation
+        .useGenericControllerForSteer()
+        .withCurrentLimit(Amps.of(20));
+  }
+
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    driveSim.update(LOOP_PERIOD_SECS);
-    turnSim.update(LOOP_PERIOD_SECS);
+    // MapleSim updates internally, we just read the values.
 
-    inputs.drivePositionRad = driveSim.getAngularPositionRad();
-    inputs.drivePositionMeters = driveSim.getAngularPositionRad() * kWheelDiameterMeters / 2;
-    inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
+    inputs.drivePositionRad = moduleSimulation.getDriveWheelFinalPosition().in(Radians);
+    inputs.drivePositionMeters = moduleSimulation.getDriveWheelFinalPosition().in(Radians) * kWheelDiameterMeters / 2;
+    inputs.driveVelocityRadPerSec = moduleSimulation.getDriveWheelFinalSpeed().in(RadiansPerSecond);
     inputs.driveVelocityMeterPerSec =
-        driveSim.getAngularVelocityRadPerSec() * kWheelDiameterMeters / 2;
+        moduleSimulation.getDriveWheelFinalSpeed().in(RadiansPerSecond) * kWheelDiameterMeters / 2;
     inputs.driveAppliedVolts = driveAppliedVolts;
-    inputs.driveCurrentAmps = new double[] {Math.abs(driveSim.getCurrentDrawAmps())};
+    // inputs.driveCurrentAmps = new double[] {Math.abs(driveMotor.().inAmps())};
 
-    inputs.turnAbsolutePosition =
-        new Rotation2d(turnSim.getAngularPositionRad()).plus(turnAbsoluteInitPosition);
-    inputs.turnPosition = new Rotation2d(turnSim.getAngularPositionRad());
-    inputs.turnVelocityRadPerSec = turnSim.getAngularVelocityRadPerSec();
+    inputs.turnAbsolutePosition = moduleSimulation.getSteerAbsoluteFacing();
+    // inputs.turnPosition = moduleSimulation.getSteerAbsoluteAngle().in(Radians);
+    inputs.turnVelocityRadPerSec = moduleSimulation.getSteerAbsoluteEncoderSpeed().in(RadiansPerSecond);
     inputs.turnAppliedVolts = turnAppliedVolts;
-    inputs.turnCurrentAmps = new double[] {Math.abs(turnSim.getCurrentDrawAmps())};
+    // inputs.turnCurrentAmps = new double[] {Math.abs(turnMotor.getCurrent().inAmps())};
 
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionRad};
@@ -79,13 +84,13 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVoltage(double volts) {
     driveAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    driveSim.setInputVoltage(driveAppliedVolts);
+    driveMotor.requestVoltage(Voltage.ofBaseUnits(driveAppliedVolts, Volts));
   }
 
   @Override
   public void setTurnVoltage(double volts) {
     turnAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    turnSim.setInputVoltage(turnAppliedVolts);
+    turnMotor.requestVoltage(Voltage.ofBaseUnits(turnAppliedVolts, Volts));
   }
 
   @Override
@@ -93,12 +98,12 @@ public class ModuleIOSim implements ModuleIO {
     velocityRadPerSec *= 2 / kWheelDiameterMeters;
     setDriveVoltage(
         driveFeedforward.calculate(velocityRadPerSec)
-            + driveFeedback.calculate(driveSim.getAngularVelocityRadPerSec(), velocityRadPerSec));
+            + driveFeedback.calculate(moduleSimulation.getDriveWheelFinalSpeed().in(RadiansPerSecond), velocityRadPerSec));
   }
 
   @Override
   public void setTurnPosition(double angle) {
-    setTurnVoltage(turnFeedback.calculate(turnSim.getAngularPositionRad(), angle));
+    setTurnVoltage(turnFeedback.calculate(moduleSimulation.getSteerAbsoluteAngle().in(Radians), angle));
   }
 
   @Override

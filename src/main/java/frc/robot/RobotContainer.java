@@ -13,11 +13,18 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
+
+import java.util.Optional;
+
 import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
@@ -28,6 +35,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -46,6 +57,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ValidatedOuttake;
 import frc.robot.subsystems.Vision.VisionIO;
@@ -57,8 +69,10 @@ import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
@@ -68,6 +82,14 @@ import frc.robot.subsystems.gripper.GripperIO;
 import frc.robot.subsystems.gripper.GripperIOSim;
 import frc.robot.subsystems.gripper.GripperIOSparkMax;
 import frc.robot.util.drive.DriveControls;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnFly;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeReefSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -99,7 +121,26 @@ public class RobotContainer {
   private boolean brakeMode = true;
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
+  private final DriveTrainSimulationConfig driveTrainSimulationConfig = DriveTrainSimulationConfig.Default()
+        // Specify gyro type (for realistic gyro drifting and error simulation)
+        .withGyro(COTS.ofPigeon2())
+        // Specify swerve module (for realistic swerve dynamics)
+        .withSwerveModule(COTS.ofMark4(
+                DCMotor.getKrakenX60(1), // Drive motor is a Kraken X60
+                DCMotor.getFalcon500(1), // Steer motor is a Falcon 500
+                COTS.WHEELS.COLSONS.cof, // Use the COF for Colson Wheels
+                3)) // L3 Gear ratio
+        // Configures the track length and track width (spacing between swerve modules)
+        .withTrackLengthTrackWidth(Inches.of(DriveConstants.kTrackWidthX), Inches.of(DriveConstants.kTrackWidthX))
+        // Configures the bumper size (dimensions of the robot bumper)
+        .withBumperSize(Inches.of(28), Inches.of(28));
   // LEDs
+  private SwerveDriveSimulation swerveDriveSimulation = new SwerveDriveSimulation(
+    // Specify Configuration
+    driveTrainSimulationConfig,
+    // Specify starting pose
+    new Pose2d(3, 3, new Rotation2d())
+  );
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -131,15 +172,15 @@ public class RobotContainer {
         break;
 
       case SIM:
+      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         // Sim robot, instantiate physics sim IO implementations
         elevator = new Elevator(new ElevatorIOSIM());
         drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
+            new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[3]),
             new VisionIOPhotonSim());
         arm = new Arm(new ArmIOSim());
         m_gripper = new Gripper(new GripperIOSim());
@@ -345,19 +386,68 @@ public class RobotContainer {
     // Real Set Positions
     DriveControls.STOW.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.STOW),
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
-
+        if (Constants.mode == Mode.SIM) {
+          DriveControls.STOW.onTrue(new InstantCommand(()->{
+            SimulatedArena.getInstance().resetFieldForAuto();
+    // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+          }));
+        }
     DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L1),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
-
+        if (Constants.mode == Mode.SIM) {
+          DriveControls.STOW.onTrue(new InstantCommand(()->{
+            // SimulatedArena.getInstance().resetFieldForAuto();
+    SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+          }));}
     DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L2),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
     
     DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(()->elevator.isLevelL4 = false), elevator.PIDCommand(ElevatorConstants.L3),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
+    if (Constants.mode == Mode.SIM) {
+      DriveControls.L3.onTrue(new InstantCommand(()->{
+        SimulatedArena.getInstance()
+          .addGamePieceProjectile(new ReefscapeCoralOnFly(
+              // Obtain robot position from drive simulation
+              swerveDriveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+              // The scoring mechanism is installed at (0.46, 0) (meters) on the robot
+              new Translation2d(0.35, 0),
+              // Obtain robot speed from drive simulation
+              swerveDriveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+              // Obtain robot facing from drive simulation
+              swerveDriveSimulation.getSimulatedDriveTrainPose().getRotation(),
+              // The height at which the coral is ejected
+              Meters.of(1.28),
+              // The initial speed of the coral
+              MetersPerSecond.of(2),
+              // The coral is ejected at a 35-degree slope
+              Degrees.of(-35)));
 
+      }));
+    }
     DriveControls.L4.onTrue(new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));
+        if (Constants.mode == Mode.SIM) {
+          DriveControls.L4.onTrue(new InstantCommand(()->{
+            SimulatedArena.getInstance()
+            .addGamePieceProjectile(new ReefscapeCoralOnFly(
+              // Obtain robot position from drive simulation
+              swerveDriveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+              // The scoring mechanism is installed at (0.46, 0) (meters) on the robot
+              new Translation2d(0.46, 0),
+              // Obtain robot speed from drive simulation
+              swerveDriveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+              // Obtain robot facing from drive simulation
+              swerveDriveSimulation.getSimulatedDriveTrainPose().getRotation(),
+              // The height at which the coral is ejected
+              Meters.of(2.1),
+              // The initial speed of the coral
+              MetersPerSecond.of(1),
+              // The coral is ejected vertically downwards
+              Degrees.of(-90)));
     
+          }));
+        }
       DriveControls.AlgaeL2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
       DriveControls.AlgaeL3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL3),
