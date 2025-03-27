@@ -469,7 +469,22 @@ public class RobotContainer {
     // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
 
   }
+  public void updateSimulation() {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
 
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput(
+            "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+    Logger.recordOutput(
+            "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+}
+public void resetSimulation() {
+  if (Constants.currentMode != Constants.Mode.SIM) return;
+
+  // drive.resetOdometry(new Pose2d(3, 3, new Rotation2d()));
+  SimulatedArena.getInstance().resetFieldForAuto();
+}
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
