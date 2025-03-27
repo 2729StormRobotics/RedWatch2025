@@ -103,9 +103,9 @@ public class DriveControls {
     switch (Constants.driver) {
       case KRITHIK:
         // Driver controls
-        DRIVE_FORWARD = () -> ((-m_translator.getY() * 4) / 4);
-        DRIVE_STRAFE = () -> ((-m_translator.getX() * 4) / 4);
-        DRIVE_ROTATE = () -> ((-m_rotator.getTwist() * 0.75));
+        DRIVE_FORWARD = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
+        DRIVE_STRAFE = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
+        DRIVE_ROTATE = () -> (((-m_rotator.getTwist() * 0.5)));
         RESET_GYRO = m_translator.button(12);
 
 

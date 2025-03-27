@@ -8,32 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.158424766615468,
-        "y": 5.179336145695765
+        "x": 6.545615253965758,
+        "y": 3.9369306631654206
       },
       "isLocked": false,
       "linkedName": "S4"
     },
     {
       "anchor": {
-        "x": 3.728176229508197,
-        "y": 4.73826844262295
+        "x": 6.286045283564814,
+        "y": 3.8899598524305548
       },
       "prevControl": {
-        "x": 3.9561218705608097,
-        "y": 4.635600118758609
+        "x": 6.67034454979538,
+        "y": 3.949748161939467
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "1L"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.25744243421052637,
-      "rotationDegrees": -119.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -46,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -119.99999999999999
+    "velocity": 1.0,
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "S4 Outbound",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
