@@ -110,7 +110,7 @@ public class Gripper extends SubsystemBase {
                     io.stop(); // End: Stop the motor
                 },
                 () -> io.isCoralPresent(), // Is finished: Finish when coral is detected
-                this).andThen(holdPositionCommand()); // Then run reverse for 0 seconds
+                this); // Then run reverse for 0 seconds
     }
 
     /**

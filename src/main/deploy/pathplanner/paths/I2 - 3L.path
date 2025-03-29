@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6103353137067178,
-        "y": 1.2587277042801517
+        "x": 1.663408709361433,
+        "y": 0.8071526825121986
       },
       "isLocked": false,
       "linkedName": "i2"
     },
     {
       "anchor": {
-        "x": 2.0978483606557377,
-        "y": 3.539497950819672
+        "x": 3.884016393442623,
+        "y": 2.100973360655738
       },
       "prevControl": {
-        "x": 1.5771746086610419,
-        "y": 1.9277568012400272
+        "x": 2.411745162142819,
+        "y": 1.3468365305347
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,16 +33,16 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 1040.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 100.0
+    "velocity": 1.0,
+    "rotation": 150.0
   },
   "reversed": false,
   "folder": "I2 Outbound",

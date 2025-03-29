@@ -102,9 +102,12 @@ public class DriveControls {
   public static void configureControls() {
     switch (Constants.driver) {
       case KRITHIK:
-        // Driver controls
+        // // Driver controls
+        // DRIVE_FORWARD = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
+        // DRIVE_STRAFE = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
+        
         DRIVE_FORWARD = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
-        DRIVE_STRAFE = () -> (Math.copySign(Math.pow(((-m_translator.getY() * 4) / 4), 2), -m_translator.getY()));
+        DRIVE_STRAFE = () -> (Math.copySign(Math.pow(((-m_translator.getX() * 4) / 4), 2), -m_translator.getX()));
         DRIVE_ROTATE = () -> (((-m_rotator.getTwist() * 0.5)));
         RESET_GYRO = m_translator.button(12);
 
@@ -175,7 +178,8 @@ public class DriveControls {
         INTAKE = m_weaponsController.rightTrigger(0.3);
         OUTTAKE = m_weaponsController.leftTrigger(0.3);
         GRIPPERSTOP = m_weaponsController.b();
-        ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/2);
+        // ELEVATOR_JOYSTICK = () -> (-m_weaponsController.getLeftY()/2);
+        ELEVATOR_JOYSTICK = () -> (Math.copySign(Math.pow(((-m_weaponsController.getLeftY() * 3) / 4), 2), -m_weaponsController.getLeftY()));
 
         EXTENDHANGER = m_weaponsController.back();
         PULLHANGER = m_weaponsController.start();

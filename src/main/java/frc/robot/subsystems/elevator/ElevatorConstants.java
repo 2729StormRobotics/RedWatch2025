@@ -78,7 +78,7 @@ public class ElevatorConstants {
     /** Tolerance used when checking if the elevator is at the setpoint */
     public static double SETPOINT_TOLERANCE_METERS = 0.2;
 
-    public static final double[] kElevatorRealPID = { 0.1, 0, 0, 0 };
+    public static final double[] kElevatorRealPID = { 0.3, 0, 0, 0 };
 
     public static final double ELEVATOR_MASS_KG = 5;
 

@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "S5 - 5L"
+                  "pathName": "S3 - 1L"
                 }
               }
             ]
@@ -40,7 +40,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "L2Setpoint"
+                        "name": "L4Setpoint"
                       }
                     }
                   ]
@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "5L - I2"
+                  "pathName": "1L - I1"
                 }
               },
               {
@@ -100,7 +100,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "I2 - 4L"
+                  "pathName": "I1 - 2L"
                 }
               }
             ]
@@ -129,7 +129,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "L2Setpoint"
+                        "name": "L4Setpoint"
                       }
                     }
                   ]
@@ -151,7 +151,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4L - I2"
+                  "pathName": "2L - I1"
                 }
               },
               {
@@ -189,7 +189,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "I2 - 3L"
+                  "pathName": "I1 - 2R"
                 }
               }
             ]
@@ -218,7 +218,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "L2Setpoint"
+                        "name": "L4Setpoint"
                       }
                     }
                   ]
@@ -240,7 +240,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4R - I2"
+                  "pathName": "2R - I1"
                 }
               },
               {

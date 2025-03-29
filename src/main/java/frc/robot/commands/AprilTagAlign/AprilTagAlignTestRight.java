@@ -78,6 +78,7 @@ public class AprilTagAlignTestRight extends Command {
     private double lateralSpeed = 0;
     private double targetRange = 0;
     private double branchY = 0;
+
     // State Machine
     private enum AlignmentState {
         SEARCHING,
@@ -104,7 +105,7 @@ public class AprilTagAlignTestRight extends Command {
      * @param y_Supplier     Supplier for Y-axis drive input.
      * @param omega_Supplier Supplier for rotantional drive input.
      * @param isRightBranch  Boolean indicating whether it's the right branch (true)
-     * or left branch (false).
+     *                       or left branch (false).
      */
     public AprilTagAlignTestRight(Drive drivetrain, DoubleSupplier x_Supplier, DoubleSupplier y_Supplier,
             DoubleSupplier omega_Supplier, boolean isRightBranch) {
@@ -157,6 +158,7 @@ public class AprilTagAlignTestRight extends Command {
     }
 
     private PhotonTrackedTarget getOptimalTarget(PhotonPipelineResult results) {
+
         Optional<PhotonTrackedTarget> target = results.getTargets().stream()
                 .filter(t -> tagAngles.containsKey(t.getFiducialId())) // Only consider known tags
                 .min((t1, t2) -> Double.compare(
@@ -173,7 +175,7 @@ public class AprilTagAlignTestRight extends Command {
         double minSpeed = MIN_FORWARD_SPEED;
         double maxSpeed = FORWARD_MULTIPLIER;
         double decayFactor = 4.5; // Adjust to tune speed decay
-        return -(Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * (targetRange-0.1)))) / 4000;
+        return -(Math.max(minSpeed, maxSpeed * Math.exp(decayFactor * (targetRange - 0.)))) / 4000;
     }
 
     private void processTarget(PhotonTrackedTarget target) {
@@ -258,28 +260,25 @@ public class AprilTagAlignTestRight extends Command {
                 // Basic search behavior, e.g., rotate slowly
                 // Apply deadband
                 // Apply deadband
-          double linearMagnitude =
-          MathUtil.applyDeadband(
-              Math.hypot(
-                  xSupplier.getAsDouble(), ySupplier.getAsDouble()),
-              DEADBAND);
-      Rotation2d linearDirection =
-          new Rotation2d(
-              xSupplier.getAsDouble(), ySupplier.getAsDouble());
-      double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+                double linearMagnitude = MathUtil.applyDeadband(
+                        Math.hypot(
+                                xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+                        DEADBAND);
+                Rotation2d linearDirection = new Rotation2d(
+                        xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-      // Square values
-      linearMagnitude = linearMagnitude * linearMagnitude;
-      omega = Math.copySign(omega * omega, omega);
+                // Square values
+                linearMagnitude = linearMagnitude * linearMagnitude;
+                omega = Math.copySign(omega * omega, omega);
 
-      // Calcaulate new linear velocity
-      Translation2d linearVelocity =
-          new Pose2d(new Translation2d(), linearDirection)
-              .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-              .getTranslation();
+                // Calcaulate new linear velocity
+                Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
+                        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                        .getTranslation();
 
-      // Convert to field relative speeds & send command
-      SmartDashboard.putNumber("FForward", linearVelocity.getY());
+                // Convert to field relative speeds & send command
+                SmartDashboard.putNumber("FForward", linearVelocity.getY());
                 forward = -linearVelocity.getY();
                 lateralSpeed = -linearVelocity.getX();
                 rotationSpeed = omega;
@@ -299,13 +298,16 @@ public class AprilTagAlignTestRight extends Command {
                 }
                 break;
             case APPROACHING:
+                manualControl = false;
                 if (results.hasTargets() && results.getBestTarget() != null) {
                     PhotonTrackedTarget target = getOptimalTarget(results);
-                    processTarget(target);
-                    if (stateTimer.get() > 0.5) { // Transition to ALIGNING after a delay
-                        currentState = AlignmentState.ALIGNING;
-                        stateTimer.reset();
-                        stateTimer.start();
+                    if (target != null) {
+                        processTarget(target);
+                        if (stateTimer.get() > 0.5) { // Transition to ALIGNING after a delay
+                            currentState = AlignmentState.ALIGNING;
+                            stateTimer.reset();
+                            stateTimer.start();
+                        }
                     }
                     lostTargetTimer.reset(); // reset
                 } else {
@@ -321,7 +323,7 @@ public class AprilTagAlignTestRight extends Command {
                         // This effectively updates the tag's pose as if the robot had moved
                         // while still seeing the tag.
                         Pose3d updatedTagPose = lastSeenTagPose.transformBy(new Transform3d(
-                            new Translation3d(robotMovement.getTranslation()),
+                                new Translation3d(robotMovement.getTranslation()),
                                 new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
                         double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
                         double lastSeenRange = updatedTagPose.getX();
@@ -329,7 +331,7 @@ public class AprilTagAlignTestRight extends Command {
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
                                 -DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxSpeedMetersPerSecond);
-                        forward = calculateForwardSpeed(lastSeenRange);
+                        forward = 0;
                     }
                 }
                 break;
@@ -337,12 +339,15 @@ public class AprilTagAlignTestRight extends Command {
                 ledController.setPattern(BlinkinPattern.BLUE_GREEN);
                 if (results.hasTargets() && results.getBestTarget() != null) {
                     PhotonTrackedTarget target = getOptimalTarget(results);
-                    processTarget(target);
-                    if ((Math.abs(pidController.getPositionError()) < YAW_THRESHOLD
-                            && Math.abs(lateralPID.getPositionError()) < LATERAL_TOLERANCE) && (targetRange < .8)) {
-                        currentState = AlignmentState.FINAL_ADJUSTMENT;
-                        stateTimer.reset();
-                        stateTimer.start();
+                    if (target != null) {
+                        processTarget(target);
+                        if ((Math.abs(pidController.getPositionError()) < YAW_THRESHOLD
+                                && Math.abs(lateralPID.getPositionError()) < LATERAL_TOLERANCE)
+                                && (targetRange < .63)) {
+                            currentState = AlignmentState.FINAL_ADJUSTMENT;
+                            stateTimer.reset();
+                            stateTimer.start();
+                        }
                     }
                     lostTargetTimer.reset(); // reset
                 } else {
@@ -365,7 +370,7 @@ public class AprilTagAlignTestRight extends Command {
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
                                 -DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxSpeedMetersPerSecond);
-                        forward = calculateForwardSpeed(lastSeenRange);
+                        forward = 0;
                     }
                 }
                 break;
@@ -373,11 +378,13 @@ public class AprilTagAlignTestRight extends Command {
                 ledController.setAllianceColorRainbow();
                 if (results.hasTargets() && results.getBestTarget() != null) {
                     PhotonTrackedTarget target = getOptimalTarget(results);
-                    processTarget(target);
-                    if (stateTimer.get() > 0.2) {
-                        currentState = AlignmentState.ALIGNED;
-                        stateTimer.reset();
-                        stateTimer.start();
+                    if (target != null) {
+                        processTarget(target);
+                        if (stateTimer.get() > 0.2) {
+                            currentState = AlignmentState.ALIGNED;
+                            stateTimer.reset();
+                            stateTimer.start();
+                        }
                     }
                     lostTargetTimer.reset(); // reset
                 } else {
@@ -400,7 +407,7 @@ public class AprilTagAlignTestRight extends Command {
                         lateralSpeed = MathUtil.clamp(
                                 lateralPID.calculate(lastSeenYaw, 0) + calculateLateralFeedforward(lastSeenYaw),
                                 -DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxSpeedMetersPerSecond);
-                        forward = calculateForwardSpeed(lastSeenRange);
+                        forward = 0;
                     }
                 }
                 break;
@@ -417,23 +424,31 @@ public class AprilTagAlignTestRight extends Command {
         // Get the current gyro angle
         double currentAngle = rotation.getDegrees();
 
-        // Calculate the rotation speed using the PID controller
-        if (manualControl == false) {
-            rotationSpeed = pidController.calculate(currentAngle);
-        }
         SmartDashboard.putNumber("currangle", currentAngle);
-        SmartDashboard.putNumber("desiangle", targetAngle); 
+        SmartDashboard.putNumber("desiangle", targetAngle);
         SmartDashboard.putNumber("rotationspeed", rotationSpeed);
         SmartDashboard.putNumber("forwardSpeed", forward);
-        double lateralSpeed = branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
+        // Calculate the rotation speed using the PID controller
+        if (manualControl == false) {
+            lateralSpeed = branchY * Constants.VisionConstants.kPTurn * DriveConstants.kMaxSpeedMetersPerSecond;
+            rotationSpeed = pidController.calculate(currentAngle);// Drive the robot
+            m_drivetrain.runVelocity(
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                            lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
+                            forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                            m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed * 1,
+                            new Rotation2d()));
+        }
+        if (manualControl == true) {
+            // Drive the robot
+            m_drivetrain.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                            lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
+                            forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
+                            m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed * 1,
+                            new Rotation2d()));
+        }
 
-        // Drive the robot
-        m_drivetrain.runVelocity(
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                        lateralSpeed * m_drivetrain.getMaxLinearSpeedMetersPerSec() * 1,
-                        forward * m_drivetrain.getMaxLinearSpeedMetersPerSec(),
-                        m_drivetrain.getMaxAngularSpeedRadPerSec() * rotationSpeed * 1,
-                        new Rotation2d()));
     }
 
     @Override
@@ -449,4 +464,3 @@ public class AprilTagAlignTestRight extends Command {
         return currentState == AlignmentState.ALIGNED;
     }
 }
-

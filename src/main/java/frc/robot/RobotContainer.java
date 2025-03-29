@@ -174,17 +174,23 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("L2Setpoint",
-        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
-            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5)));
+        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
+            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
+            
+    NamedCommands.registerCommand("L4Setpoint",
+    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
+        arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
     NamedCommands.registerCommand("IntakeSetpoint",
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
-    NamedCommands.registerCommand("Intake", m_gripper.Intake());
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.75), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false).withTimeout(5));
+    NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
+    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(4).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
+
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
     NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.STOW).withTimeout(1.5),
+        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2).withTimeout(1.5),
             arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
     field = new Field2d();
