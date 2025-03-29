@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6575,
-        "y": 7.408249999999999
+        "x": 0.9470286885245902,
+        "y": 7.123821721311475
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3950586419831685,
-        "y": 6.6626633457991895
+        "x": 1.684587330507759,
+        "y": 6.378235067110666
       },
       "isLocked": false,
       "linkedName": "I1"
     },
     {
       "anchor": {
-        "x": 2.901024590163934,
-        "y": 5.217776639344262
+        "x": 2.697233606557377,
+        "y": 5.097899590163934
       },
       "prevControl": {
-        "x": 2.411670163649783,
-        "y": 5.768987744296229
+        "x": 2.207879180043226,
+        "y": 5.649110695115901
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "I1 Outbound",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 36.0
+    "rotation": 29.999999999999996
   },
   "useDefaultConstraints": true
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6575,
-        "y": 7.408249999999999
+        "x": 0.9470286885245902,
+        "y": 7.123821721311475
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.538957635351207,
-        "y": 6.345442524789573
+        "x": 1.8284863238757973,
+        "y": 6.061014246101049
       },
       "isLocked": false,
       "linkedName": "I1"
@@ -48,7 +48,7 @@
   "folder": "I1 Outbound",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 36.0
+    "rotation": 29.999999999999996
   },
   "useDefaultConstraints": true
 }

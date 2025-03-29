@@ -184,13 +184,13 @@ public class RobotContainer {
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(4).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup( elevator.PIDCommand(ElevatorConstants.L4),m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
+    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
 
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
     NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2).withTimeout(1.5),
+        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2).withTimeout(0.5),
             arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
     field = new Field2d();
@@ -323,7 +323,8 @@ public class RobotContainer {
     // } else {
     //   OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
     // }
-    OUTTAKE.onTrue(m_gripper.outtake());
+    // OUTTAKE.onTrue(m_gripper.outtake());
+    OUTTAKE.onTrue(new ConditionalCommand(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.15), arm.PIDCommand(ArmConstants.kSTOW)) ), m_gripper.outtake(), ()->elevator.getL4()));
     // OUTTAKE.onTrue(new ValidatedOuttake(elevator.getL4(), arm, m_gripper, elevator));
     INTAKE.onTrue(m_gripper.Intake());
     GRIPPERSTOP.onTrue(m_gripper.stop());
@@ -353,13 +354,13 @@ public class RobotContainer {
         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
     DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L1),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL1))));
+        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
 
     DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(()->{elevator.isLevelL4 = false;}), elevator.PIDCommand(ElevatorConstants.L2),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL2))));
+        new SequentialCommandGroup(new WaitCommand(0.35), arm.PIDCommand(ArmConstants.kL2))));
     
     DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(()->elevator.isLevelL4 = false), elevator.PIDCommand(ElevatorConstants.L3),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL3))));
+        new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kL3))));
 
     DriveControls.L4.onTrue(new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));

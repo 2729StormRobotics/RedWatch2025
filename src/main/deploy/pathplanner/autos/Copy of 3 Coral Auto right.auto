@@ -191,6 +191,12 @@
                 "data": {
                   "pathName": "I1 - 2R"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow"
+                }
               }
             ]
           }
