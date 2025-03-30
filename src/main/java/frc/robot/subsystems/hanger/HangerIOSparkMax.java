@@ -12,6 +12,9 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import java.lang.Thread.State;
+
 import com.revrobotics.spark.SparkMax;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
@@ -28,6 +31,23 @@ public class HangerIOSparkMax implements HangerIO {
   public static Timer timer = new Timer(); // Timer for timing operations
   public DigitalInput metalDetector; // Digital input for metal detector
   private BlinkinLEDController ledController = BlinkinLEDController.getInstance(); // LED controller instance
+
+  public enum StateMachine 
+  {
+    Docked,
+    Extending,
+    Retracting
+  };
+
+  public enum TransitionEvents
+  {
+    RetractButton,
+    ExtendButton,
+    None,
+  };
+
+  private StateMachine currState = StateMachine.Docked;
+  private TransitionEvents currEvent = TransitionEvents.None;
 
   /**j
    * Constructor for HangerIOSparkMax.
@@ -48,101 +68,42 @@ public class HangerIOSparkMax implements HangerIO {
     metalDetector = new DigitalInput(2); // Initialize metal detector input
   }
 
+  @Override
+  public StateMachine getState(){
+    return currState;
+  }
+
+  @Override
+  public void setEvent(TransitionEvents event){
+    currEvent = event;
+  }
+
+  @Override
+  public void setMotorRetract(){
+    hangerSparkMax.set(HangerConstants.motorSpeed);
+  }
+
+  @Override
+  public void setMotorExtend(){
+    hangerSparkMax.set(-HangerConstants.motorSpeed);
+  }
+
+  @Override
+  public void stop(){
+    hangerSparkMax.set(0);
+  }
+
+  
+
   /**
    * Sets the voltage of the hanger motor.
    *
    * @param volts The voltage to set.
    */
-  @Override
-  public void setHangerVoltage(double volts) {
-    hangerSparkMax.setVoltage(volts);
-  }
 
-  /**
-   * Gets the voltage of the hanger motor.
-   *
-   * @return The voltage.
-   */
-  @Override
-  public double getHangerVoltage() {
-    return hangerSparkMax.getBusVoltage() * hangerSparkMax.getAppliedOutput();
-  }
-
-  /**
-   * Gets the angle of the hanger.
-   *
-   * @return The angle (currently 0, needs testing).
-   */
-  @Override
-  public double getHangerAngle() {
-    // NEEDS TO BE TESTED
-    return 0;
-  }
-
-  /**
-   * Gets if the hanger is in the cage.
-   *
-   * @return True if in the cage, false otherwise.
-   */
-  @Override
-  public boolean getIsInCage(){
-    return metalDetector.get();
-  }
-
-  /**
-   * Pulls the hanger mechanism.
-   */
-  @Override
-  public void pull() {
-    BlinkinLEDController.isEndgame = true; // Set endgame flag for LED control
-
-    hangerSparkMax.set(HangerConstants.motorSpeedOpenHanger); // Set motor to pull speed
-    isClosed = true;
-  }
-
-  /**
-   * Releases the hanger mechanism.
-   */
-  @Override
-  public void release() {
-    BlinkinLEDController.isEndgame = true; // Set endgame flag for LED control
-
-    hangerSparkMax.set(-1); // Set motor to release speed
-    ledController.setPattern(BlinkinPattern.RAINBOW_RAINBOW_PALETTE); // Set LED pattern
-    isClosed = false;
-  }
-
-  /**
-   * Stops the hanger motor.
-   */
-  @Override
-  public void stop() {
-    hangerSparkMax.set(0); // Stop the motor
-  }
-
-  /**
-   * Creates a command group to retract the hanger.
-   *
-   * @return The retract command group.
-   */
-  @Override
-  public SequentialCommandGroup retract() {
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> {System.out.println("retract");}), // Print retract message
-        new InstantCommand(() -> {
-          this.pull(); // Pull the hanger
-        }),
-        new WaitCommand(5), // Wait for 5 seconds
-        new InstantCommand(() -> {
-          this.stop(); // Stop the motor
-        }));
-  }
 
   /**
    * Periodic method for HangerIOSparkMax.
    * Displays the metal detector state on the SmartDashboard.
    */
-  public void periodic(){
-    SmartDashboard.putBoolean("metaldetector", getIsInCage()); // Display metal detector state
-  }
 }

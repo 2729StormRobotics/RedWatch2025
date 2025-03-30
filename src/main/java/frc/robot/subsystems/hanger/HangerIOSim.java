@@ -56,7 +56,7 @@ public class HangerIOSim implements HangerIO {
    */
   @Override
   public void pull() {
-    hangerSim.setInputVoltage(HangerConstants.motorSpeedOpenHanger);
+    hangerSim.setInputVoltage(HangerConstants.motorSpeed);
     isClosed = true;
   }
 
@@ -65,7 +65,7 @@ public class HangerIOSim implements HangerIO {
    */
   @Override
   public void release() {
-    hangerSim.setInputVoltage(-HangerConstants.motorSpeedOpenHanger);
+    hangerSim.setInputVoltage(-HangerConstants.motorSpeed);
     isClosed = false;
   }
 

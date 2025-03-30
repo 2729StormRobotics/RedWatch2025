@@ -1,88 +1,23 @@
 package frc.robot.subsystems.hanger;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.hanger.HangerIOSparkMax.StateMachine;
+import frc.robot.subsystems.hanger.HangerIOSparkMax.TransitionEvents;
 
 /**
  * Interface for Hanger I/O implementations.
  */
 public interface HangerIO {
 
-    /**
-     * Stops the hanger motor.
-     */
-    public default void stop() {
-    }
+  public default StateMachine getState(){
+    return StateMachine.Docked;
+  }
 
-    /**
-     * Pulls the hanger mechanism.
-     */
-    public default void pull() {
-    }
+  public void setEvent(TransitionEvents event);
 
-    /**
-     * Releases the hanger mechanism.
-     */
-    public default void release() {
-    }
+  public void setMotorRetract();
 
-    /**
-     * Sets the voltage of the hanger motor.
-     *
-     * @param volts The voltage to set.
-     */
-    public default void setHangerVoltage(double volts) {
-    }
+  public void setMotorExtend();
 
-    /**
-     * Gets the voltage of the hanger motor.
-     *
-     * @return The voltage.
-     */
-    public default double getHangerVoltage() {
-        return 0;
-    }
-
-    /**
-     * Gets the angle of the hanger.
-     *
-     * @return The angle.
-     */
-    public default double getHangerAngle() {
-        return 0;
-    }
-
-    /**
-     * Gets if the hanger is in the cage.
-     *
-     * @return True if in the cage, false otherwise.
-     */
-    public default boolean getIsInCage(){
-        return false;
-    }
-
-    /**
-     * Sets the current limit of the hanger motor.
-     *
-     * @param limit The current limit.
-     */
-    public default void setHangerCurrentLimit(int limit) {
-    }
-
-    /**
-     * Creates a command group to extend the hanger.
-     *
-     * @return The extend command group.
-     */
-    public default SequentialCommandGroup extend(){
-        return new SequentialCommandGroup();
-    }
-
-    /**
-     * Creates a command group to retract the hanger.
-     *
-     * @return The retract command group.
-     */
-    public default SequentialCommandGroup retract(){
-        return new SequentialCommandGroup();
-    }
+  public void stop();
 }
