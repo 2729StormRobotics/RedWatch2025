@@ -184,7 +184,7 @@ public class RobotContainer {
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup( elevator.PIDCommand(ElevatorConstants.L4),m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
     NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
     NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
 
