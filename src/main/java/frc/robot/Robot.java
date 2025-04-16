@@ -165,7 +165,7 @@ public class Robot extends LoggedRobot {
     BlinkinLEDController.driving = true;
 
     // Select the autonomous tab in elastic
-    Elastic.selectTab("Teleoperated");
+    Elastic.selectTab("Cameras");
 
     // True if Blue
     // if (true) {

@@ -18,6 +18,9 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
 import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
+
+import java.io.Console;
+
 import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
@@ -28,6 +31,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -177,6 +181,10 @@ public class RobotContainer {
         new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
             arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
             
+    NamedCommands.registerCommand("Reset 180",new InstantCommand(()->{drive.resetYawOffset(180);}).withTimeout(0.01));
+    NamedCommands.registerCommand("Reset 270",new InstantCommand(()->{drive.resetYawOffset(270);}).withTimeout(0.01));
+    NamedCommands.registerCommand("Reset 90",new InstantCommand(()->{drive.resetYawOffset(90);}).withTimeout(0.01));
+
     NamedCommands.registerCommand("L4Setpoint",
     new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
         arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
@@ -184,13 +192,14 @@ public class RobotContainer {
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
-    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(),new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(), elevator.PIDCommand(ElevatorConstants.L4), new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
     NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
     NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
+    NamedCommands.registerCommand("Algae3", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
+    new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
     NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L2).withTimeout(0.5),
+        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3).withTimeout(0.5),
             arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
     field = new Field2d();
@@ -283,7 +292,7 @@ public class RobotContainer {
     //       new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD, DRIVE_STRAFE),
     //           DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () -> 0).withTimeout(.1))
     //           .withTimeout(20));
-    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ParallelCommandGroup(arm.PIDCommand(ArmConstants.kSTOW), elevator.PIDCommand(ElevatorConstants.L2),new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false)));
+    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(new ParallelCommandGroup(arm.PIDCommand(ArmConstants.kSTOW), elevator.PIDCommand(ElevatorConstants.L3),new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false)));
     DRIVE_PHOTONVISION_ALIGN_LEFT.whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
 
     // .onFalse(drive.getDefaultCommand());
@@ -393,6 +402,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    System.out.println(autoChooser.get().getName());
+    System.out.println();
     return autoChooser.get();
   }
 }

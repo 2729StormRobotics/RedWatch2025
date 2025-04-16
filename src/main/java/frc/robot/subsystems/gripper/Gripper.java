@@ -96,7 +96,8 @@ public class Gripper extends SubsystemBase {
                 this); // Pass the current subsystem instance
     }
 
-    /**
+    /**hwfAE50I-IQDGI'0AEBWsyu9l):9w4g  dqcru9ol/ nigeria
+     * 
      * Creates a command to intake with the gripper and then reverse if an object is detected.
      *
      * @return A Command that performs intake and reverse.

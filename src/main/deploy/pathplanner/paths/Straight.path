@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1508196721311474,
-        "y": 0.3747438524590166
+        "x": 7.1583033130787035,
+        "y": 4.0346082899305555
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8717686031386354,
-        "y": 0.12523416015545918
+        "x": 6.524582105469111,
+        "y": 4.0309211395828415
       },
       "isLocked": false,
-      "linkedName": "i2"
+      "linkedName": "S4"
     },
     {
       "anchor": {
-        "x": 3.94875,
-        "y": 2.8257499999999993
+        "x": 5.646209016393443,
+        "y": 4.0346082899305555
       },
       "prevControl": {
-        "x": 2.9590526895718394,
-        "y": 1.9171091533181248
+        "x": 6.160865812778833,
+        "y": 4.0196571601275455
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4R"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 145.0
+    "velocity": 0.0,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "I2 Outbound",
+  "folder": "S4 Outbound",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": 145.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

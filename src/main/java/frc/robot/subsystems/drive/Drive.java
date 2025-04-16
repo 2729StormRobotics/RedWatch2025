@@ -156,6 +156,7 @@ public class Drive extends SubsystemBase {
           if (alliance.isPresent()) {
             return alliance.get() == DriverStation.Alliance.Red;
           }
+
           return false;
         },
         this // Reference to this subsystem to set requirements
@@ -317,7 +318,6 @@ public class Drive extends SubsystemBase {
   public void resetYaw() {
     gyroIO.zeroAll();
     setPose(AllianceFlipUtil.apply(new Pose2d()));
-
     // if (DriverStation.getAlliance().isPresent()
     // && DriverStation.getAlliance().get() == Alliance.Blue) {
     // setPose((new Pose2d(new Translation2d(0.0,0.0), new Rotation2d(180))));
@@ -325,6 +325,12 @@ public class Drive extends SubsystemBase {
     // } else {
     // setPose((new Pose2d()));
     // }
+  }
+
+  public void resetYawOffset(double offset) {
+    gyroIO.zeroAll();
+    gyroIO.setRobotAngle(offset);
+    poseEstimator.resetRotation(rawGyroRotation.plus(new Rotation2d(offset)));
   }
 
   /**
