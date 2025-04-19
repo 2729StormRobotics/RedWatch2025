@@ -145,6 +145,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
+    // robotContainer.resetAuto();
   }
 
   /** This function is called periodically during autonomous. */

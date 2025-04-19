@@ -50,7 +50,7 @@ public class AprilTagAlignTestRight extends Command {
     private static final double YAW_THRESHOLD = 1;
     private static final double FORWARD_MULTIPLIER = 7;
     private static final double BRANCH_OFFSET_METERS = Units.inchesToMeters(6);
-    private static final double ARM_OFFSET_METERS = Units.inchesToMeters(-4.5);
+    private static final double ARM_OFFSET_METERS = Units.inchesToMeters(-2);
     private static final double FIN_DISTANCE_REEF = 1.7;
     private static final double SLOW_DOWN_DISTANCE = Units.inchesToMeters(6); // Distance to start slowing down
     private static final double MIN_FORWARD_SPEED = 0.0005; // Minimum forward speed
