@@ -129,6 +129,11 @@ public class Arm extends SubsystemBase {
     io.setArmPosition(position);
   }
 
+
+  public Command InstantPIDCommand(double setpoint) {
+    return new InstantCommand(() -> setPID(setpoint));
+  }
+
   /**
    * Sets the voltage applied to the arm motor.
    * @param voltage The voltage to apply.

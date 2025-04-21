@@ -49,12 +49,12 @@ public class ModuleIOInputsAutoLogged extends ModuleIO.ModuleIOInputs implements
     copy.driveVelocityRadPerSec = this.driveVelocityRadPerSec;
     copy.driveVelocityMeterPerSec = this.driveVelocityMeterPerSec;
     copy.driveAppliedVolts = this.driveAppliedVolts;
-    copy.driveCurrentAmps = this.driveCurrentAmps.clone();
+    copy.driveCurrentAmps = this.driveCurrentAmps;
     copy.turnAbsolutePosition = this.turnAbsolutePosition;
     copy.turnPosition = this.turnPosition;
     copy.turnVelocityRadPerSec = this.turnVelocityRadPerSec;
     copy.turnAppliedVolts = this.turnAppliedVolts;
-    copy.turnCurrentAmps = this.turnCurrentAmps.clone();
+    copy.turnCurrentAmps = this.turnCurrentAmps;
     copy.odometryTimestamps = this.odometryTimestamps.clone();
     copy.odometryDrivePositionsRad = this.odometryDrivePositionsRad.clone();
     copy.odometryTurnPositions = this.odometryTurnPositions.clone();

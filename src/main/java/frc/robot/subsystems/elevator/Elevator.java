@@ -198,6 +198,9 @@ public class Elevator extends SubsystemBase {
         () -> true,
         this);
   }
+  public Command InstantPIDCommand(double setpoint) {
+    return new InstantCommand(() -> setSetpoint(setpoint));
+  }
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(

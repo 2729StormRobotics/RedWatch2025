@@ -5,6 +5,8 @@ import java.lang.Override;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import frc.robot.subsystems.vision.VisionIO;
+
 public class VisionIOInputsAutoLogged extends VisionIO.VisionIOInputs implements LoggableInputs, Cloneable {
   @Override
   public void toLog(LogTable table) {

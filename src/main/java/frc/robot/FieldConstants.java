@@ -1,3 +1,5 @@
+// Copyright (c) 2025 FRC 6328
+// http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
@@ -21,12 +23,14 @@ public class FieldConstants {
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
       Units.inchesToMeters(299.438); // Measured from the inside of starting line
+  public static final double algaeDiameter = Units.inchesToMeters(16);
 
   public static class Processor {
     public static final Pose2d centerFace =
         new Pose2d(Units.inchesToMeters(235.726), 0, Rotation2d.fromDegrees(90));
   }
-
+  // contains the measurements and starting points for the cages; contains measurements from INCHES
+  // to METERS
   public static class Barge {
     public static final Translation2d farCage =
         new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(286.779));
@@ -34,7 +38,12 @@ public class FieldConstants {
         new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(242.855));
     public static final Translation2d closeCage =
         new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(199.947));
-
+    public static final Translation2d farCageLow =
+        new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(30.221));
+    public static final Translation2d middleCageLow =
+        new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(74.145));
+    public static final Translation2d closeCageLow =
+        new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(117.053));
     // Measured from floor to bottom of cage
     public static final double deepHeight = Units.inchesToMeters(3.125);
     public static final double shallowHeight = Units.inchesToMeters(30.125);
@@ -137,19 +146,121 @@ public class FieldConstants {
                       Units.degreesToRadians(level.pitch),
                       poseDirection.getRotation().getRadians())));
         }
-        branchPositions.add((face * 2) + 1, fillRight);
-        branchPositions.add((face * 2) + 2, fillLeft);
+        branchPositions.add(fillRight);
+        branchPositions.add(fillLeft);
       }
     }
   }
 
   public static class StagingPositions {
+    // Measured from the center of the ice cream
     public static final Pose2d leftIceCream =
         new Pose2d(Units.inchesToMeters(48), Units.inchesToMeters(230.5), new Rotation2d());
     public static final Pose2d middleIceCream =
         new Pose2d(Units.inchesToMeters(48), Units.inchesToMeters(158.5), new Rotation2d());
     public static final Pose2d rightIceCream =
         new Pose2d(Units.inchesToMeters(48), Units.inchesToMeters(86.5), new Rotation2d());
+  }
+
+  public static final Pose2d[] ReefScoringPositions = getReefScoringPositions();
+  public static final Pose2d[] ReefCenterPositions = getCenterScoringPositions();
+
+  // The distance backward from the reef that the center of the robot should be when scoring
+  public static final double distanceBackFromReef = 0.67;
+  public static final double reefFaceCenterToScoreDistance = 0.164338;
+
+  // Calculates all the reef scoring positions using the centers of the faces as a reference
+  public static Pose2d[] getReefScoringPositions() {
+    Pose2d[] positions = new Pose2d[12];
+
+    for (int i = 0; i < 12; i++) {
+      // Use center of face as a reference and rotate it 180 degrees to point towards reef instead
+      // of away
+      Pose2d centerFacePose = Reef.centerFaces[i / 2];
+      Pose2d scoringPose =
+          new Pose2d(
+              centerFacePose.getTranslation(),
+              centerFacePose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
+      // Alternate between translating each position to the left and right of the center of the face
+      switch (i % 2) {
+        case 0:
+          scoringPose =
+              translateCoordinates(
+                  scoringPose,
+                  centerFacePose.getRotation().getDegrees() + 90,
+                  reefFaceCenterToScoreDistance);
+          break;
+        case 1:
+          scoringPose =
+              translateCoordinates(
+                  scoringPose,
+                  centerFacePose.getRotation().getDegrees() - 90,
+                  reefFaceCenterToScoreDistance);
+          break;
+      }
+
+      // Move position backwards
+      positions[i] =
+          translateCoordinates(
+              scoringPose, centerFacePose.getRotation().getDegrees(), distanceBackFromReef);
+    }
+
+    return positions;
+  }
+
+  public static Pose2d[] getCenterScoringPositions() {
+    Pose2d[] positions = new Pose2d[6];
+
+    for (int i = 0; i < 6; i++) {
+      Pose2d scoringPose =
+          new Pose2d(
+              Reef.centerFaces[i].getTranslation(),
+              Reef.centerFaces[i].getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
+      positions[i] =
+          translateCoordinates(
+              scoringPose, Reef.centerFaces[i].getRotation().getDegrees(), distanceBackFromReef);
+    }
+    return positions;
+  }
+
+  // Translates the coordinates of originalPose by some distance at some angle
+  // Stolen- uhhh taken inspiration from team 6964 BearBots
+  public static Pose2d translateCoordinates(
+      Pose2d originalPose, double degreesRotate, double distance) {
+    double newXCoord = originalPose.getX() + (Math.cos(Math.toRadians(degreesRotate)) * distance);
+    double newYCoord = originalPose.getY() + (Math.sin(Math.toRadians(degreesRotate)) * distance);
+
+    return new Pose2d(newXCoord, newYCoord, originalPose.getRotation());
+  }
+
+  public static final Pose2d[] STATION_POSITION = getStationPositions();
+
+  public static final double distanceBackFromStation = 0.72;
+
+  // Returns an array of positions using the station center faces and moving the poses back
+  public static Pose2d[] getStationPositions() {
+    Pose2d[] stationPositions = new Pose2d[2];
+
+    // Set poses to station center faces
+    stationPositions[0] = CoralStation.leftCenterFace;
+    stationPositions[1] = CoralStation.rightCenterFace;
+
+    // Move each pose back and flip it 180 degrees
+    for (int i = 0; i < 2; i++) {
+      stationPositions[i] =
+          translateCoordinates(
+              stationPositions[i],
+              stationPositions[i].getRotation().getDegrees(),
+              distanceBackFromStation);
+      stationPositions[i] =
+          new Pose2d(
+              stationPositions[i].getTranslation(),
+              stationPositions[i].getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+    }
+
+    return stationPositions;
   }
 
   public enum ReefHeight {
@@ -166,4 +277,62 @@ public class FieldConstants {
     public final double height;
     public final double pitch;
   }
+
+  public static class StartingPositions {
+    public static final Pose2d startPos1 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.farCage.getY(),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d startPos2 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.middleCage.getY(),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d startPos3 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.closeCage.getY(),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d startPos4 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.closeCageLow.getY(),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d startPos5 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.middleCageLow.getY(),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d startPos6 =
+        new Pose2d(
+            startingLineX - Units.inchesToMeters(15),
+            Barge.farCageLow.getY(),
+            Rotation2d.fromDegrees(180));
+  }
+
+  public static final double aprilTagWidth = Units.inchesToMeters(6.50);
+  // public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;//
+  public static final int aprilTagCount = 22;
+
+  /*
+  public enum AprilTagLayoutType {
+    OFFICIAL("2025-official");
+
+    AprilTagLayoutType(String name) {
+      if (layout == null) {
+        layoutString = "";
+      } else {
+        try {
+          layoutString = new ObjectMapper().writeValueAsString(layout);
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException(
+              "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+        }
+      }
+    }
+
+    private final AprilTagFieldLayout layout;
+    private final String layoutString;
+    */
 }

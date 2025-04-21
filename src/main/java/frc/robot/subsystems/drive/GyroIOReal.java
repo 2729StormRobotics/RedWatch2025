@@ -33,6 +33,7 @@ public class GyroIOReal implements GyroIO {
     navx = new AHRS(NavXComType.kMXP_SPI);
     resetRoll = 0;
     resetPitch = 0;
+    resetYaw = 0;
     navx.reset();
 
     gyro = new ADXRS450_Gyro();
@@ -45,6 +46,7 @@ public class GyroIOReal implements GyroIO {
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = navx.isConnected();
     Logger.recordOutput("OtherGyro", gyro.getAngle());
+    Logger.recordOutput("Drive/Gyro Calibrating", navx.isCalibrating());
     inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
     inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
     inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
@@ -165,7 +167,6 @@ public class GyroIOReal implements GyroIO {
   }
 
   /** Sets the current rotation of the robot to a given value. */
-  @Override
   public void setRobotAngle(double angle) {
     setYawAngle(angle);
   }

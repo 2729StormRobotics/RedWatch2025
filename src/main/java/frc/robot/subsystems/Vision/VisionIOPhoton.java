@@ -1,165 +1,198 @@
-  // Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+package frc.robot.subsystems.vision;
 
-//FIX CAM NAMES *******************************
-// ******
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-package frc.robot.subsystems.Vision;
-
-import static frc.robot.subsystems.Vision.VisionConstants.AMBIGUITY_THRESHOLD;
-import static frc.robot.subsystems.Vision.VisionConstants.cam1RobotToCam;
-import static frc.robot.subsystems.Vision.VisionConstants.cam2RobotToCam;
-import static frc.robot.subsystems.Vision.VisionConstants.cam3RobotToCam;
-import static frc.robot.subsystems.Vision.VisionConstants.intakeUp_Cam;
-import static frc.robot.subsystems.Vision.VisionConstants.intake_Cam;
-import static frc.robot.subsystems.Vision.VisionConstants.kTagLayout;
-import static frc.robot.subsystems.Vision.VisionConstants.outtake_Cam;
+import static frc.robot.subsystems.vision.VisionConstants.AMBIGUITY_THRESHOLD;
+import static frc.robot.subsystems.vision.VisionConstants.camNames;
+import static frc.robot.subsystems.vision.VisionConstants.camsRobotToCam;
+import static frc.robot.subsystems.vision.VisionConstants.kTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.numCameras;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.net.PortForwarder;
-
-
 public class VisionIOPhoton implements VisionIO {
-  
-  public final PhotonCamera camera1;
-  public final PhotonPoseEstimator camera1Estimator;
+  private final PhotonCamera[] cameras = new PhotonCamera[numCameras];
+  private final PhotonPoseEstimator[] positionEstimators = new PhotonPoseEstimator[numCameras];
+  private final PhotonPoseEstimator[] rotationEstimators = new PhotonPoseEstimator[numCameras];
+  private final PhotonPipelineResult[] cameraResults = new PhotonPipelineResult[numCameras];
 
-  public final PhotonCamera camera2;
-  public final PhotonPoseEstimator camera2Estimator;
+  private Pose2d lastEstimate = new Pose2d();
 
-  public final PhotonCamera camera3;
-  public final PhotonPoseEstimator camera3Estimator;
+  LoggedNetworkBoolean killSideCams =
+      new LoggedNetworkBoolean("/SmartDashboard/Vision/KillSideCams", false);
 
-  private Pose2d lastEstimate = new Pose2d(); 
-
-   LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false); // **COMMENTED OUT FUNCTION CUZ ITS WEIRD**
-
-
-  // Initialzes camera with a name and creates a PhotonPoseEstimator to process vision data
   public VisionIOPhoton() {
     PortForwarder.add(5800, "photonvision.local", 5800);
 
-    // Camera 1
-    camera1 = new PhotonCamera(intake_Cam);
-    camera1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam1RobotToCam);
-    camera1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    for (int i = 0; i < numCameras; i++) {
+      cameras[i] = new PhotonCamera(camNames[i]);
 
-    // Camera 2
-    camera2 = new PhotonCamera(outtake_Cam);
-    camera2Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam2RobotToCam);
-    camera2Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      positionEstimators[i] =
+          new PhotonPoseEstimator(
+              kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camsRobotToCam[i]);
+      positionEstimators[i].setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
 
-    // Camera 3
-    camera3 = new PhotonCamera(intakeUp_Cam);
-    camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam3RobotToCam);
-    camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // These estimators are used specifically to mitigate gyro drifting
+      // LOWEST_AMBIGUITY is unreliable at estimating position but any additional rotation data is
+      // worth it
+      rotationEstimators[i] =
+          new PhotonPoseEstimator(
+              kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camsRobotToCam[i]);
+      rotationEstimators[i].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
+      cameraResults[i] = new PhotonPipelineResult();
+    }
+
+    SmartDashboard.putBoolean("KillSideCams", false);
   }
 
-  // Defines PhotonPoseEstimator which sets current estimate
-  private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-    camera1Estimator.setReferencePose(currentEstimate);
-    camera2Estimator.setReferencePose(currentEstimate);
-    camera3Estimator.setReferencePose(currentEstimate);
-
-    return new PhotonPoseEstimator[] { camera1Estimator, camera2Estimator, camera3Estimator };
-  }
-
-  // Updates inputs for vision processing
   @Override
-  public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
+  public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate, Rotation2d heading) {
     lastEstimate = currentEstimate;
-    
+
     PhotonPipelineResult[] results = getAprilTagResults();
-    PhotonPoseEstimator[] photonEstimators = getAprilTagEstimators(currentEstimate);
+    PhotonPoseEstimator[] photonEstimators = getPositionEstimators(currentEstimate, heading);
+    PhotonPoseEstimator[] photonRotationEstimators = getRotationEstimators(currentEstimate);
 
-    inputs.estimate = new Pose2d[] { new Pose2d() };
+    inputs.positionEstimates = new Pose2d[] {new Pose2d()};
+    inputs.rotationEstimates = new Rotation2d[] {heading};
 
-    // add code to check if the closest target is in front or back **CHANGE**
+    // add code to check if the closest target is in front or back
     inputs.timestamp = estimateLatestTimestamp(results);
 
-    // Checks for a valid estimate from photonvision
+    inputs.timestampArray = getTimestampArray(results);
+
     if (hasEstimate(results)) {
       // inputs.results = results;
-      inputs.estimate = getEstimatesArray(results, photonEstimators);
+      inputs.positionEstimates = getEstimatesArray(results, photonEstimators);
+      inputs.rotationEstimates = getRotationEstimates(results, photonRotationEstimators);
       inputs.hasEstimate = true;
 
-      int[][] cameraTargets = getCameraTargets(results);
-      inputs.camera1Targets = cameraTargets[0];
+      inputs.cameraTargets = getCameraTargets(results);
 
       Pose3d[] tags = getTargetsPositions(results);
-      Logger.recordOutput("Vision/Targets3D", tags); 
-      Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags)); 
-      Logger.recordOutput("Vision/TagCounts", tagCounts(results)); 
-    } 
-    else {
+      Logger.recordOutput("Vision/Targets3D", tags);
+      Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags));
+      Logger.recordOutput("Vision/TagCounts", tagCounts(results));
+    } else {
       inputs.timestamp = inputs.timestamp;
       inputs.hasEstimate = false;
     }
 
-    Logger.recordOutput("Vision/cam1/Connected", camera1.isConnected());
-    Logger.recordOutput("Vision/cam2/Connected", camera2.isConnected());
-    Logger.recordOutput("Vision/cam3/Connected", camera3.isConnected());
+    // Log if the robot code can see these cameras
+    for (int i = 0; i < numCameras; i++) {
+      Logger.recordOutput("Vision/cam" + (i + 1) + "/Connected", cameras[i].isConnected());
+    }
+  }
+
+  @Override
+  public PhotonPipelineResult getLatestResult(int camIndex) {
+    if (camIndex < 0 || camIndex >= numCameras) return new PhotonPipelineResult();
+
+    var unreadResults = cameras[camIndex].getAllUnreadResults();
+    double latestTimestamp = 0;
+
+    if (unreadResults.size() == 0) {
+      return cameraResults[camIndex];
+    }
+
+    for (var result : unreadResults) {
+      if (result.getTimestampSeconds() > latestTimestamp) {
+        latestTimestamp = result.getTimestampSeconds();
+        cameraResults[camIndex] = result;
+      }
+    }
+
+    return cameraResults[camIndex];
+  }
+
+  private PhotonPipelineResult[] getAprilTagResults() {
+    if (killSideCams.get()) {
+      PhotonPipelineResult cam1_result = getLatestResult(0);
+
+      printStuff("cam1", cam1_result);
+
+      return new PhotonPipelineResult[] {cam1_result};
+    }
+
+    PhotonPipelineResult[] results = new PhotonPipelineResult[numCameras];
+
+    for (int i = 0; i < numCameras; i++) {
+      results[i] = getLatestResult(i);
+      printStuff("cam" + (i + 1), results[i]);
+    }
+
+    return results;
   }
 
   private void printStuff(String name, PhotonPipelineResult result) {
-    Logger.recordOutput("Vision/" + name + "/results", result.getTargets().size()); 
+    Logger.recordOutput("Vision/" + name + "/results", result.getTargets().size());
 
     PhotonTrackedTarget target = result.getBestTarget();
     if (target != null) {
-        Logger.recordOutput("Vision/" + name + "/PoseAmbiguity", result.getBestTarget().getPoseAmbiguity());
-        Logger.recordOutput("Vision/" + name + "/Yaw", result.getBestTarget().getYaw());
+      Logger.recordOutput(
+          "Vision/" + name + "/PoseAmbiguity", result.getBestTarget().getPoseAmbiguity());
+      Logger.recordOutput("Vision/" + name + "/Yaw", result.getBestTarget().getYaw());
     }
   }
- 
-  public PhotonPipelineResult[] getAprilTagResults() {
-    PhotonPipelineResult cam1_result = getLatestResult(camera1);
-    PhotonPipelineResult cam2_result = getLatestResult(camera2);
-    PhotonPipelineResult cam3_result = getLatestResult(camera3);
-    printStuff("cam1", cam1_result);
-    printStuff("cam2", cam2_result);
-    printStuff("cam3", cam3_result);
 
-    return new PhotonPipelineResult[] { cam1_result, cam2_result, cam3_result };
+  private PhotonPoseEstimator[] getPositionEstimators(Pose2d currentEstimate, Rotation2d heading) {
+    if (killSideCams.get()) {
+      positionEstimators[0].setReferencePose(currentEstimate);
+      positionEstimators[0].addHeadingData(Timer.getFPGATimestamp(), heading);
+
+      return new PhotonPoseEstimator[] {positionEstimators[0]};
+    }
+
+    for (PhotonPoseEstimator estimator : positionEstimators) {
+      estimator.setReferencePose(currentEstimate);
+      estimator.addHeadingData(Timer.getFPGATimestamp(), heading);
+    }
+
+    return positionEstimators;
   }
 
+  private PhotonPoseEstimator[] getRotationEstimators(Pose2d currentEstimate) {
+    if (killSideCams.get()) {
+      rotationEstimators[0].setReferencePose(currentEstimate);
 
-  // Checks if a result is valid (checks if has targets and pose amiguity)
+      return new PhotonPoseEstimator[] {rotationEstimators[0]};
+    }
+
+    for (PhotonPoseEstimator estimator : rotationEstimators) {
+      estimator.setReferencePose(currentEstimate);
+    }
+
+    return rotationEstimators;
+  }
+
   @Override
   public boolean goodResult(PhotonPipelineResult result) {
     return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
-        /*
-         * && kTagLayout.
-         * getTagPose(
-         * result.
-         * getBestTarget().
-         * getFiducialId())
-         * .get().toPose2d(
-         * ).getTranslation
-         * ()
-         * .getDistance(
-         * lastEstimate.
-         * getTranslation()
-         * ) < MAX_DISTANCE
-         */;
+    /*
+     * && kTagLayout.
+     * getTagPose(
+     * result.
+     * getBestTarget().
+     * getFiducialId())
+     * .get().toPose2d(
+     * ).getTranslation
+     * ()
+     * .getDistance(
+     * lastEstimate.
+     * getTranslation()
+     * ) < MAX_DISTANCE
+     */ ;
   }
-
-
-  /**
-   * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
-   * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
-   * This should only be used when there are targets visible.
-   *
-   * @param estimatedPose The estimated pose to guess standard deviations for.
-   */
 }

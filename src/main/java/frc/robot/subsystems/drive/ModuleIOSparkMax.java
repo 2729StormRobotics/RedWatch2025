@@ -35,22 +35,25 @@ import static frc.robot.subsystems.drive.ModuleConstants.kTurningMaxOutput;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningMinOutput;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorCurrentLimit;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorIdleMode;
-import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
+import static frc.robot.subsystems.drive.ModuleConstants.kWheelRadiusMeters;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import java.util.Queue;
 
 /**
@@ -67,14 +70,17 @@ import java.util.Queue;
  */
 public class ModuleIOSparkMax implements ModuleIO {
 
-  private final SparkFlex driveSparkMax;
+  private final SparkMax driveSparkMax;
   private final SparkMax turnSparkMax;
 
-  private final SparkFlexConfig driveConfig;
+  private final SparkMaxConfig driveConfig;
   private final SparkMaxConfig turnConfig;
 
   private final SparkClosedLoopController drivePIDController;
   private final SparkClosedLoopController turnPIDController;
+
+  private final SimpleMotorFeedforward driveFeedforward;
+  private final SimpleMotorFeedforward turnFeedforward;
 
   private final RelativeEncoder driveEncoder;
   private final AbsoluteEncoder turnAbsoluteEncoder;
@@ -85,26 +91,29 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   private final double absoluteEncoderOffset;
 
+  private double lastTurnSetpoint = 0;
+  private double lastTime = 0;
+
   public ModuleIOSparkMax(int index) {
     switch (index) {
       case 0: // Front Left
-        driveSparkMax = new SparkFlex(kFrontLeftDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkMax(kFrontLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kFrontLeftTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kFrontLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 1: // Front Right
-        driveSparkMax = new SparkFlex(kFrontRightDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkMax(kFrontRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kFrontRightTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset =
             DriveConstants.kFrontRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 2: // Back Left
-        driveSparkMax = new SparkFlex(kRearLeftDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkMax(kRearLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kRearLeftTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kBackLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 3: // Back Right
-        driveSparkMax = new SparkFlex(kRearRightDrivingCanId, MotorType.kBrushless);
+        driveSparkMax = new SparkMax(kRearRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new SparkMax(kRearRightTurningCanId, MotorType.kBrushless);
         absoluteEncoderOffset = DriveConstants.kBackRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
@@ -112,7 +121,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         throw new RuntimeException("Invalid module index");
     }
 
-    driveConfig = new SparkFlexConfig();
+    driveConfig = new SparkMaxConfig();
     turnConfig = new SparkMaxConfig();
 
     // Configure motor current limit, voltage compensation, and brake modes
@@ -167,8 +176,17 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnSparkMax.setCANTimeout(0);
 
     // Log things?
-    driveConfig.signals.primaryEncoderPositionPeriodMs((int) (1000.0 / Module.ODOMETRY_FREQUENCY));
-    turnConfig.signals.primaryEncoderPositionPeriodMs((int) (1000.0 / Module.ODOMETRY_FREQUENCY));
+    driveConfig
+        .signals
+        .primaryEncoderPositionAlwaysOn(true)
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / Module.ODOMETRY_FREQUENCY))
+        .primaryEncoderVelocityAlwaysOn(true);
+
+    turnConfig
+        .signals
+        .absoluteEncoderPositionAlwaysOn(true)
+        .absoluteEncoderPositionPeriodMs((int) (1000.0 / Module.ODOMETRY_FREQUENCY))
+        .absoluteEncoderVelocityAlwaysOn(true);
 
     // Save our settings
     driveSparkMax.configure(
@@ -187,22 +205,28 @@ public class ModuleIOSparkMax implements ModuleIO {
         SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
     turnPositionQueue =
         SparkMaxOdometryThread.getInstance().registerSignal(turnAbsoluteEncoder::getPosition);
+
+    driveFeedforward = new SimpleMotorFeedforward(0, 0);
+    turnFeedforward = new SimpleMotorFeedforward(0, 0);
+
+    lastTurnSetpoint = getTurnPosition().getRadians();
+    lastTime = Timer.getFPGATimestamp();
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.drivePositionRad = driveEncoder.getPosition() / (kWheelDiameterMeters / 2);
-    inputs.drivePositionMeters = driveEncoder.getPosition();
-    inputs.driveVelocityMeterPerSec = driveEncoder.getVelocity();
-    inputs.driveVelocityRadPerSec = driveEncoder.getVelocity() / (kWheelDiameterMeters / 2);
+    inputs.drivePositionRad = driveEncoder.getPosition();
+    inputs.drivePositionMeters = driveEncoder.getPosition() * kWheelRadiusMeters;
+    inputs.driveVelocityMeterPerSec = driveEncoder.getVelocity() * kWheelRadiusMeters;
+    inputs.driveVelocityRadPerSec = driveEncoder.getVelocity();
     inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
-    inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
+    inputs.driveCurrentAmps = driveSparkMax.getOutputCurrent();
 
     inputs.turnAbsolutePosition = getTurnPosition();
     inputs.turnPosition = getTurnPosition();
     inputs.turnVelocityRadPerSec = turnAbsoluteEncoder.getVelocity();
     inputs.turnAppliedVolts = turnSparkMax.getAppliedOutput() * turnSparkMax.getBusVoltage();
-    inputs.turnCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
+    inputs.turnCurrentAmps = turnSparkMax.getOutputCurrent();
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -220,27 +244,61 @@ public class ModuleIOSparkMax implements ModuleIO {
   }
 
   @Override
-  public void setDrivePIDFF(double p, double i, double d, double ff) {
-    driveConfig.closedLoop.pidf(p, i, d, ff);
+  public void setDrivePID(double p, double i, double d) {
+    driveConfig.closedLoop.pid(p, i, d);
     driveSparkMax.configure(
-        driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
-  public void setTurnPIDFF(double p, double i, double d, double ff) {
-    turnConfig.closedLoop.pidf(p, i, d, ff);
+  public void setDriveFF(double kS, double kV) {
+    driveFeedforward.setKs(kS);
+    driveFeedforward.setKv(kV);
+  }
+
+  @Override
+  public void setTurnPID(double p, double i, double d) {
+    turnConfig.closedLoop.pid(p, i, d);
     turnSparkMax.configure(
-        turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        turnConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  @Override
+  public void setTurnFF(double kS, double kV) {
+    turnFeedforward.setKs(kS);
+    turnFeedforward.setKv(kV);
   }
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
-    drivePIDController.setReference(velocityRadPerSec, SparkMax.ControlType.kVelocity);
+    double ffOutput = driveFeedforward.calculate(velocityRadPerSec);
+    drivePIDController.setReference(
+        velocityRadPerSec,
+        SparkMax.ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        ffOutput,
+        ArbFFUnits.kVoltage);
   }
 
   @Override
   public void setTurnPosition(double angle) {
-    turnPIDController.setReference(angle + absoluteEncoderOffset, SparkMax.ControlType.kPosition);
+    double dtheta = angle - lastTurnSetpoint;
+    if (dtheta > Constants.PI) {
+      dtheta -= 2 * Constants.PI;
+    } else if (dtheta < -Constants.PI) {
+      dtheta += 2 * Constants.PI;
+    }
+
+    double setpointVelocity = dtheta / (Timer.getFPGATimestamp() - lastTime);
+    lastTime = Timer.getFPGATimestamp();
+    lastTurnSetpoint = angle;
+    double ffOutput = turnFeedforward.calculate(setpointVelocity);
+    turnPIDController.setReference(
+        angle + absoluteEncoderOffset,
+        SparkMax.ControlType.kPosition,
+        ClosedLoopSlot.kSlot0,
+        ffOutput,
+        ArbFFUnits.kVoltage);
   }
 
   public Rotation2d getTurnPosition() {
@@ -263,14 +321,14 @@ public class ModuleIOSparkMax implements ModuleIO {
   public void setDriveBrakeMode(boolean enable) {
     driveConfig.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
     driveSparkMax.configure(
-        driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void setTurnBrakeMode(boolean enable) {
     driveConfig.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
     driveSparkMax.configure(
-        driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override

@@ -113,7 +113,7 @@ public class AprilTagAlignTest extends Command {
         xSupplier = x_Supplier;
         ySupplier = y_Supplier;
         omegaSupplier = omega_Supplier;
-        camera1 = new PhotonCamera(frc.robot.subsystems.Vision.VisionConstants.intake_Cam);
+        camera1 = new PhotonCamera(frc.robot.subsystems.vision.VisionConstants.camNames[0]);
         this.rotation = drivetrain.getRotation();
         this.targetAngle = 0;
         this.isRightBranch = isRightBranch; // Store the branch selection

@@ -13,25 +13,31 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
 import static frc.robot.util.drive.DriveControls.*;
 
-import java.io.Console;
-
-import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
-import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTestRight;
-import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
+import edu.wpi.first.math.geometry.Rotation2d;
+ import edu.wpi.first.math.geometry.Translation2d;
+ import edu.wpi.first.math.system.plant.DCMotor;
+ import edu.wpi.first.wpilibj.DriverStation;
 
+ import org.ironmaple.simulation.SimulatedArena;
+ import org.ironmaple.simulation.drivesims.COTS;
+ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+ import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
+ import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnFly;
+ import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeReefSimulation;
+import java.util.Optional;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -43,45 +49,44 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ValidatedOuttake;
-import frc.robot.subsystems.Vision.VisionIO;
-import frc.robot.subsystems.Vision.VisionIOPhoton;
-import frc.robot.subsystems.Vision.VisionIOPhotonSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.gripper.GripperIO;
+import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.gripper.GripperIOSim;
 import frc.robot.subsystems.gripper.GripperIOSparkMax;
 import frc.robot.util.drive.DriveControls;
+
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 //~
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSIM;
 import frc.robot.subsystems.hanger.*;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -102,7 +107,26 @@ public class RobotContainer {
 
   private boolean brakeMode = true;
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
-
+  private final DriveTrainSimulationConfig driveTrainSimulationConfig = DriveTrainSimulationConfig.Default()
+  // Specify gyro type (for realistic gyro drifting and error simulation)
+  .withGyro(COTS.ofPigeon2())
+  // Specify swerve module (for realistic swerve dynamics)
+  .withSwerveModule(COTS.ofMark4(
+          DCMotor.getKrakenX60(1), // Drive motor is a Kraken X60
+          DCMotor.getFalcon500(1), // Steer motor is a Falcon 500
+          COTS.WHEELS.COLSONS.cof, // Use the COF for Colson Wheels
+          3)) // L3 Gear ratio
+  // Configures the track length and track width (spacing between swerve modules)
+  .withTrackLengthTrackWidth(Inches.of(DriveConstants.kTrackWidthX), Inches.of(DriveConstants.kTrackWidthX))
+  // Configures the bumper size (dimensions of the robot bumper)
+  .withBumperSize(Inches.of(28), Inches.of(28));
+// LEDs
+private SwerveDriveSimulation swerveDriveSimulation = new SwerveDriveSimulation(
+// Specify Configuration
+driveTrainSimulationConfig,
+// Specify starting pose
+new Pose2d(3, 3, new Rotation2d())
+);
   // LEDs
 
   // Dashboard inputs
@@ -135,16 +159,16 @@ public class RobotContainer {
         break;
 
       case SIM:
+      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         // Sim robot, instantiate physics sim IO implementations
         elevator = new Elevator(new ElevatorIOSIM());
         drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new VisionIOPhotonSim());
+          new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
+          new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
+          new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
+          new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
+          new ModuleIOSim(swerveDriveSimulation.getModules()[3]),
+            new VisionIOSim());
         arm = new Arm(new ArmIOSim());
         m_gripper = new Gripper(new GripperIOSim());
         hanger = new HangerIOSim();
@@ -182,10 +206,6 @@ public class RobotContainer {
             // arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
             arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5), new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
             
-    NamedCommands.registerCommand("Reset 180",new InstantCommand(()->{drive.resetYawOffset(180);}).withTimeout(0.01));
-    NamedCommands.registerCommand("Reset 270",new InstantCommand(()->{drive.resetYawOffset(270);}).withTimeout(0.01));
-    NamedCommands.registerCommand("Reset 90",new InstantCommand(()->{drive.resetYawOffset(90);}).withTimeout(0.01));
-
     NamedCommands.registerCommand("L4Setpoint",
     new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
         arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
@@ -267,10 +287,6 @@ public class RobotContainer {
   public void reset() {
     drive.resetYaw();
   }
-  
-  public void resetAuto() {
-    drive.resetYawOffset(270);
-  }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -331,6 +347,18 @@ public class RobotContainer {
     SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
     // Elevator Commands
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+
+    if (Constants.mode == Mode.SIM) {
+      DriveControls.STOW.onTrue(new InstantCommand(()->{
+        SimulatedArena.getInstance().resetFieldForAuto();
+        // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+      }));
+      DriveControls.STOW.onTrue(new InstantCommand(()->{
+        // SimulatedArena.getInstance().resetFieldForAuto();
+SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+      }));
+    }
+    
 
     MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {
       elevator.setVelocity(0);
@@ -433,5 +461,135 @@ public class RobotContainer {
     System.out.println(autoChooser.get().getName());
     System.out.println();
     return autoChooser.get();
+  }
+
+  // Subsystem compound commands
+  
+
+  public Command goToL1() {
+    return elevator.InstantPIDCommand(ElevatorConstants.L1)
+        .alongWith(arm.InstantPIDCommand(ArmConstants.kL1));
+  }
+
+  public Command goToL2() {
+    return elevator.InstantPIDCommand(ElevatorConstants.L2)
+        .alongWith(arm.InstantPIDCommand(ArmConstants.kL2));
+  }
+
+  public Command goToL3() {
+    return elevator.InstantPIDCommand(ElevatorConstants.L3)
+        .alongWith(arm.InstantPIDCommand(ArmConstants.kL3));
+  }
+
+  public Command goToStation() {
+    return arm
+        .InstantPIDCommand(ArmConstants.kIntake)
+        .andThen(elevator.InstantPIDCommand(ElevatorConstants.INTAKE));
+  }
+
+  public Command stow() {
+    return elevator.InstantPIDCommand(ElevatorConstants.STOW)
+        .alongWith(arm.InstantPIDCommand(ArmConstants.kSTOW));
+  }
+
+  public Command goToL1Auto() {
+    return arm
+        .InstantPIDCommand(ArmConstants.kL1)
+        .andThen(new WaitCommand(0.5))
+        .andThen(elevator.InstantPIDCommand(ElevatorConstants.L1));
+  }
+
+  public Command goToL2Auto() {
+    return arm
+        .InstantPIDCommand(ArmConstants.kL2)
+        .andThen(new WaitCommand(0.5))
+        .andThen(elevator.InstantPIDCommand(ElevatorConstants.L2));
+  }
+
+  public Command goToL3Auto() {
+    return arm
+        .InstantPIDCommand(ArmConstants.kL3)
+        .andThen(new WaitCommand(0.5))
+        .andThen(elevator.InstantPIDCommand(ElevatorConstants.L3));
+  }
+
+  public Command goToL4Auto() {
+    return arm
+        .InstantPIDCommand(ArmConstants.kL4)
+        .andThen(new WaitCommand(0.5))
+        .andThen(elevator.InstantPIDCommand(ElevatorConstants.L4));
+  }
+
+  public Command stowAuto() {
+    return elevator.PIDCommand(ElevatorConstants.STOW)
+        .alongWith(arm.PIDCommand(ArmConstants.kSTOW));
+  }
+
+  public Command goToStationAuto() {
+    return elevator.InstantPIDCommand(ElevatorConstants.INTAKE)
+        .alongWith(arm.InstantPIDCommand(ArmConstants.kIntake));
+  }
+
+  public Command coralIntake() {
+    return m_gripper.Intake();
+  }
+
+  public Command coralIntakeForever() {
+    return null;
+  }
+
+  public Command coralOuttakeForever() {
+    return null;
+  }
+
+  public Command coralFeeder() {
+    return arm
+        .PIDCommand(ArmConstants.kIntake)
+        .andThen(coralIntake());
+  }
+
+  public Command coralOuttake() {
+    return m_gripper.outtake();
+  }
+
+  public void updateSimulation() {
+     if (Constants.currentMode != Constants.Mode.SIM) return;
+ 
+     SimulatedArena.getInstance().simulationPeriodic();
+     Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+     Logger.recordOutput(
+             "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+     Logger.recordOutput(
+             "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+ }
+ public void resetSimulation() {
+   if (Constants.currentMode != Constants.Mode.SIM) return;
+ 
+   // drive.resetOdometry(new Pose2d(3, 3, new Rotation2d()));
+   SimulatedArena.getInstance().resetFieldForAuto();
+ }
+
+  public Command fullL1() {
+    return (goToL1().andThen(coralOuttake()));
+  }
+
+  public Command fullL2() {
+    return (goToL2().andThen(coralOuttake()));
+  }
+
+  public Command fullL3() {
+    return (goToL3().andThen(coralOuttake()));
+  }
+
+  public Command fullL1Auto() {
+    return (goToL1Auto().andThen(coralOuttake()));
+  }
+
+  public Command fullL2Auto() {
+    return (goToL2Auto().andThen(coralOuttake()));
+  }
+
+  public Command fullL3Auto() {
+    return (goToL3Auto().andThen(coralOuttake()));
   }
 }
