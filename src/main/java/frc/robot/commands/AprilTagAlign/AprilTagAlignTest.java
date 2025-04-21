@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.LED.BlinkinLEDController.BlinkinPattern;
 import frc.robot.subsystems.drive.Drive;
@@ -51,30 +50,22 @@ public class AprilTagAlignTest extends Command {
     private static final double FORWARD_MULTIPLIER = 7;
     private static final double BRANCH_OFFSET_METERS = Units.inchesToMeters(6);
     private static final double ARM_OFFSET_METERS = Units.inchesToMeters(8.5);
-    private static final double FIN_DISTANCE_REEF = 1.7;
-    private static final double SLOW_DOWN_DISTANCE = Units.inchesToMeters(6); // Distance to start slowing down
     private static final double MIN_FORWARD_SPEED = 0.0005; // Minimum forward speed
-    private static final double MAX_FORWARD_SPEED = 0.5 * DriveConstants.kMaxSpeedMetersPerSecond;
-    private static final double MAX_ROTATION_SPEED = 0.3;
     private static final double LATERAL_P = 0.05; // Tune these
     private static final double LATERAL_I = 0.0;
     private static final double LATERAL_D = 0.01;
     private static final double LATERAL_TOLERANCE = 0.05;
-    private static final double FORWARD_FEEDFORWARD_GAIN = 0.1; // Example gain
     private static final double ROTATION_FEEDFORWARD_GAIN = 0.1; // Example gain
     private static final double LOST_TARGET_TIMEOUT = 0.5; // seconds
     private static final double DEADBAND = 0.02;
 
     // Dynamic PID Tuning Constants (Example values, tune these)
-    private static final double YAW_KP_FAR = 0.01;
-    private static final double YAW_KP_CLOSE = 0.05;
-    private static final double YAW_KD_FAR = 0.002;
-    private static final double YAW_KD_CLOSE = 0.01;
     private static final double LATERAL_KP_FAR = 0.01;
     private static final double LATERAL_KP_CLOSE = 0.05;
     private static final double LATERAL_KD_FAR = 0.002;
     private static final double LATERAL_KD_CLOSE = 0.01;
     private static final double DYNAMIC_TUNING_DISTANCE_THRESHOLD = 1.0; // Metersdouble
+    @SuppressWarnings("unused")
     private double lateralSpeed = 0;
     private double targetRange = 0;
     private double branchY = 0;
@@ -239,10 +230,6 @@ public class AprilTagAlignTest extends Command {
         return ROTATION_FEEDFORWARD_GAIN * yaw;
     }
 
-    private double calculateForwardFeedforward(double distance) {
-        return FORWARD_FEEDFORWARD_GAIN * distance;
-    }
-
     @Override
     public void execute() {
         rotation = m_drivetrain.getRotation();
@@ -324,6 +311,7 @@ public class AprilTagAlignTest extends Command {
                                 new Translation3d(robotMovement.getTranslation()),
                                 new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
                         double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        @SuppressWarnings("unused")
                         double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(
@@ -363,6 +351,7 @@ public class AprilTagAlignTest extends Command {
                                 new Translation3d(robotMovement.getTranslation()),
                                 new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
                         double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        @SuppressWarnings("unused")
                         double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(
@@ -400,6 +389,7 @@ public class AprilTagAlignTest extends Command {
                                 new Translation3d(robotMovement.getTranslation()),
                                 new Rotation3d(0, 0, robotMovement.getRotation().getRadians())));
                         double lastSeenYaw = Math.toDegrees(Math.atan2(updatedTagPose.getY(), updatedTagPose.getX()));
+                        @SuppressWarnings("unused")
                         double lastSeenRange = updatedTagPose.getX();
 
                         lateralSpeed = MathUtil.clamp(

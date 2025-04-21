@@ -37,6 +37,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
+@SuppressWarnings("unused")
 public class DriveCommands {
   private static final double DEADBAND = 0.02;
   private static double slowMode = 1;

@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
 import frc.robot.Constants;
 
+@SuppressWarnings("unused")
 public class ElevatorIOSparkFlex implements ElevatorIO {
   private SparkFlex leftMotor;
   // right follows left

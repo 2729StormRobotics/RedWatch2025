@@ -33,6 +33,8 @@ import edu.wpi.first.wpilibj.Timer;
 /**
  * Physics sim implementation of module IO using MapleSim.
  */
+
+ @SuppressWarnings("unused")
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = 0.02;
 

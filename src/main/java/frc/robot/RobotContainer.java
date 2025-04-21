@@ -18,22 +18,14 @@ import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
 import frc.robot.commands.AprilTagAlign.AprilTagAlignTestRight;
 import edu.wpi.first.math.geometry.Rotation2d;
- import edu.wpi.first.math.geometry.Translation2d;
- import edu.wpi.first.math.system.plant.DCMotor;
- import edu.wpi.first.wpilibj.DriverStation;
-
- import org.ironmaple.simulation.SimulatedArena;
- import org.ironmaple.simulation.drivesims.COTS;
- import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
- import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
- import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
- import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnFly;
- import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeReefSimulation;
-import java.util.Optional;
-import static edu.wpi.first.units.Units.Degrees;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -69,14 +61,11 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.gripper.GripperIOSim;
 import frc.robot.subsystems.gripper.GripperIOSparkMax;
 import frc.robot.util.drive.DriveControls;
 
-import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 //~
 import frc.robot.subsystems.elevator.Elevator;
@@ -105,35 +94,30 @@ public class RobotContainer {
   private final Gripper m_gripper;
   private final HangerIO hanger;
 
-  private boolean brakeMode = true;
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
   private final DriveTrainSimulationConfig driveTrainSimulationConfig = DriveTrainSimulationConfig.Default()
-  // Specify gyro type (for realistic gyro drifting and error simulation)
-  .withGyro(COTS.ofPigeon2())
-  // Specify swerve module (for realistic swerve dynamics)
-  .withSwerveModule(COTS.ofMark4(
+      // Specify gyro type (for realistic gyro drifting and error simulation)
+      .withGyro(COTS.ofPigeon2())
+      // Specify swerve module (for realistic swerve dynamics)
+      .withSwerveModule(COTS.ofMark4(
           DCMotor.getKrakenX60(1), // Drive motor is a Kraken X60
           DCMotor.getFalcon500(1), // Steer motor is a Falcon 500
           COTS.WHEELS.COLSONS.cof, // Use the COF for Colson Wheels
           3)) // L3 Gear ratio
-  // Configures the track length and track width (spacing between swerve modules)
-  .withTrackLengthTrackWidth(Inches.of(DriveConstants.kTrackWidthX), Inches.of(DriveConstants.kTrackWidthX))
-  // Configures the bumper size (dimensions of the robot bumper)
-  .withBumperSize(Inches.of(28), Inches.of(28));
-// LEDs
-private SwerveDriveSimulation swerveDriveSimulation = new SwerveDriveSimulation(
-// Specify Configuration
-driveTrainSimulationConfig,
-// Specify starting pose
-new Pose2d(3, 3, new Rotation2d())
-);
+      // Configures the track length and track width (spacing between swerve modules)
+      .withTrackLengthTrackWidth(Inches.of(DriveConstants.kTrackWidthX), Inches.of(DriveConstants.kTrackWidthX))
+      // Configures the bumper size (dimensions of the robot bumper)
+      .withBumperSize(Inches.of(28), Inches.of(28));
+  // LEDs
+  private SwerveDriveSimulation swerveDriveSimulation = new SwerveDriveSimulation(
+      // Specify Configuration
+      driveTrainSimulationConfig,
+      // Specify starting pose
+      new Pose2d(3, 3, new Rotation2d()));
   // LEDs
 
   // Dashboard inputs
   private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
-
   // Field
   private final Field2d field;
 
@@ -159,15 +143,15 @@ new Pose2d(3, 3, new Rotation2d())
         break;
 
       case SIM:
-      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
+        SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         // Sim robot, instantiate physics sim IO implementations
         elevator = new Elevator(new ElevatorIOSIM());
         drive = new Drive(
-          new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
-          new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
-          new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
-          new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
-          new ModuleIOSim(swerveDriveSimulation.getModules()[3]),
+            new GyroIOSim(swerveDriveSimulation.getGyroSimulation()),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
+            new ModuleIOSim(swerveDriveSimulation.getModules()[3]),
             new VisionIOSim());
         arm = new Arm(new ArmIOSim());
         m_gripper = new Gripper(new GripperIOSim());
@@ -204,24 +188,32 @@ new Pose2d(3, 3, new Rotation2d())
     NamedCommands.registerCommand("L2Setpoint",
         new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
             // arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
-            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5), new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
-            
+            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5),
+            new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
+
     NamedCommands.registerCommand("L4Setpoint",
-    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
-        arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
+        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
+            arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
     NamedCommands.registerCommand("IntakeSetpoint",
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
             new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
     NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
     NamedCommands.registerCommand("Outtake", new WaitCommand(0));
-    
-    // NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(), elevator.PIDCommand(ElevatorConstants.L4), new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-    NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
+
+    // NamedCommands.registerCommand("Outtake", new
+    // ParallelDeadlineGroup(m_gripper.outtake(),
+    // elevator.PIDCommand(ElevatorConstants.L4), new SequentialCommandGroup(new
+    // WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
+    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, () -> 0, () -> 0, () -> 0, false)
+        .withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.01)));
+    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, () -> 0, () -> 0, () -> 0, false)
+        .withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.01)));
+    NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {
+      drive.resetYaw();
+    }));
     NamedCommands.registerCommand("Algae3", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
-    new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
-    NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
+        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
+    NamedCommands.registerCommand("Stow", // put the nail in the horsehoe
         new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3).withTimeout(0.5),
             arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
@@ -349,16 +341,16 @@ new Pose2d(3, 3, new Rotation2d())
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
     if (Constants.mode == Mode.SIM) {
-      DriveControls.STOW.onTrue(new InstantCommand(()->{
+      DriveControls.STOW.onTrue(new InstantCommand(() -> {
         SimulatedArena.getInstance().resetFieldForAuto();
-        // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+        // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new
+        // Translation2d(2,2)));
       }));
-      DriveControls.STOW.onTrue(new InstantCommand(()->{
+      DriveControls.STOW.onTrue(new InstantCommand(() -> {
         // SimulatedArena.getInstance().resetFieldForAuto();
-SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2,2)));
+        SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Translation2d(2, 2)));
       }));
     }
-    
 
     MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {
       elevator.setVelocity(0);
@@ -464,7 +456,6 @@ SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Trans
   }
 
   // Subsystem compound commands
-  
 
   public Command goToL1() {
     return elevator.InstantPIDCommand(ElevatorConstants.L1)
@@ -553,21 +544,24 @@ SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralAlgaeStack(new Trans
   }
 
   public void updateSimulation() {
-     if (Constants.currentMode != Constants.Mode.SIM) return;
- 
-     SimulatedArena.getInstance().simulationPeriodic();
-     Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
-     Logger.recordOutput(
-             "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-     Logger.recordOutput(
-             "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
- }
- public void resetSimulation() {
-   if (Constants.currentMode != Constants.Mode.SIM) return;
- 
-   // drive.resetOdometry(new Pose2d(3, 3, new Rotation2d()));
-   SimulatedArena.getInstance().resetFieldForAuto();
- }
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
+
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput(
+        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+    Logger.recordOutput(
+        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  }
+
+  public void resetSimulation() {
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
+
+    // drive.resetOdometry(new Pose2d(3, 3, new Rotation2d()));
+    SimulatedArena.getInstance().resetFieldForAuto();
+  }
 
   public Command fullL1() {
     return (goToL1().andThen(coralOuttake()));

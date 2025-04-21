@@ -29,6 +29,7 @@ public class VisionIOSim implements VisionIO {
 
   private VisionSystemSim visionSim;
 
+  @SuppressWarnings("unused")
   private Pose2d lastEstimate = new Pose2d();
 
   public VisionIOSim() {

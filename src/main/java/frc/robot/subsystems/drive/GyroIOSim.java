@@ -1,10 +1,7 @@
 package frc.robot.subsystems.drive;
  
- import com.studica.frc.AHRS;
- import com.studica.frc.AHRS.NavXComType;
  import edu.wpi.first.math.geometry.Rotation2d;
  import edu.wpi.first.math.util.Units;
- import edu.wpi.first.units.AngularVelocityUnit;
  import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  import java.util.Queue;
@@ -17,7 +14,9 @@ package frc.robot.subsystems.drive;
   *
   * <p>Mostly utilizes the navX-MXP, but uses the ADXRS450 as backup if it disconnects
   */
- public class GyroIOSim implements GyroIO {
+  
+ @SuppressWarnings("unused")
+public class GyroIOSim implements GyroIO {
    // this class is not like the other Advantage Kit classes because we only want it
    // to run on the real robot
    // we can log all this stuff else where if we want to test it

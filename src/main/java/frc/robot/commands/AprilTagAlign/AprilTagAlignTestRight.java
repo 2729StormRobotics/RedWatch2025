@@ -33,6 +33,7 @@ import java.util.function.DoubleSupplier;
  * Command to align the robot with the nearest AprilTag using PhotonVision while
  * still allowing translational driving.
  */
+@SuppressWarnings("unused")
 public class AprilTagAlignTestRight extends Command {
     private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
     private final Drive m_drivetrain;

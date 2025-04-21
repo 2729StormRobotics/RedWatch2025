@@ -52,7 +52,9 @@ public class CustomAutoChooser {
   /*dropdown for each one in elastic, allows us to choose between start, position,
   and level*/
   private LoggedDashboardChooser<StartPositions> startChooser;
+  @SuppressWarnings("unchecked")
   private LoggedDashboardChooser<ReefPositions>[] positionChoosers = new LoggedDashboardChooser[5];
+  @SuppressWarnings("unchecked")
   private LoggedDashboardChooser<ReefLevels>[] levelChoosers = new LoggedDashboardChooser[5];
 
   private Drive drive;

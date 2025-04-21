@@ -27,6 +27,7 @@ public class VisionIOPhoton implements VisionIO {
   private final PhotonPoseEstimator[] rotationEstimators = new PhotonPoseEstimator[numCameras];
   private final PhotonPipelineResult[] cameraResults = new PhotonPipelineResult[numCameras];
 
+  @SuppressWarnings("unused")
   private Pose2d lastEstimate = new Pose2d();
 
   LoggedNetworkBoolean killSideCams =

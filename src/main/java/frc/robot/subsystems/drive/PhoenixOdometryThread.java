@@ -33,6 +33,7 @@ import org.littletonrobotics.junction.Logger;
  * This also allows Phoenix Pro users to benefit from lower latency between devices using CANivore
  * time synchronization.
  */
+
 public class PhoenixOdometryThread extends Thread {
   private final Lock signalsLock =
       new ReentrantLock(); // Prevents conflicts when registering signals
@@ -62,6 +63,7 @@ public class PhoenixOdometryThread extends Thread {
     }
   }
 
+  @SuppressWarnings("removal")
   public Queue<Double> registerSignal(ParentDevice device, StatusSignal<Double> signal) {
     Queue<Double> queue = new ArrayBlockingQueue<>(20);
     signalsLock.lock();
@@ -116,6 +118,7 @@ public class PhoenixOdometryThread extends Thread {
       // Save new data to queues
       Drive.odometryLock.lock();
       try {
+        @SuppressWarnings("deprecation")
         double timestamp = Logger.getRealTimestamp() / 1e6;
         double totalLatency = 0.0;
         for (BaseStatusSignal signal : signals) {
