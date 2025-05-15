@@ -13,425 +13,94 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.elevator.ElevatorConstants.L1;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L2;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L3;
-import static frc.robot.subsystems.elevator.ElevatorConstants.L4;
-import static frc.robot.util.drive.DriveControls.*;
-
-import java.io.Console;
-
-import frc.robot.commands.AprilTagAlign.AprilTagAlignLeft;
-import frc.robot.commands.AprilTagAlign.AprilTagAlignMiddle;
-import frc.robot.commands.AprilTagAlign.AprilTagAlignTest;
-import frc.robot.commands.AprilTagAlign.AprilTagAlignTestRight;
-import frc.robot.commands.AprilTagAlign.ApriltagAlignRight;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ValidatedOuttake;
-import frc.robot.subsystems.Vision.VisionIO;
-import frc.robot.subsystems.Vision.VisionIOPhoton;
-import frc.robot.subsystems.Vision.VisionIOPhotonSim;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmConstants;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.arm.ArmIOSparkMax;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOReal;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSparkMax;
-import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
-import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.gripper.GripperIO;
-import frc.robot.subsystems.gripper.GripperIOSim;
-import frc.robot.subsystems.gripper.GripperIOSparkMax;
-import frc.robot.util.drive.DriveControls;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-//~
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOSIM;
-import frc.robot.subsystems.hanger.*;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.*;
+import frc.robot.Constants.OIConstants;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
-  private final Arm arm;
-  private final Gripper m_gripper;
-  private final HangerIO hanger;
+  private final Turret turret;
+  private final Loader loader;
+  private final Pivot pivot;
+  private final Shooter shooter;
 
-  private boolean brakeMode = true;
-  private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
+  // Controllers
+  private final XboxController driverController;
+  private final XboxController operatorController;
 
-  // LEDs
-
-  // Dashboard inputs
-  private LoggedDashboardChooser<Command> autoChooser;
-  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
-  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
-
-  // Field
-  private final Field2d field;
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
+    // Initialize subsystems
+    drive = new Drive();
+    turret = new Turret();
+    loader = new Loader();
+    pivot = new Pivot();
+    shooter = new Shooter();
 
-        elevator = new Elevator(new ElevatorIOSparkFlex());
-        drive = new Drive(
-            new GyroIOReal(),
-            new ModuleIOSparkMax(0),
-            new ModuleIOSparkMax(1),
-            new ModuleIOSparkMax(2),
-            new ModuleIOSparkMax(3),
-            new VisionIOPhoton());
-        arm = new Arm(new ArmIOSparkMax());
-        m_gripper = new Gripper(new GripperIOSparkMax());
-        hanger = new HangerIOSparkMax();
-        break;
+    // Initialize controllers
+    driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
+    operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        elevator = new Elevator(new ElevatorIOSIM());
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new VisionIOPhotonSim());
-        arm = new Arm(new ArmIOSim());
-        m_gripper = new Gripper(new GripperIOSim());
-        hanger = new HangerIOSim();
-
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        elevator = new Elevator(new ElevatorIO() {
-        });
-
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new VisionIO() {
-            });
-        arm = new Arm(new ArmIO() {
-        });
-        m_gripper = new Gripper(new GripperIOSim());
-        hanger = new HangerIOSparkMax();
-
-        break;
-    }
-
-    NamedCommands.registerCommand("L2Setpoint",
-        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
-            // arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
-            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5), new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
-            
-    NamedCommands.registerCommand("Reset 180",new InstantCommand(()->{drive.resetYawOffset(180);}).withTimeout(0.01));
-    NamedCommands.registerCommand("Reset 270",new InstantCommand(()->{drive.resetYawOffset(270);}).withTimeout(0.01));
-    NamedCommands.registerCommand("Reset 90",new InstantCommand(()->{drive.resetYawOffset(90);}).withTimeout(0.01));
-
-    NamedCommands.registerCommand("L4Setpoint",
-    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
-        arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
-    NamedCommands.registerCommand("IntakeSetpoint",
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
-            new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
-    NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
-    NamedCommands.registerCommand("Outtake", new WaitCommand(0));
-    
-    // NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(), elevator.PIDCommand(ElevatorConstants.L4), new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
-    NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-    NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
-    NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
-    NamedCommands.registerCommand("Algae3", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
-    new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
-    NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3).withTimeout(0.5),
-            arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
-
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-
-    System.out.println("[Init] Setting up Path Planner Logging");
-
-    // Logging callback for current robot pose
-    PathPlannerLogging.setLogCurrentPoseCallback(
-        (pose) -> {
-          // Do whatever you want with the pose here
-          field.setRobotPose(pose);
-          Logger.recordOutput("PathPlanner/RobotPose", pose);
-        });
-
-    // Logging callback for target robot pose
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (pose) -> {
-          // Do whatever you want with the pose here
-          field.getObject("target pose").setPose(pose);
-          Logger.recordOutput("PathPlanner/TargetPose", pose);
-        });
-
-    // Logging callback for the active path, this is sent as a list of poses
-    PathPlannerLogging.setLogActivePathCallback(
-        (poses) -> {
-          // Do whatever you want with the poses here
-          field.getObject("path").setPoses(poses);
-          Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
-        });
-
-    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
-    elevatorRoot.append(elevator.getElevatorMechanism());
-    // add subsystem mechanisms
-    SmartDashboard.putData("Elevator Mechanism", elevatorMech);
-
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up Drive SysId routines
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    // Set up Named Commands
-
+    // Configure button bindings
     configureButtonBindings();
-
-    // Set up auto routines
-    // System.out.println("[Init] Setting up Logged Auto Chooser");
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices",
-    // AutoBuilder.buildAutoChooser());
   }
 
-  // zero gyro
-  public void reset() {
-    drive.resetYaw();
-  }
-  
-  public void resetAuto() {
-    drive.resetYawOffset(270);
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
-    DriveControls.configureControls();
-
-    // Drive Commands
-    SmartDashboard.putData("commandscheduler", CommandScheduler.getInstance());
+    // Driver controls
+    // Tank drive
     drive.setDefaultCommand(
-        DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-
-    DRIVE_SLOW.onTrue(DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    // DRIVE_PHOTONVISION_ALIGN_RIGHT
-    // .whileTrue(
-    // new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD,
-    // DRIVE_STRAFE),
-    // DriveCommands.joystickDriveRobotRelative(drive, () -> -0.4, () -> -0.05, ()
-    // -> 0).withTimeout(.51))
-    // .withTimeout(20));
-    // DRIVE_PHOTONVISION_ALIGN_LEFT
-    // .whileTrue(
-    // new SequentialCommandGroup(new AprilTagAlignLeft( drive, DRIVE_FORWARD,
-    // DRIVE_STRAFE),
-    // DriveCommands.joystickDriveRobotRelative(drive, () -> 0.4, () -> -0.05, () ->
-    // 0).withTimeout(.1))
-    // .withTimeout(20));
-    DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(
-        new ParallelCommandGroup(arm.PIDCommand(ArmConstants.kSTOW), elevator.PIDCommand(ElevatorConstants.L3),
-            new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false)));
-    DRIVE_PHOTONVISION_ALIGN_LEFT
-        .whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
-
-    // .onFalse(drive.getDefaultCommand());
-    // DRIVE_PHOTONVISION_ALIGN_MIDDLE
-    // .onTrue(
-    // new SequentialCommandGroup(new AprilTagAlignMiddle(m_rotator.getHID(), drive,
-    // DRIVE_FORWARD, DRIVE_STRAFE),
-    // new ParallelDeadlineGroup(new WaitCommand(2),
-    // DriveCommands.joystickDriveRobotRelative(drive, () -> 0.2, () -> 0, () ->
-    // 0))))
-    // .onFalse(drive.getDefaultCommand());
-
-    RESET_GYRO.onTrue(
-        new InstantCommand(
-            () -> {
-              drive.resetYaw();
-            },
+        new RunCommand(
+            () -> drive.tankDrive(
+                -driverController.getLeftY() * 0.1,
+                -driverController.getRightY() * 0.1),
             drive));
 
-    // DRIVE_ROBOT_RELATIVE.onTrue(DriveCommands.joystickDriveRobotRelative(drive,
-    // DRIVE_STRAFE, DRIVE_FORWARD, DRIVE_ROTATE));
-    SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
-    // Elevator Commands
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+    // Turret controls
+    new JoystickButton(driverController, XboxController.Button.kX.value)
+        .whileTrue(new RunCommand(() -> turret.rotate(0.1), turret));
+    new JoystickButton(driverController, XboxController.Button.kB.value)
+        .whileTrue(new RunCommand(() -> turret.rotate(-0.1), turret));
 
-    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {
-      elevator.setVelocity(0);
-    }, elevator), arm.stop(), m_gripper.stop(), new InstantCommand(() -> {
-      hanger.stop();
-    })));
-    // Arm Commands
-    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
-    // Gripper Commands
-    // if (elevator.isLevelL4) {
-    // OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new
-    // SequentialCommandGroup(new WaitCommand(0.15),
-    // arm.PIDCommand(ArmConstants.kSTOW)) ));
+    // Operator controls
+    // Loader controls
+    new JoystickButton(operatorController, XboxController.Button.kA.value)
+        .whileTrue(new RunCommand(() -> loader.load(0.1), loader));
+    new JoystickButton(operatorController, XboxController.Button.kY.value)
+        .whileTrue(new RunCommand(() -> loader.load(-0.1), loader));
 
-    // } else {
-    // OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
-    // }
-    // OUTTAKE.onTrue(m_gripper.outtake());
-    OUTTAKE.onTrue(new ConditionalCommand(
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), m_gripper.outtake(),
-            new SequentialCommandGroup(new WaitCommand(0.40), arm.PIDCommand(ArmConstants.kSTOW))),
-        m_gripper.outtake(), () -> elevator.getL4()));
-    // OUTTAKE.onTrue(new ValidatedOuttake(elevator.getL4(), arm, m_gripper,
-    // elevator));
-    INTAKE.onTrue(m_gripper.Intake());
-    GRIPPERSTOP.onTrue(m_gripper.stop());
-    REVERSE.onTrue(m_gripper.reverse());
+    // Pivot controls
+    new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value)
+        .onTrue(new InstantCommand(() -> pivot.moveToIntakePosition(), pivot));
+    new JoystickButton(operatorController, XboxController.Button.kRightBumper.value)
+        .onTrue(new InstantCommand(() -> pivot.moveToZeroPosition(), pivot));
 
-    PULLHANGER.whileTrue(new InstantCommand(() -> {
-      hanger.pull();
-    }));
-    PULLHANGER.onFalse(new InstantCommand(() -> {
-      hanger.stop();
-    }));
-    EXTENDHANGER.whileTrue(new InstantCommand(() -> {
-      hanger.release();
-    }));
-    EXTENDHANGER.onFalse(new InstantCommand(() -> {
-      hanger.stop();
-    }));
+    // Shooter controls
+    new JoystickButton(operatorController, XboxController.Button.kStart.value)
+        .whileTrue(new RunCommand(() -> shooter.shoot(0.1), shooter));
+    new JoystickButton(operatorController, XboxController.Button.kBack.value)
+        .whileTrue(new RunCommand(() -> shooter.shoot(-0.1), shooter));
 
-    // Set Positions
-    // DriveControls.L1.onTrue(arm.PIDCommand(32));
-    // DriveControls.L2.onTrue(arm.PIDCommand(90));
-    // DriveControls.L3.onTrue(arm.PIDCommand(120));
-    // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
+    // Stop commands
+    new JoystickButton(driverController, XboxController.Button.kStart.value)
+        .onTrue(new InstantCommand(() -> {
+          drive.stop();
+          turret.stop();
+        }));
 
-    // Real Set Positions
-    DriveControls.STOW.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.STOW),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
-
-    DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.L1),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
-
-    DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.L2),
-        new SequentialCommandGroup(new WaitCommand(0.35), arm.PIDCommand(ArmConstants.kL2))));
-
-    DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(() -> elevator.isLevelL4 = false),
-        elevator.PIDCommand(ElevatorConstants.L3),
-        new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kL3))));
-
-    DriveControls.L4.onTrue(
-        new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-            new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));
-
-    DriveControls.AlgaeL2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
-    DriveControls.AlgaeL3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL3),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
-
-    DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
-
-    // Elevator only
-
-    // DriveControls.L1.onTrue(elevator.PIDCommand(ElevatorConstants.L1));
-
-    // DriveControls.L2.onTrue(elevator.PIDCommand(ElevatorConstants.L2));
-
-    // DriveControls.L3.onTrue(elevator.PIDCommand(ElevatorConstants.L3));
-
-    // DriveControls.L4.onTrue(elevator.PIDCommand(ElevatorConstants.L4));
-
-    // DriveControls.INTAKE_POS.onTrue(elevator.PIDCommand(ElevatorConstants.INTAKE));
-
+    new JoystickButton(operatorController, XboxController.Button.kLeftStick.value)
+        .onTrue(new InstantCommand(() -> {
+          loader.stop();
+          pivot.stop();
+          shooter.stop();
+        }));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   public Command getAutonomousCommand() {
-    System.out.println(autoChooser.get().getName());
-    System.out.println();
-    return autoChooser.get();
+    // Return a default auto command
+    return new InstantCommand();
   }
 }

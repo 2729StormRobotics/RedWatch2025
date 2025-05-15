@@ -8,6 +8,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import java.awt.geom.Point2D;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -198,5 +200,52 @@ public final class Constants {
 
     // public static final double kNoteTolerance = 2.0;
     // public static final double kPNoteTurn = 0.008;
+  }
+
+  public static final class DriveConstants {
+    // Motor IDs
+    public static final int LEFT_MOTOR_1_ID = 3;
+    public static final int LEFT_MOTOR_2_ID = 4;
+    public static final int RIGHT_MOTOR_1_ID = 1;
+    public static final int RIGHT_MOTOR_2_ID = 2;
+
+    // Drive settings
+    public static final double MAX_SPEED = 0.8;
+    public static final double MAX_ANGULAR_SPEED = Math.PI;
+    public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
+  }
+
+  public static final class TurretConstants {
+    public static final int TURRET_MOTOR_ID = 5;
+    public static final double MAX_TURRET_SPEED = 0.5;
+    public static final IdleMode TURRET_IDLE_MODE = IdleMode.kBrake;
+  }
+
+  public static final class LoaderConstants {
+    public static final int LOADER_MOTOR_ID = 6;
+    public static final double MAX_LOADER_SPEED = 0.5;
+    public static final IdleMode LOADER_IDLE_MODE = IdleMode.kBrake;
+  }
+
+  public static final class PivotConstants {
+    public static final int PIVOT_MOTOR_ID = 8;
+    public static final double MAX_PIVOT_SPEED = 0.5;
+    public static final IdleMode PIVOT_IDLE_MODE = IdleMode.kBrake;
+    
+    // Pivot positions (in degrees)
+    public static final double INTAKE_POSITION = 45.0;
+    public static final double ZERO_POSITION = 0.0;
+  }
+
+  public static final class ShooterConstants {
+    public static final int LEFT_SHOOTER_MOTOR_ID = 14;
+    public static final int RIGHT_SHOOTER_MOTOR_ID = 10;
+    public static final double MAX_SHOOTER_SPEED = 1.0;
+    public static final IdleMode SHOOTER_IDLE_MODE = IdleMode.kCoast;
+  }
+
+  public static final class OIConstants {
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
   }
 }
