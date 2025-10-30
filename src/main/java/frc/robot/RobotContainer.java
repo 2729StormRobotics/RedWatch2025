@@ -95,9 +95,9 @@ import frc.robot.subsystems.hanger.*;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
-  private final Arm arm;
-  private final Gripper m_gripper;
+  // private final Elevator elevator;
+  // private final Arm arm;
+  // private final Gripper m_gripper;
   private final HangerIO hanger;
 
   private boolean brakeMode = true;
@@ -121,7 +121,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
 
-        elevator = new Elevator(new ElevatorIOSparkFlex());
+        //elevator = new Elevator(new ElevatorIOSparkFlex());
         drive = new Drive(
             new GyroIOReal(),
             new ModuleIOSparkMax(0),
@@ -129,14 +129,14 @@ public class RobotContainer {
             new ModuleIOSparkMax(2),
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
-        arm = new Arm(new ArmIOSparkMax());
-        m_gripper = new Gripper(new GripperIOSparkMax());
+        //arm = new Arm(new ArmIOSparkMax());
+        // m_gripper = new Gripper(new GripperIOSparkMax());
         hanger = new HangerIOSparkMax();
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        elevator = new Elevator(new ElevatorIOSIM());
+        //elevator = new Elevator(new ElevatorIOSIM());
         drive = new Drive(
             new GyroIO() {
             },
@@ -145,16 +145,16 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOPhotonSim());
-        arm = new Arm(new ArmIOSim());
-        m_gripper = new Gripper(new GripperIOSim());
+        //arm = new Arm(new ArmIOSim());
+        // m_gripper = new Gripper(new GripperIOSim());
         hanger = new HangerIOSim();
 
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        elevator = new Elevator(new ElevatorIO() {
-        });
+        //elevator = new Elevator(new ElevatorIO() {
+        //});
 
         drive = new Drive(
             new GyroIO() {
@@ -169,41 +169,41 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
-        arm = new Arm(new ArmIO() {
-        });
-        m_gripper = new Gripper(new GripperIOSim());
+        // arm = new Arm(new ArmIO() {
+        // });
+        // m_gripper = new Gripper(new GripperIOSim());
         hanger = new HangerIOSparkMax();
 
         break;
     }
 
-    NamedCommands.registerCommand("L2Setpoint",
-        new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
-            // arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
-            arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5), new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
+    // NamedCommands.registerCommand("L2Setpoint",
+    //     new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.2),
+    //         // arm.PIDCommand(ArmConstants.kL4).withTimeout(0.45)));
+    //         arm.PIDCommand(ArmConstants.kL4).withTimeout(0.5), m_gripper.outtake().withTimeout(0.5), new WaitCommand(0.4), arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.3)));
             
     NamedCommands.registerCommand("Reset 180",new InstantCommand(()->{drive.resetYawOffset(180);}).withTimeout(0.01));
     NamedCommands.registerCommand("Reset 270",new InstantCommand(()->{drive.resetYawOffset(270);}).withTimeout(0.01));
     NamedCommands.registerCommand("Reset 90",new InstantCommand(()->{drive.resetYawOffset(90);}).withTimeout(0.01));
 
-    NamedCommands.registerCommand("L4Setpoint",
-    new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
-        arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
-    NamedCommands.registerCommand("IntakeSetpoint",
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
-            new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
-    NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
-    NamedCommands.registerCommand("Outtake", new WaitCommand(0));
+    // NamedCommands.registerCommand("L4Setpoint",
+    // new SequentialCommandGroup(elevator.PIDCommand(ElevatorConstants.L4).withTimeout(1.5),
+    //     arm.PIDCommand(ArmConstants.kL4).withTimeout(1)));
+    // NamedCommands.registerCommand("IntakeSetpoint",
+    //     new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE).withTimeout(2),
+    //         new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake).withTimeout(1))));
+    // NamedCommands.registerCommand("Intake", m_gripper.Intake().withTimeout(2));
+    // NamedCommands.registerCommand("Outtake", new WaitCommand(0));
     
     // NamedCommands.registerCommand("Outtake", new ParallelDeadlineGroup(m_gripper.outtake(), elevator.PIDCommand(ElevatorConstants.L4), new SequentialCommandGroup(new WaitCommand(0.9), arm.PIDCommand(ArmConstants.kSTOW))));
     NamedCommands.registerCommand("AlignReefLeft", new AprilTagAlignTest(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
     NamedCommands.registerCommand("AlignReefRight", new AprilTagAlignTestRight(drive, ()->0, ()->0, ()->0, false).withTimeout(2.5).andThen(DriveCommands.joystickDrive(drive, ()->0, ()->0, ()->0).withTimeout(0.01)));
     NamedCommands.registerCommand("AngleReset", new InstantCommand(() -> {drive.resetYaw();}));
-    NamedCommands.registerCommand("Algae3", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
-    new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
-    NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3).withTimeout(0.5),
-            arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
+    // NamedCommands.registerCommand("Algae3", new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
+    // new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae)), m_gripper.reverse()));
+    // NamedCommands.registerCommand("Stow", //put the nail in the horsehoe
+    //     new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L3).withTimeout(0.5),
+    //         arm.PIDCommand(ArmConstants.kSTOW).withTimeout(0.5)));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -234,8 +234,8 @@ public class RobotContainer {
           Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
         });
 
-    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
-    elevatorRoot.append(elevator.getElevatorMechanism());
+    // MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
+    // elevatorRoot.append(elevator.getElevatorMechanism());
     // add subsystem mechanisms
     SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
@@ -304,8 +304,7 @@ public class RobotContainer {
     // 0).withTimeout(.1))
     // .withTimeout(20));
     DRIVE_PHOTONVISION_ALIGN_RIGHT.whileTrue(
-        new ParallelCommandGroup(arm.PIDCommand(ArmConstants.kSTOW), elevator.PIDCommand(ElevatorConstants.L3),
-            new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false)));
+            new AprilTagAlignTestRight(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
     DRIVE_PHOTONVISION_ALIGN_LEFT
         .whileTrue(new AprilTagAlignTest(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE, false));
 
@@ -330,15 +329,11 @@ public class RobotContainer {
     // DRIVE_STRAFE, DRIVE_FORWARD, DRIVE_ROTATE));
     SmartDashboard.putNumber("Elevator Joystick", ELEVATOR_JOYSTICK.getAsDouble());
     // Elevator Commands
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
+    // elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_JOYSTICK));
 
-    MELTDOWN.onTrue(new SequentialCommandGroup(new InstantCommand(() -> {
-      elevator.setVelocity(0);
-    }, elevator), arm.stop(), m_gripper.stop(), new InstantCommand(() -> {
-      hanger.stop();
-    })));
+    MELTDOWN.onTrue(new InstantCommand(() -> {hanger.stop();}));
     // Arm Commands
-    arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
+    // arm.setDefaultCommand(arm.ManualCommand(PIVOT_ROTATE));
     // Gripper Commands
     // if (elevator.isLevelL4) {
     // OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake(),new
@@ -349,15 +344,15 @@ public class RobotContainer {
     // OUTTAKE.onTrue(new ParallelCommandGroup(m_gripper.outtake()));
     // }
     // OUTTAKE.onTrue(m_gripper.outtake());
-    OUTTAKE.onTrue(new ConditionalCommand(
-        new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), m_gripper.outtake(),
-            new SequentialCommandGroup(new WaitCommand(0.40), arm.PIDCommand(ArmConstants.kSTOW))),
-        m_gripper.outtake(), () -> elevator.getL4()));
+    // OUTTAKE.onTrue(new ConditionalCommand(
+    //     new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4), m_gripper.outtake(),
+    //         new SequentialCommandGroup(new WaitCommand(0.40), arm.PIDCommand(ArmConstants.kSTOW))),
+    //     m_gripper.outtake(), () -> elevator.getL4()));
     // OUTTAKE.onTrue(new ValidatedOuttake(elevator.getL4(), arm, m_gripper,
     // elevator));
-    INTAKE.onTrue(m_gripper.Intake());
-    GRIPPERSTOP.onTrue(m_gripper.stop());
-    REVERSE.onTrue(m_gripper.reverse());
+    // INTAKE.onTrue(m_gripper.Intake());
+    // GRIPPERSTOP.onTrue(m_gripper.stop());
+    // REVERSE.onTrue(m_gripper.reverse());
 
     PULLHANGER.whileTrue(new InstantCommand(() -> {
       hanger.pull();
@@ -379,36 +374,36 @@ public class RobotContainer {
     // DriveControls.L1.onTrue(elevator.ManualCommand(0.05));
 
     // Real Set Positions
-    DriveControls.STOW.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.STOW),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
+    // DriveControls.STOW.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
+    //   elevator.isLevelL4 = false;
+    // }), elevator.PIDCommand(ElevatorConstants.STOW),
+    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kSTOW))));
 
-    DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.L1),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
+    // DriveControls.L1.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
+    //   elevator.isLevelL4 = false;
+    // }), elevator.PIDCommand(ElevatorConstants.L1),
+    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kL1))));
 
-    DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
-      elevator.isLevelL4 = false;
-    }), elevator.PIDCommand(ElevatorConstants.L2),
-        new SequentialCommandGroup(new WaitCommand(0.35), arm.PIDCommand(ArmConstants.kL2))));
+    // DriveControls.L2.onTrue(new ParallelCommandGroup(new InstantCommand(() -> {
+    //   elevator.isLevelL4 = false;
+    // }), elevator.PIDCommand(ElevatorConstants.L2),
+    //     new SequentialCommandGroup(new WaitCommand(0.35), arm.PIDCommand(ArmConstants.kL2))));
 
-    DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(() -> elevator.isLevelL4 = false),
-        elevator.PIDCommand(ElevatorConstants.L3),
-        new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kL3))));
+    // DriveControls.L3.onTrue(new ParallelCommandGroup(new InstantCommand(() -> elevator.isLevelL4 = false),
+    //     elevator.PIDCommand(ElevatorConstants.L3),
+    //     new SequentialCommandGroup(new WaitCommand(0.5), arm.PIDCommand(ArmConstants.kL3))));
 
-    DriveControls.L4.onTrue(
-        new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
-            new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));
+    // DriveControls.L4.onTrue(
+    //     new SequentialCommandGroup(elevator.setL4(), new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.L4),
+    //         new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kL4)))));
 
-    DriveControls.AlgaeL2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
-    DriveControls.AlgaeL3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL3),
-        new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
+    // DriveControls.AlgaeL2.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL2),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
+    // DriveControls.AlgaeL3.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.AlgaeL3),
+    //     new SequentialCommandGroup(new WaitCommand(1), arm.PIDCommand(ArmConstants.kAlgae))));
 
-    DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
-        new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
+    // DriveControls.INTAKE_POS.onTrue(new ParallelCommandGroup(elevator.PIDCommand(ElevatorConstants.INTAKE),
+    //     new SequentialCommandGroup(new WaitCommand(0), arm.PIDCommand(ArmConstants.kIntake))));
 
     // Elevator only
 
